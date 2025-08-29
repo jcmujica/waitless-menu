@@ -1,5 +1,6 @@
 ---
 import { fetchMenu, type Menu } from '../../../services/menus/fetch-menu';
+import { TAILWIND_COLORS } from '../../../constants/colors';
 
 const { account } = Astro.params;
 const { data, error } = await fetchMenu(account as string);
@@ -66,16 +67,42 @@ if (menu?.appearance?.customStyle) {
     // Get colors if available
     if (parsedStyle.colors) {
       if (parsedStyle.colors.primary) {
-        primaryColor = parsedStyle.colors.primary;
+        // Check if the primary color is a Tailwind color name (e.g., 'blue-500')
+        if (typeof parsedStyle.colors.primary === 'string' && parsedStyle.colors.primary.includes('-')) {
+          // Map the Tailwind color name to its hex value
+          const colorKey = parsedStyle.colors.primary as keyof typeof TAILWIND_COLORS;
+          primaryColor = TAILWIND_COLORS[colorKey] || parsedStyle.colors.primary;
+        } else {
+          // Use the color value directly if it's not a Tailwind color name
+          primaryColor = parsedStyle.colors.primary;
+        }
       }
       if (parsedStyle.colors.text) {
-        textColor = parsedStyle.colors.text;
+        // Check if the text color is a Tailwind color name
+        if (typeof parsedStyle.colors.text === 'string' && parsedStyle.colors.text.includes('-')) {
+          const colorKey = parsedStyle.colors.text as keyof typeof TAILWIND_COLORS;
+          textColor = TAILWIND_COLORS[colorKey] || parsedStyle.colors.text;
+        } else {
+          textColor = parsedStyle.colors.text;
+        }
       }
       if (parsedStyle.colors.secondary) {
-        secondaryColor = parsedStyle.colors.secondary;
+        // Check if the secondary color is a Tailwind color name
+        if (typeof parsedStyle.colors.secondary === 'string' && parsedStyle.colors.secondary.includes('-')) {
+          const colorKey = parsedStyle.colors.secondary as keyof typeof TAILWIND_COLORS;
+          secondaryColor = TAILWIND_COLORS[colorKey] || parsedStyle.colors.secondary;
+        } else {
+          secondaryColor = parsedStyle.colors.secondary;
+        }
       }
       if (parsedStyle.colors.accent) {
-        accentColor = parsedStyle.colors.accent;
+        // Check if the accent color is a Tailwind color name
+        if (typeof parsedStyle.colors.accent === 'string' && parsedStyle.colors.accent.includes('-')) {
+          const colorKey = parsedStyle.colors.accent as keyof typeof TAILWIND_COLORS;
+          accentColor = TAILWIND_COLORS[colorKey] || parsedStyle.colors.accent;
+        } else {
+          accentColor = parsedStyle.colors.accent;
+        }
       }
     }
   } catch (e) {
