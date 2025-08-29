@@ -20,7 +20,6 @@ export interface MenuPage {
 export interface MenuAppearance {
   theme: string;
   layout: string;
-  customStyleName: string | null;
   customStyle: string | null;
 }
 
@@ -55,7 +54,6 @@ export const fetchMenu = async (account: string) => {
         menu_appearances (
           theme,
           layout,
-          custom_style_name,
           custom_style
         ),
         menu_settings (
@@ -157,7 +155,6 @@ export const fetchMenu = async (account: string) => {
       appearance: {
         theme: appearance?.theme || 'light',
         layout: appearance?.layout || 'grid',
-        customStyleName: appearance?.custom_style_name || null,
         customStyle: appearance?.custom_style || null
       },
       settings: {

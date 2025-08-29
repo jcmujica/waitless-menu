@@ -7,11 +7,76 @@ const menu = data as Menu;
 
 // Parse custom style if available
 let customBackground = '';
+let backgroundImage = '';
+let backgroundSize = '';
+let backgroundPosition = '';
+let backgroundRepeat = '';
+let textColor = '';
+let secondaryColor = '';
+let accentColor = '';
+let primaryColor = '';
+
 if (menu?.appearance?.customStyle) {
   try {
     const parsedStyle = JSON.parse(menu.appearance.customStyle);
-    if (parsedStyle.background) {
-      customBackground = parsedStyle.background;
+    
+    // Get background appearance if available
+    if (parsedStyle.backgroundAppearance) {
+      // Extract all background properties
+      if (parsedStyle.backgroundAppearance.background) {
+        customBackground = parsedStyle.backgroundAppearance.background;
+      }
+      if (parsedStyle.backgroundAppearance.backgroundImage) {
+        backgroundImage = parsedStyle.backgroundAppearance.backgroundImage;
+      }
+      if (parsedStyle.backgroundAppearance.backgroundSize) {
+        backgroundSize = parsedStyle.backgroundAppearance.backgroundSize;
+      }
+      if (parsedStyle.backgroundAppearance.backgroundPosition) {
+        backgroundPosition = parsedStyle.backgroundAppearance.backgroundPosition;
+      }
+      if (parsedStyle.backgroundAppearance.backgroundRepeat) {
+        backgroundRepeat = parsedStyle.backgroundAppearance.backgroundRepeat;
+      }
+    } else if (parsedStyle.background) {
+      // Fallback for old format
+      // Check if the background contains multiple properties
+      if (typeof parsedStyle.background === 'string' && parsedStyle.background.includes(';')) {
+        // Split the combined background properties
+        const bgProps = parsedStyle.background.split(';');
+        
+        bgProps.forEach((prop: string) => {
+          const trimmedProp = prop.trim();
+          if (trimmedProp.startsWith('background-image:')) {
+            backgroundImage = trimmedProp.replace('background-image:', '').trim();
+          } else if (trimmedProp.startsWith('background-size:')) {
+            backgroundSize = trimmedProp.replace('background-size:', '').trim();
+          } else if (trimmedProp.startsWith('background-position:')) {
+            backgroundPosition = trimmedProp.replace('background-position:', '').trim();
+          } else if (trimmedProp.startsWith('background-repeat:')) {
+            backgroundRepeat = trimmedProp.replace('background-repeat:', '').trim();
+          }
+        });
+      } else {
+        // Simple background
+        customBackground = parsedStyle.background;
+      }
+    }
+    
+    // Get colors if available
+    if (parsedStyle.colors) {
+      if (parsedStyle.colors.primary) {
+        primaryColor = parsedStyle.colors.primary;
+      }
+      if (parsedStyle.colors.text) {
+        textColor = parsedStyle.colors.text;
+      }
+      if (parsedStyle.colors.secondary) {
+        secondaryColor = parsedStyle.colors.secondary;
+      }
+      if (parsedStyle.colors.accent) {
+        accentColor = parsedStyle.colors.accent;
+      }
     }
   } catch (e) {
     console.error('Error parsing custom style:', e);
@@ -28,15 +93,23 @@ if (menu?.appearance?.customStyle) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Apply custom background directly -->
-  {customBackground && (
-    <style is:inline set:html={`
-      body {
-        background: ${customBackground} !important;
-      }
-    `}>
-    </style>
-  )}
+  <!-- Apply custom styles directly -->
+  <style is:inline set:html={`
+    :root {
+      ${primaryColor ? `--primary-color: ${primaryColor} !important;` : ''}
+      ${secondaryColor ? `--secondary-color: ${secondaryColor} !important;` : ''}
+      ${textColor ? `--text-color: ${textColor} !important;` : ''}
+      ${accentColor ? `--accent-color: ${accentColor} !important;` : ''}
+    }
+    body {
+      ${customBackground ? `background: ${customBackground} !important;` : ''}
+      ${backgroundImage ? `background-image: ${backgroundImage} !important;` : ''}
+      ${backgroundSize ? `background-size: ${backgroundSize} !important;` : ''}
+      ${backgroundPosition ? `background-position: ${backgroundPosition} !important;` : ''}
+      ${backgroundRepeat ? `background-repeat: ${backgroundRepeat} !important;` : ''}
+    }
+  `}>
+  </style>
 </head>
 
 <body class={menu?.appearance?.theme || 'light'} data-layout={menu?.appearance?.layout || 'grid'}>
@@ -110,7 +183,7 @@ if (menu?.appearance?.customStyle) {
 <style>
   :root {
     /* Light theme (default) */
-    --primary-color: #3a86ff;
+    --primary-color: #3b82f6; /* Default blue, can be overridden */
     --secondary-color: #ff006e;
     --text-color: #333;
     --background-color: #f9f9f9;
