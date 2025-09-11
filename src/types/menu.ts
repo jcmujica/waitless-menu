@@ -58,6 +58,17 @@ export interface MenuAppearance {
   style: string | null
 }
 
+export interface ParsedMenuAppearanceStyle {
+  background?: any
+  colors?: {
+    primary?: {
+      id: string
+      value: string
+    }
+  }
+}
+  
+
 /**
  * Menu display settings
  */

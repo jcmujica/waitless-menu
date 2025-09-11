@@ -1,6 +1,6 @@
 ---
 import { getColorShades } from "@/utils/getColorshades";
-import type { IMenu, MenuPage } from "@/types/menu";
+import type { IMenu, MenuPage, ParsedMenuAppearanceStyle } from "@/types/menu";
 import Page from "./Page.astro";
 
 interface Props {
@@ -12,14 +12,7 @@ interface Props {
   error?: Error | unknown;
 }
 
-const { 
-  menu, 
-  currentPage,
-  account,
-  accountPath,
-  pageId,
-  error
-} = Astro.props;
+const { menu, currentPage, account, accountPath, pageId, error } = Astro.props;
 
 // Determine the route type based on available params
 const isQrRoute = !!account;
@@ -32,9 +25,14 @@ const isSinglePage = menu?.type === "single-page";
 const baseUrl = isQrRoute ? `/qr/${account}` : `/v/${accountPath}`;
 
 // Parse appearance styles
-const styles = JSON.parse(menu?.appearance?.style || "{}");
-const baseColor = styles?.colors?.primary?.id?.split("-")[0] || "slate";
-const colorShades = getColorShades(baseColor);
+const styles = JSON.parse(
+  menu?.appearance?.style || "{}",
+) as ParsedMenuAppearanceStyle;
+const backgroundStyle = styles?.background?.style || {};
+
+console.log({ backgroundStyle });
+const colors = styles?.colors?.primary?.id?.split("-")[0] || "slate";
+const primaryColorShades = getColorShades(colors);
 const theme = menu?.appearance?.theme || "light";
 
 // Find the page to display in single-page view
@@ -54,91 +52,112 @@ const showDescriptions = menu?.settings?.showDescriptions ?? true;
     <title>{menu?.name || "Menu"}</title>
   </head>
 
-  <body class={theme}>
+  <body
+    class={theme}
+    style={{
+      ...backgroundStyle,
+    }}
+  >
     <div class="menu-container">
       {/* Error message */}
-      {error && (
-        <div class="error-container">
-          <h1>Error loading menu</h1>
-          <p>{error instanceof Error ? error.message : "Unknown error"}</p>
-        </div>
-      )}
+      {
+        error && (
+          <div class="error-container">
+            <h1>Error loading menu</h1>
+            <p>{error instanceof Error ? error.message : "Unknown error"}</p>
+          </div>
+        )
+      }
 
       {/* Menu content when available */}
-      {menu && (
-        <>
-          {/* Header with menu name */}
-          <header>
-            <h1>{menu?.name || "Menu"}</h1>
-            
-            {/* Back button when viewing a specific page */}
-            {isPageView && (
-              <a href={baseUrl} class="back-link">Back to Menu</a>
-            )}
-          </header>
+      {
+        menu && (
+          <>
+            {/* Header with menu name */}
+            <header>
+              <h1>{menu?.name || "Menu"}</h1>
 
-          {/* Navigation for multi-page menus when not in page view */}
-          {isMultiPage && !isPageView && menu?.pages && menu.pages.length > 0 && (
-            <nav class="page-navigation">
-              {menu.pages.map((page) => (
-                <a href={`${baseUrl}/${page.id}`} class="page-link">{page.name}</a>
-              ))}
-            </nav>
-          )}
+              {/* Back button when viewing a specific page */}
+              {isPageView && (
+                <a href={baseUrl} class="back-link">
+                  Back to Menu
+                </a>
+              )}
+            </header>
 
-          {/* Main content area */}
-          <main>
-            {/* Specific page view */}
-            {isPageView && currentPage && (
-              <Page
-                id={currentPage.id}
-                name={currentPage.name}
-                items={currentPage.items}
-                showPrices={showPrices}
-                showImages={showImages}
-                isVisible={true}
-              />
-            )}
+            {/* Navigation for multi-page menus when not in page view */}
+            {isMultiPage &&
+              !isPageView &&
+              menu?.pages &&
+              menu.pages.length > 0 && (
+                <nav class="page-navigation">
+                  {menu.pages.map((page) => (
+                    <a href={`${baseUrl}/${page.id}`} class="page-link">
+                      {page.name}
+                    </a>
+                  ))}
+                </nav>
+              )}
 
-            {/* Page not found */}
-            {isPageView && !currentPage && menu && (
-              <div class="not-found">
-                <h2>Page not found</h2>
-                <p>The requested page could not be found.</p>
-              </div>
-            )}
+            {/* Main content area */}
+            <main>
+              {/* Specific page view */}
+              {isPageView && currentPage && (
+                <Page
+                  id={currentPage.id}
+                  name={currentPage.name}
+                  items={currentPage.items}
+                  showPrices={showPrices}
+                  showImages={showImages}
+                  showDescriptions={showDescriptions}
+                  isVisible={true}
+                />
+              )}
 
-            {/* Single-page layout */}
-            {isSinglePage && !isPageView && menu.pages && menu.pages.length > 0 && (
-              <div class="single-page-layout">
-                {menu.pages.map((page) => (
-                  <Page
-                    id={page.id}
-                    name={page.name}
-                    items={page.items}
-                    showPrices={showPrices}
-                    showImages={showImages}
-                    isVisible={true}
-                  />
-                ))}
-              </div>
-            )}
+              {/* Page not found */}
+              {isPageView && !currentPage && menu && (
+                <div class="not-found">
+                  <h2>Page not found</h2>
+                  <p>The requested page could not be found.</p>
+                </div>
+              )}
 
-            {/* Custom slot content */}
-            <slot />
-          </main>
+              {/* Single-page layout */}
+              {isSinglePage &&
+                !isPageView &&
+                menu.pages &&
+                menu.pages.length > 0 && (
+                  <div class="single-page-layout">
+                    {menu.pages.map((page) => (
+                      <Page
+                        id={page.id}
+                        name={page.name}
+                        items={page.items}
+                        showPrices={showPrices}
+                        showImages={showImages}
+                        showDescriptions={showDescriptions}
+                        isVisible={true}
+                      />
+                    ))}
+                  </div>
+                )}
 
-          {/* Footer */}
-          <footer>
-            <p>Powered by Waitless</p>
-          </footer>
-        </>
-      )}
+              {/* Custom slot content */}
+              <slot />
+            </main>
+
+            {/* Footer */}
+            <footer>
+              <p>Powered by Waitless</p>
+            </footer>
+          </>
+        )
+      }
     </div>
   </body>
 </html>
 
-<style is:global define:vars={{ ...colorShades, theme }}>
+<style is:global define:vars={{ ...primaryColorShades, theme }}>
   :root {
     color-scheme: var(--theme);
     --bg-color: var(--50);
@@ -160,106 +179,32 @@ const showDescriptions = menu?.settings?.showDescriptions ?? true;
   }
 
   body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background-color: var(--bg-color);
+    font-family:
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      Oxygen,
+      Ubuntu,
+      Cantarell,
+      sans-serif;
+    /* background-color: var(--bg-color); */
     color: var(--text-color);
     margin: 0;
     padding: 0;
   }
 
-  .menu-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem;
-  }
-
-  header {
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  header h1 {
-    margin-top: 0;
-  }
-
-  .back-link {
-    display: inline-block;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-    text-decoration: none;
-  }
-
-  .back-link:hover {
-    color: var(--primary-hover);
-    text-decoration: underline;
-  }
-
-  .page-navigation {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .page-link {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    background-color: var(--primary-color);
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-  }
-
-  .page-link:hover {
-    background-color: var(--primary-hover);
-  }
-
-  .error-container {
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    background-color: var(--warning-bg);
-    color: var(--warning-text);
-    border-radius: 4px;
-    border-left: 4px solid var(--error-color);
-  }
-
-  .error-container h1 {
-    margin-top: 0;
-    font-size: 1.5rem;
-  }
-
-  .not-found {
-    text-align: center;
-    padding: 2rem 0;
-  }
-
-  .single-page-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-
   main {
-    min-height: 50vh;
+    height: 100dvh;
+  }
+
+  h1 {
+    text-align: center;
   }
 
   footer {
-    margin-top: 2rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border-color);
     text-align: center;
-    font-size: 0.875rem;
-    opacity: 0.8;
-  }
-
-  a {
-    color: var(--primary-color);
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: underline;
+    margin-top: auto;
   }
 </style>

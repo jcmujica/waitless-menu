@@ -4,9 +4,11 @@ interface Props {
   name: string;
   price?: number | null;
   image_url?: string | null;
+  description?: string;
   is_available?: boolean;
   showPrices?: boolean;
   showImages?: boolean;
+  showDescriptions?: boolean;
 }
 
 // Destructure the props
@@ -14,9 +16,11 @@ const {
   name,
   price,
   image_url,
+  description,
   is_available = true,
   showPrices = true,
   showImages = true,
+  showDescriptions = true,
 } = Astro.props;
 
 // Helper function to format price
@@ -30,21 +34,29 @@ const formatPrice = (price: number) => {
 ---
 
 <li>
-  <h3>{name}</h3>
-  {
-    showPrices && price !== null && price !== undefined && (
-      <p>{formatPrice(price)}</p>
-    )
-  }
-  {showImages && image_url && <img src={image_url} alt={name} width="200" />}
+  <div>
+    <h3>{name}</h3>
+    {
+      showPrices && price !== null && price !== undefined && (
+        <p>{formatPrice(price)}</p>
+      )
+    }
+    {showDescriptions && description && <p>{description}</p>}
+  </div>
   {!is_available && <p>Not Available</p>}
+  {showImages && image_url && <img src={image_url} alt={name} width="200" />}
 </li>
 
 <style>
   li {
     list-style: none;
     margin: 0;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    background-color: var(--200);
     border-bottom: 1px solid var(--200);
+    padding: 1rem;
   }
   h3 {
     color: var(--500);

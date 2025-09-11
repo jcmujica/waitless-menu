@@ -1,6 +1,6 @@
 ---
-import Item from './Item.astro';
-import type { MenuItem } from '../services/menus/fetch-menu';
+import Item from "./Item.astro";
+import type { MenuItem } from "@/types/menu";
 
 // Define the props for the Page component
 interface Props {
@@ -9,33 +9,57 @@ interface Props {
   items: MenuItem[];
   showPrices?: boolean;
   showImages?: boolean;
+  showDescriptions?: boolean;
   isVisible?: boolean;
 }
 
 // Destructure the props
-const { id, name, items = [], showPrices = true, showImages = true, isVisible = true } = Astro.props;
+const {
+  id,
+  name,
+  items = [],
+  showPrices = true,
+  showImages = true,
+  showDescriptions = true,
+  isVisible = true,
+} = Astro.props;
 ---
 
-<div id={`page-${id}`} style={`display: ${isVisible ? 'block' : 'none'};`}>
+<section id={`page-${id}`} style={`display: ${isVisible ? "block" : "none"};`}>
   <h2>{name}</h2>
   <ul>
-    {items.map((item) => (
-      <Item
-        name={item.name}
-        price={item.price}
-        image_url={item.image_url}
-        is_available={item.is_available}
-        showPrices={showPrices}
-        showImages={showImages}
-      />
-    ))}
+    {
+      items.map((item) => (
+        <Item
+          name={item.name}
+          price={item.price}
+          image_url={item.image_url}
+          description={item.description}
+          is_available={item.is_available}
+          showPrices={showPrices}
+          showImages={showImages}
+          showDescriptions={showDescriptions}
+        />
+      ))
+    }
   </ul>
-</div>
+</section>
 
 <style>
+  section {
+    margin: 0 auto;
+    max-width: 640px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+  }
   ul {
     list-style: none;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 </style>
