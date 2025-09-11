@@ -1,0 +1,52 @@
+---
+// Define the props for the Item component
+interface Props {
+  name: string;
+  price?: number | null;
+  image_url?: string | null;
+  is_available?: boolean;
+  showPrices?: boolean;
+  showImages?: boolean;
+}
+
+// Destructure the props
+const {
+  name,
+  price,
+  image_url,
+  is_available = true,
+  showPrices = true,
+  showImages = true,
+} = Astro.props;
+
+// Helper function to format price
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("es-CL", {
+    style: "currency",
+    currency: "CLP",
+    maximumFractionDigits: 0,
+  }).format(price);
+};
+---
+
+<li>
+  <h3>{name}</h3>
+  {
+    showPrices && price !== null && price !== undefined && (
+      <p>{formatPrice(price)}</p>
+    )
+  }
+  {showImages && image_url && <img src={image_url} alt={name} width="200" />}
+  {!is_available && <p>Not Available</p>}
+</li>
+
+<style>
+  li {
+    list-style: none;
+    margin: 0;
+    border-bottom: 1px solid var(--200);
+  }
+  h3 {
+    color: var(--500);
+  }
+</style>

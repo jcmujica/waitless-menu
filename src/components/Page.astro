@@ -1,0 +1,41 @@
+---
+import Item from './Item.astro';
+import type { MenuItem } from '../services/menus/fetch-menu';
+
+// Define the props for the Page component
+interface Props {
+  id: string;
+  name: string;
+  items: MenuItem[];
+  showPrices?: boolean;
+  showImages?: boolean;
+  isVisible?: boolean;
+}
+
+// Destructure the props
+const { id, name, items = [], showPrices = true, showImages = true, isVisible = true } = Astro.props;
+---
+
+<div id={`page-${id}`} style={`display: ${isVisible ? 'block' : 'none'};`}>
+  <h2>{name}</h2>
+  <ul>
+    {items.map((item) => (
+      <Item
+        name={item.name}
+        price={item.price}
+        image_url={item.image_url}
+        is_available={item.is_available}
+        showPrices={showPrices}
+        showImages={showImages}
+      />
+    ))}
+  </ul>
+</div>
+
+<style>
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>

@@ -1,0 +1,17 @@
+---
+import { fetchMenuByPath } from "@/services/menus/fetch-menu-by-path";
+import type { IMenu } from "@/types/menu";
+import Menu from "@/components/Menu.astro";
+
+const { accountPath } = Astro.params;
+const { data, error } = await fetchMenuByPath(accountPath as string);
+
+const menu = data as IMenu;
+---
+
+<Menu 
+  menu={menu}
+  accountPath={accountPath}
+  error={error}
+/>
+
