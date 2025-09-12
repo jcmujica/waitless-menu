@@ -33,7 +33,6 @@ const baseUrl = (identifier && routeType) ? `/${routeType}/${identifier}` : '';
 const styles = JSON.parse(
   menu?.appearance?.style || "{}",
 ) as ParsedMenuAppearanceStyle;
-const backgroundStyle = styles?.background?.style || {};
 
 // Extract primary color from styles
 const primaryColor = styles?.colors?.primary?.id?.split("-")[0] || "slate";
@@ -70,8 +69,8 @@ const shouldShowSinglePage = isSinglePage && !isPageView;
     src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1"
     type="module"></script>
   <script slot="head" src="/src/scripts/dialog.js"></script>
-  <div style={{ ...backgroundStyle }}>
-    <div class="max-w-2xl mx-auto">
+  <div class="w-full">
+    <div class="max-w-2xl mx-auto pb-8">
       {
         menu && (
           <>

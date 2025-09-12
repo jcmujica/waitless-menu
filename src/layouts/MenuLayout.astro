@@ -7,9 +7,14 @@ import { ClientRouter } from "astro:transitions";
 interface Props {
   primaryColor?: string;
   theme?: "light" | "dark";
+  backgroundStyle?: Record<string, string>;
 }
 
-const { primaryColor = "slate", theme = "light" } = Astro.props;
+const {
+  primaryColor = "slate",
+  theme = "light",
+  backgroundStyle = {},
+} = Astro.props;
 
 // Generate theme variables based on the selected primary color
 const themeVariables = generateThemeVariables(primaryColor);
@@ -45,7 +50,12 @@ const primaryColorStyles = Object.entries(themeVariables)
 
     <slot name="head" />
   </head>
-  <body class={theme}>
+  <body
+    class={`${theme} h-screen flex flex-col overflow-scroll `}
+    style={{
+      ...backgroundStyle,
+    }}
+  >
     <slot />
   </body>
 </html>
