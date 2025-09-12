@@ -3,9 +3,10 @@ import { Image } from "astro:assets";
 
 // Helper function to format price
 const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("es-CL", {
     style: "currency",
-    currency: "USD",
+    currency: "CLP",
+    maximumFractionDigits: 0,
   }).format(price);
 };
 ---
@@ -86,22 +87,54 @@ const formatPrice = (price: number) => {
 <script>
   // This script will be executed client-side
   document.addEventListener('DOMContentLoaded', () => {
-    // Find all buttons with data-item attribute
-    const buttons = document.querySelectorAll('[data-item]');
+    // Find all buttons with data-modal-trigger attribute for the shared modal
+    const buttons = document.querySelectorAll('[data-modal-trigger="shared-modal"]');
     const modal = document.getElementById('shared-modal');
     const modalTitle = document.getElementById('modal-title');
     const modalImage = document.getElementById('modal-image');
     const modalDescription = document.getElementById('modal-description');
     const modalPrice = document.getElementById('modal-price');
     
-    if (!modal || !modalTitle || !modalImage || !modalDescription || !modalPrice) {
-      console.error('Modal elements not found');
+    if (!modal) {
+      console.error('Modal element not found: shared-modal');
       return;
     }
     
+    if (!modalTitle) {
+      console.error('Modal title element not found: modal-title');
+      return;
+    }
+    
+    if (!modalImage) {
+      console.error('Modal image element not found: modal-image');
+      return;
+    }
+    
+    if (!modalDescription) {
+      console.error('Modal description element not found: modal-description');
+      return;
+    }
+    
+    if (!modalPrice) {
+      console.error('Modal price element not found: modal-price');
+      return;
+    }
+        
     buttons.forEach(button => {
       button.addEventListener('click', () => {
-        const itemData = JSON.parse(button.getAttribute('data-item') || '{}');
+        const itemDataStr = button.getAttribute('data-item');
+        if (!itemDataStr) {
+          console.error('No data-item attribute found on button');
+          return;
+        }
+        
+        let itemData;
+        try {
+          itemData = JSON.parse(itemDataStr);
+        } catch (error) {
+          console.error('Error parsing item data:', error);
+          return;
+        }
         
         // Set modal title
         modalTitle.textContent = itemData.name || '';
@@ -138,9 +171,10 @@ const formatPrice = (price: number) => {
           const priceText = modalPrice.querySelector('p');
           if (priceText) {
             // Format price
-            const formattedPrice = new Intl.NumberFormat("en-US", {
+            const formattedPrice = new Intl.NumberFormat("es-CL", {
               style: "currency",
-              currency: "USD",
+              currency: "CLP",
+              maximumFractionDigits: 0,
             }).format(itemData.price);
             
             priceText.textContent = formattedPrice;
