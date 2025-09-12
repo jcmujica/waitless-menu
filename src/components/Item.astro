@@ -1,6 +1,5 @@
 ---
 import { Image } from "astro:assets";
-import Modal from "./Modal.astro";
 import type { MenuItem } from "@/types/menu";
 
 // Define the props for the Item component
@@ -27,6 +26,17 @@ const formatPrice = (price: number) => {
     maximumFractionDigits: 0,
   }).format(price);
 };
+
+// Create a JSON string with the item data for the modal
+const itemData = item ? JSON.stringify({
+  name,
+  price,
+  image_url,
+  description,
+  showPrices,
+  showImages,
+  showDescriptions
+}) : null;
 ---
 
 {item?.type === "item" && (
@@ -57,8 +67,7 @@ const formatPrice = (price: number) => {
           <div class="flex flex-col gap-2">
             <p class="text-lg px-4 font-bold">{formatPrice(price)}</p>
             <button
-              data-command="show-modal"
-              data-commandfor="dialog"
+              data-item={itemData}
               class="rounded-md bg-primary-600 px-2.5 py-1.5 text-sm font-semibold text-white hover:bg-primary-700 mx-4"
             >
               See details
@@ -68,7 +77,6 @@ const formatPrice = (price: number) => {
       }
       <!-- {!is_available && <p>Not Available</p>} -->
     </li>
-    <Modal item={item!} settings={settings} />
   </>
 )}
 
