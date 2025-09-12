@@ -1,10 +1,10 @@
 ---
-import "../styles/global.css";
 import { getColorShades } from "@/utils/getColorshades";
 import type { IMenu, MenuPage, ParsedMenuAppearanceStyle } from "@/types/menu";
 import Page from "./Page.astro";
 import Footer from "./Footer.astro";
 import Home from "./Home.astro";
+import MenuLayout from "@/layouts/MenuLayout.astro";
 
 interface Props {
   menu: IMenu;
@@ -40,7 +40,7 @@ const settings = {
   showPrices: menu?.settings?.showPrices ?? true,
   showImages: menu?.settings?.showImages ?? true,
   showDescriptions: menu?.settings?.showDescriptions ?? true,
-}
+};
 
 const isPageNotFound = isPageView && !currentPage && menu;
 const shouldRedirect = isPageNotFound || error;
@@ -49,64 +49,65 @@ const shouldShowPage = isPageView && currentPage;
 const shouldShowSinglePage = isSinglePage && !isPageView;
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content={theme} />
-    <title>{menu?.name || "Menu"}</title>
-    <script define:vars={{ baseUrl, shouldRedirect }} is:inline>
-      if (shouldRedirect) {
-        window.location.href = baseUrl;
-      }
-    </script>
-    <script is:inline src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
-    <script src="/src/scripts/dialog.js"></script>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content={theme} />
+  <title>{menu?.name || "Menu"}</title>
+  <script define:vars={{ baseUrl, shouldRedirect }} is:inline>
+    if (shouldRedirect) {
+      window.location.href = baseUrl;
+    }
+  </script>
+  <script
+    is:inline
+    src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1"
+    type="module"></script>
+  <script src="/src/scripts/dialog.js"></script>
+</head>
 
-  <body class={theme} style={{ ...backgroundStyle }}>
-    <div class="max-w-4xl mx-auto">
-      {
-        menu && (
-          <>
-            {/* Navigation for multi-page menus when not in page view */}
-            {shouldShowHome && <Home menu={menu} baseUrl={baseUrl} />}
+<body class={theme} style={{ ...backgroundStyle }}>
+  <div class="max-w-4xl mx-auto">
+    {
+      menu && (
+        <>
+          {/* Navigation for multi-page menus when not in page view */}
+          {shouldShowHome && <Home menu={menu} baseUrl={baseUrl} />}
 
-            {/* Main content area */}
-            {/* Specific page view */}
-            {shouldShowPage && (
-              <Page
-                id={currentPage.id}
-                name={currentPage.name}
-                items={currentPage.items}
-                baseUrl={baseUrl}
-                settings={settings}
-                isVisible={true}
-              />
-            )}
+          {/* Main content area */}
+          {/* Specific page view */}
+          {shouldShowPage && (
+            <Page
+              id={currentPage.id}
+              name={currentPage.name}
+              items={currentPage.items}
+              baseUrl={baseUrl}
+              settings={settings}
+              isVisible={true}
+            />
+          )}
 
-            {/* Single-page layout */}
-            {shouldShowSinglePage && (
-              <>
-                {menu.pages.map((page: MenuPage) => (
-                  <Page
-                    id={page.id}
-                    name={page.name}
-                    items={page.items}
-                    baseUrl={baseUrl}
-                    settings={settings}
-                    isVisible={true}
-                  />
-                ))}
-              </>
-            )}
-            <Footer />
-          </>
-        )
-      }
-    </div>
-  </body>
-</html>
+          {/* Single-page layout */}
+          {shouldShowSinglePage && (
+            <>
+              {menu.pages.map((page: MenuPage) => (
+                <Page
+                  id={page.id}
+                  name={page.name}
+                  items={page.items}
+                  baseUrl={baseUrl}
+                  settings={settings}
+                  isVisible={true}
+                />
+              ))}
+            </>
+          )}
+          <Footer />
+        </>
+      )
+    }
+  </div>
+</body>
 
 <style is:global define:vars={{ ...primaryColorShades, theme }}>
   :root {

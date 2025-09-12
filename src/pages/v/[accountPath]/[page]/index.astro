@@ -2,6 +2,7 @@
 import { fetchMenuByPath } from "@/services/menus/fetch-menu-by-path";
 import type { IMenu, MenuPage } from "@/types/menu";
 import Menu from "@/components/Menu.astro";
+import MenuLayout from "@/layouts/MenuLayout.astro";
 
 const { accountPath, page: pageId } = Astro.params;
 const { data, error } = await fetchMenuByPath(accountPath as string);
@@ -11,10 +12,12 @@ const menu = data as IMenu;
 const currentPage = menu?.pages?.find((page: MenuPage) => page.id === pageId);
 ---
 
-<Menu 
-  menu={menu}
-  accountPath={accountPath}
-  pageId={pageId}
-  currentPage={currentPage}
-  error={error}
-/>
+<MenuLayout>
+  <Menu
+    menu={menu}
+    accountPath={accountPath}
+    pageId={pageId}
+    currentPage={currentPage}
+    error={error}
+  />
+</MenuLayout>

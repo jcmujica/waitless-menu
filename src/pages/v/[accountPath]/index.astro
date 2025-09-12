@@ -2,6 +2,7 @@
 import { fetchMenuByPath } from "@/services/menus/fetch-menu-by-path";
 import type { IMenu } from "@/types/menu";
 import Menu from "@/components/Menu.astro";
+import MenuLayout from "@/layouts/MenuLayout.astro";
 
 const { accountPath } = Astro.params;
 const { data, error } = await fetchMenuByPath(accountPath as string);
@@ -9,9 +10,11 @@ const { data, error } = await fetchMenuByPath(accountPath as string);
 const menu = data as IMenu;
 ---
 
+<MenuLayout>
 <Menu 
   menu={menu}
   accountPath={accountPath}
   error={error}
 />
+</MenuLayout>
 
