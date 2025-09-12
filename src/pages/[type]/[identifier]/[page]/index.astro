@@ -1,0 +1,48 @@
+---
+import { fetchMenu } from "@/services/menus/fetch-menu";
+import { fetchMenuByPath } from "@/services/menus/fetch-menu-by-path";
+import type { IMenu, MenuPage } from "@/types/menu";
+import Menu from "@/components/Menu.astro";
+import MenuLayout from "@/layouts/MenuLayout.astro";
+
+const { type, identifier, page: pageId } = Astro.params;
+
+// Determine which fetch method to use based on the route type
+let data, error;
+if (type === 'qr') {
+  // For QR routes, fetch by account ID
+  const response = await fetchMenu(identifier as string);
+  data = response.data;
+  error = response.error;
+} else if (type === 'v') {
+  // For vanity URL routes, fetch by path
+  const response = await fetchMenuByPath(identifier as string);
+  data = response.data;
+  error = response.error;
+} else {
+  // Handle unknown route types
+  error = new Error(`Unknown route type: ${type}`);
+}
+
+const menu = data as IMenu;
+
+// Find the current page
+const currentPage = menu?.pages?.find((page: MenuPage) => page.id === pageId);
+
+// Extract theme properties for the layout
+const primaryColor = menu?.appearance?.style ? 
+  JSON.parse(menu.appearance.style)?.colors?.primary?.id?.split("-")[0] || "slate" : 
+  "slate";
+const theme = (menu?.appearance?.theme || "light") as "light" | "dark";
+---
+
+<MenuLayout primaryColor={primaryColor} theme={theme}>
+  <Menu
+    menu={menu}
+    account={type === 'qr' ? identifier : undefined}
+    accountPath={type === 'v' ? identifier : undefined}
+    pageId={pageId}
+    currentPage={currentPage}
+    error={error}
+  />
+</MenuLayout>

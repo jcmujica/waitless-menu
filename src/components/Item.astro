@@ -32,7 +32,7 @@ const formatPrice = (price: number) => {
 {item?.type === "item" && (
   <>
     <li
-      class="menu-item flex w-full justify-between items-center gap-4 rounded-md bg-[var(--primary-200)]"
+      class="menu-item flex w-full justify-between items-center gap-4 rounded-md bg-primary-200"
     >
       {
         showImages && image_url && (
@@ -59,7 +59,7 @@ const formatPrice = (price: number) => {
             <button
               data-command="show-modal"
               data-commandfor="dialog"
-              class="rounded-md bg-white/10 px-2.5 py-1.5 text-sm font-semibold text-white inset-ring inset-ring-white/5 hover:bg-white/20 mx-4"
+              class="rounded-md bg-primary-600 px-2.5 py-1.5 text-sm font-semibold text-white hover:bg-primary-700 mx-4"
             >
               See details
             </button>
@@ -74,7 +74,7 @@ const formatPrice = (price: number) => {
 
 {item?.type === "section" && (
   <ul class="menu-category flex flex-col gap-2">
-    <li class="menu-category-item flex w-full justify-between items-center gap-4 rounded-md bg-[var(--primary-200)]">
+    <li class="menu-category-item flex w-full justify-between items-center gap-4 rounded-md bg-primary-200">
       <div class="flex flex-col gap-2 grow py-4">
         <h3 class="font-bold">{name}</h3>
         {showDescriptions && description && <p class="text-xs">{description}</p>}

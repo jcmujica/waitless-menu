@@ -1,7 +1,47 @@
 ---
 import "../styles/global.css";
+import "../styles/theme.css";
+import { generateThemeVariables, themeVariablesToInlineStyle } from "../utils/themeUtils";
+
+interface Props {
+  primaryColor?: string;
+  theme?: 'light' | 'dark';
+}
+
+const { primaryColor = 'slate', theme = 'light' } = Astro.props;
+
+// Generate theme variables based on the selected primary color
+const themeVariables = generateThemeVariables(primaryColor);
+
+// Create a style string for the primary color variables
+const primaryColorStyles = Object.entries(themeVariables)
+  .map(([key, value]) => `${key}: ${value};`)
+  .join('\n        ');
 ---
 
 <html lang="es">
-  <slot />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content={theme} />
+    <title>Waitless Menu</title>
+    
+    <!-- Inject primary color variables -->
+    <style set:html={`
+      :root {
+        ${primaryColorStyles}
+      }
+    `}></style>
+    
+    <!-- Force the theme mode regardless of user preferences -->
+    <script define:vars={{ theme }} is:inline>
+      // Force the theme mode and prevent system preferences from overriding it
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+    </script>
+    
+    <slot name="head" />
+  </head>
+  <body class={theme}>
+    <slot />
+  </body>
 </html>

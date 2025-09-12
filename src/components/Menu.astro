@@ -4,7 +4,6 @@ import type { IMenu, MenuPage, ParsedMenuAppearanceStyle } from "@/types/menu";
 import Page from "./Page.astro";
 import Footer from "./Footer.astro";
 import Home from "./Home.astro";
-import MenuLayout from "@/layouts/MenuLayout.astro";
 
 interface Props {
   menu: IMenu;
@@ -23,8 +22,12 @@ const isPageView = !!pageId || !!currentPage;
 const isMultiPage = menu?.type === "multi-page";
 const isSinglePage = menu?.type === "single-page";
 
+// Determine the route type for the dynamic routing
+const routeType = isQrRoute ? 'qr' : 'v';
+const identifier = isQrRoute ? (account as string) : (accountPath as string);
+
 // Generate the base URL for navigation
-const baseUrl = isQrRoute ? `/qr/${account}` : `/v/${accountPath}`;
+const baseUrl = (identifier && routeType) ? `/${routeType}/${identifier}` : '';
 
 // Parse appearance styles
 const styles = JSON.parse(
@@ -32,9 +35,14 @@ const styles = JSON.parse(
 ) as ParsedMenuAppearanceStyle;
 const backgroundStyle = styles?.background?.style || {};
 
-const colors = styles?.colors?.primary?.id?.split("-")[0] || "slate";
-const primaryColorShades = getColorShades(colors, "primary");
+// Extract primary color from styles
+const primaryColor = styles?.colors?.primary?.id?.split("-")[0] || "slate";
+
+// Get the theme mode (light or dark) - this is forced by the restaurant
 const theme = menu?.appearance?.theme || "light";
+
+// Get color shades for legacy CSS variables
+const primaryColorShades = getColorShades(primaryColor, "primary");
 
 const settings = {
   showPrices: menu?.settings?.showPrices ?? true,
@@ -49,171 +57,61 @@ const shouldShowPage = isPageView && currentPage;
 const shouldShowSinglePage = isSinglePage && !isPageView;
 ---
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="color-scheme" content={theme} />
-  <title>{menu?.name || "Menu"}</title>
-  <script define:vars={{ baseUrl, shouldRedirect }} is:inline>
+<Fragment>
+  <title slot="head">{menu?.name || "Menu"}</title>
+  <script slot="head" define:vars={{ baseUrl, shouldRedirect }} is:inline>
     if (shouldRedirect) {
       window.location.href = baseUrl;
     }
   </script>
   <script
+    slot="head"
     is:inline
     src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1"
     type="module"></script>
-  <script src="/src/scripts/dialog.js"></script>
-</head>
+  <script slot="head" src="/src/scripts/dialog.js"></script>
+  <div style={{ ...backgroundStyle }}>
+    <div class="max-w-2xl mx-auto">
+      {
+        menu && (
+          <>
+            {/* Navigation for multi-page menus when not in page view */}
+            {shouldShowHome && <Home menu={menu} baseUrl={baseUrl} />}
 
-<body class={theme} style={{ ...backgroundStyle }}>
-  <div class="max-w-4xl mx-auto">
-    {
-      menu && (
-        <>
-          {/* Navigation for multi-page menus when not in page view */}
-          {shouldShowHome && <Home menu={menu} baseUrl={baseUrl} />}
+            {/* Main content area */}
+            {/* Specific page view */}
+            {shouldShowPage && (
+              <Page
+                id={currentPage.id}
+                name={currentPage.name}
+                items={currentPage.items}
+                baseUrl={baseUrl}
+                settings={settings}
+                isVisible={true}
+              />
+            )}
 
-          {/* Main content area */}
-          {/* Specific page view */}
-          {shouldShowPage && (
-            <Page
-              id={currentPage.id}
-              name={currentPage.name}
-              items={currentPage.items}
-              baseUrl={baseUrl}
-              settings={settings}
-              isVisible={true}
-            />
-          )}
-
-          {/* Single-page layout */}
-          {shouldShowSinglePage && (
-            <>
-              {menu.pages.map((page: MenuPage) => (
-                <Page
-                  id={page.id}
-                  name={page.name}
-                  items={page.items}
-                  baseUrl={baseUrl}
-                  settings={settings}
-                  isVisible={true}
-                />
-              ))}
-            </>
-          )}
-          <Footer />
-        </>
-      )
-    }
+            {/* Single-page layout */}
+            {shouldShowSinglePage && (
+              <>
+                {menu.pages.map((page: MenuPage) => (
+                  <Page
+                    id={page.id}
+                    name={page.name}
+                    items={page.items}
+                    baseUrl={baseUrl}
+                    settings={settings}
+                    isVisible={true}
+                  />
+                ))}
+              </>
+            )}
+            <Footer />
+          </>
+        )
+      }
+    </div>
   </div>
-</body>
+</Fragment>
 
-<style is:global define:vars={{ ...primaryColorShades, theme }}>
-  :root {
-    --radius: 0.625rem;
-    --background: oklch(100% 0 0);
-    --foreground: oklch(14.5% 0 0);
-    --card: oklch(100% 0 0);
-    --card-foreground: oklch(14.5% 0 0);
-    --popover: oklch(100% 0 0);
-    --popover-foreground: oklch(14.5% 0 0);
-    --primary: oklch(20.5% 0 0);
-    --primary-foreground: oklch(98.5% 0 0);
-    --secondary: oklch(97% 0 0);
-    --secondary-foreground: oklch(20.5% 0 0);
-    --muted: oklch(97% 0 0);
-    --muted-foreground: oklch(55.6% 0 0);
-    --accent: oklch(97% 0 0);
-    --accent-foreground: oklch(20.5% 0 0);
-    --destructive: oklch(57.7% 0.245 27.325);
-    --border: oklch(92.2% 0 0);
-    --input: oklch(92.2% 0 0);
-    --ring: oklch(70.8% 0 0);
-    --chart-1: var(--color-blue-300);
-    --chart-2: var(--color-blue-500);
-    --chart-3: var(--color-blue-600);
-    --chart-4: var(--color-blue-700);
-    --chart-5: var(--color-blue-800);
-    --sidebar: oklch(98.5% 0 0);
-    --sidebar-foreground: oklch(14.5% 0 0);
-    --sidebar-primary: oklch(20.5% 0 0);
-    --sidebar-primary-foreground: oklch(98.5% 0 0);
-    --sidebar-accent: oklch(97% 0 0);
-    --sidebar-accent-foreground: oklch(20.5% 0 0);
-    --sidebar-border: oklch(92.2% 0 0);
-    --sidebar-ring: oklch(70.8% 0 0);
-    --surface: oklch(98% 0 0);
-    --surface-foreground: var(--foreground);
-    --code: var(--surface);
-    --code-foreground: var(--surface-foreground);
-    --code-highlight: oklch(96% 0 0);
-    --code-number: oklch(56% 0 0);
-    --selection: oklch(14.5% 0 0);
-    --selection-foreground: oklch(100% 0 0);
-  }
-
-  .dark {
-    --background: oklch(14.5% 0 0);
-    --foreground: oklch(98.5% 0 0);
-    --card: oklch(20.5% 0 0);
-    --card-foreground: oklch(98.5% 0 0);
-    --popover: oklch(26.9% 0 0);
-    --popover-foreground: oklch(98.5% 0 0);
-    --primary: oklch(92.2% 0 0);
-    --primary-foreground: oklch(20.5% 0 0);
-    --secondary: oklch(26.9% 0 0);
-    --secondary-foreground: oklch(98.5% 0 0);
-    --muted: oklch(26.9% 0 0);
-    --muted-foreground: oklch(70.8% 0 0);
-    --accent: oklch(37.1% 0 0);
-    --accent-foreground: oklch(98.5% 0 0);
-    --destructive: oklch(70.4% 0.191 22.216);
-    --border: oklch(100% 0 0 / 0.1);
-    --input: oklch(100% 0 0 / 0.15);
-    --ring: oklch(55.6% 0 0);
-    --chart-1: var(--color-blue-300);
-    --chart-2: var(--color-blue-500);
-    --chart-3: var(--color-blue-600);
-    --chart-4: var(--color-blue-700);
-    --chart-5: var(--color-blue-800);
-    --sidebar: oklch(20.5% 0 0);
-    --sidebar-foreground: oklch(98.5% 0 0);
-    --sidebar-primary: oklch(48.8% 0.243 264.376);
-    --sidebar-primary-foreground: oklch(98.5% 0 0);
-    --sidebar-accent: oklch(26.9% 0 0);
-    --sidebar-accent-foreground: oklch(98.5% 0 0);
-    --sidebar-border: oklch(100% 0 0 / 0.1);
-    --sidebar-ring: oklch(43.9% 0 0);
-    --surface: oklch(20% 0 0);
-    --surface-foreground: oklch(70.8% 0 0);
-    --code: var(--surface);
-    --code-foreground: var(--surface-foreground);
-    --code-highlight: oklch(27% 0 0);
-    --code-number: oklch(72% 0 0);
-    --selection: oklch(92.2% 0 0);
-    --selection-foreground: oklch(20.5% 0 0);
-  }
-
-  body {
-    font-family:
-      system-ui,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      Roboto,
-      Oxygen,
-      Ubuntu,
-      Cantarell,
-      sans-serif;
-    background-color: var(--background);
-    color: var(--text-color);
-    margin: 0;
-    padding: 0;
-  }
-
-  footer {
-    text-align: center;
-    margin-top: auto;
-  }
-</style>
+<style is:global define:vars={{ ...primaryColorShades }}></style>
