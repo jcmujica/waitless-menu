@@ -71,6 +71,7 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
       return { error: itemsError }
     }
 
+    console.log(JSON.stringify(itemsData, null, 2))
     // 4. Group items by page
     const itemsByPageId = (itemsData || []).reduce<Record<string, MenuItem[]>>((acc, item: any) => {
       const pageId = item.page_id

@@ -1,65 +1,48 @@
 ---
 import Item from "./Item.astro";
 import type { MenuItem } from "@/types/menu";
-
-// Define the props for the Page component
+import ChevronLeft from "../assets/icons/ChevronLeft.svg";
+import FloatingButton from "./Buttons/FloatingButton.astro";
 interface Props {
   id: string;
   name: string;
   items: MenuItem[];
-  showPrices?: boolean;
-  showImages?: boolean;
-  showDescriptions?: boolean;
+  settings: {
+    showPrices: boolean;
+    showImages: boolean;
+    showDescriptions: boolean;
+  };
   isVisible?: boolean;
+  baseUrl: string;
 }
 
-// Destructure the props
 const {
   id,
   name,
   items = [],
-  showPrices = true,
-  showImages = true,
-  showDescriptions = true,
+  settings,
   isVisible = true,
+  baseUrl,
 } = Astro.props;
 ---
 
-<section id={`page-${id}`} style={`display: ${isVisible ? "block" : "none"};`}>
-  <h2>{name}</h2>
-  <ul>
+<main
+  id={`page-${id}`}
+  class="h-screen flex flex-col gap-4"
+  style={`display: ${isVisible ? "block" : "none"};`}
+>
+  <h2 class="text-2xl font-bold p-4 text-center">{name}</h2>
+  <ul class="flex flex-col gap-2 p-2">
     {
       items.map((item) => (
         <Item
-          name={item.name}
-          price={item.price}
-          image_url={item.image_url}
-          description={item.description}
-          is_available={item.is_available}
-          showPrices={showPrices}
-          showImages={showImages}
-          showDescriptions={showDescriptions}
+          item={item}
+          settings={settings}
         />
       ))
     }
   </ul>
-</section>
-
-<style>
-  section {
-    margin: 0 auto;
-    max-width: 640px;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    flex-direction: column;
-  }
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-</style>
+  <FloatingButton href={baseUrl} variant="primary">
+    <ChevronLeft />
+  </FloatingButton>
+</main>

@@ -1,7 +1,10 @@
 ---
+import "../styles/global.css";
 import { getColorShades } from "@/utils/getColorshades";
 import type { IMenu, MenuPage, ParsedMenuAppearanceStyle } from "@/types/menu";
 import Page from "./Page.astro";
+import Footer from "./Footer.astro";
+import Home from "./Home.astro";
 
 interface Props {
   menu: IMenu;
@@ -16,7 +19,6 @@ const { menu, currentPage, account, accountPath, pageId, error } = Astro.props;
 
 // Determine the route type based on available params
 const isQrRoute = !!account;
-const isVanityRoute = !!accountPath;
 const isPageView = !!pageId || !!currentPage;
 const isMultiPage = menu?.type === "multi-page";
 const isSinglePage = menu?.type === "single-page";
@@ -30,18 +32,21 @@ const styles = JSON.parse(
 ) as ParsedMenuAppearanceStyle;
 const backgroundStyle = styles?.background?.style || {};
 
-console.log({ backgroundStyle });
 const colors = styles?.colors?.primary?.id?.split("-")[0] || "slate";
-const primaryColorShades = getColorShades(colors);
+const primaryColorShades = getColorShades(colors, "primary");
 const theme = menu?.appearance?.theme || "light";
 
-// Find the page to display in single-page view
-const displayPage = currentPage || (isPageView ? undefined : null);
+const settings = {
+  showPrices: menu?.settings?.showPrices ?? true,
+  showImages: menu?.settings?.showImages ?? true,
+  showDescriptions: menu?.settings?.showDescriptions ?? true,
+}
 
-// Get settings for displaying items
-const showPrices = menu?.settings?.showPrices ?? true;
-const showImages = menu?.settings?.showImages ?? true;
-const showDescriptions = menu?.settings?.showDescriptions ?? true;
+const isPageNotFound = isPageView && !currentPage && menu;
+const shouldRedirect = isPageNotFound || error;
+const shouldShowHome = isMultiPage && !isPageView;
+const shouldShowPage = isPageView && currentPage;
+const shouldShowSinglePage = isSinglePage && !isPageView;
 ---
 
 <html lang="en">
@@ -50,106 +55,51 @@ const showDescriptions = menu?.settings?.showDescriptions ?? true;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content={theme} />
     <title>{menu?.name || "Menu"}</title>
+    <script define:vars={{ baseUrl, shouldRedirect }} is:inline>
+      if (shouldRedirect) {
+        window.location.href = baseUrl;
+      }
+    </script>
+    <script is:inline src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
   </head>
 
-  <body
-    class={theme}
-    style={{
-      ...backgroundStyle,
-    }}
-  >
-    <div class="menu-container">
-      {/* Error message */}
-      {
-        error && (
-          <div class="error-container">
-            <h1>Error loading menu</h1>
-            <p>{error instanceof Error ? error.message : "Unknown error"}</p>
-          </div>
-        )
-      }
-
-      {/* Menu content when available */}
+  <body class={theme} style={{ ...backgroundStyle }}>
+    <div class="max-w-4xl mx-auto">
       {
         menu && (
           <>
-            {/* Header with menu name */}
-            <header>
-              <h1>{menu?.name || "Menu"}</h1>
-
-              {/* Back button when viewing a specific page */}
-              {isPageView && (
-                <a href={baseUrl} class="back-link">
-                  Back to Menu
-                </a>
-              )}
-            </header>
-
             {/* Navigation for multi-page menus when not in page view */}
-            {isMultiPage &&
-              !isPageView &&
-              menu?.pages &&
-              menu.pages.length > 0 && (
-                <nav class="page-navigation">
-                  {menu.pages.map((page) => (
-                    <a href={`${baseUrl}/${page.id}`} class="page-link">
-                      {page.name}
-                    </a>
-                  ))}
-                </nav>
-              )}
+            {shouldShowHome && <Home menu={menu} baseUrl={baseUrl} />}
 
             {/* Main content area */}
-            <main>
-              {/* Specific page view */}
-              {isPageView && currentPage && (
-                <Page
-                  id={currentPage.id}
-                  name={currentPage.name}
-                  items={currentPage.items}
-                  showPrices={showPrices}
-                  showImages={showImages}
-                  showDescriptions={showDescriptions}
-                  isVisible={true}
-                />
-              )}
+            {/* Specific page view */}
+            {shouldShowPage && (
+              <Page
+                id={currentPage.id}
+                name={currentPage.name}
+                items={currentPage.items}
+                baseUrl={baseUrl}
+                settings={settings}
+                isVisible={true}
+              />
+            )}
 
-              {/* Page not found */}
-              {isPageView && !currentPage && menu && (
-                <div class="not-found">
-                  <h2>Page not found</h2>
-                  <p>The requested page could not be found.</p>
-                </div>
-              )}
-
-              {/* Single-page layout */}
-              {isSinglePage &&
-                !isPageView &&
-                menu.pages &&
-                menu.pages.length > 0 && (
-                  <div class="single-page-layout">
-                    {menu.pages.map((page) => (
-                      <Page
-                        id={page.id}
-                        name={page.name}
-                        items={page.items}
-                        showPrices={showPrices}
-                        showImages={showImages}
-                        showDescriptions={showDescriptions}
-                        isVisible={true}
-                      />
-                    ))}
-                  </div>
-                )}
-
-              {/* Custom slot content */}
-              <slot />
-            </main>
-
-            {/* Footer */}
-            <footer>
-              <p>Powered by Waitless</p>
-            </footer>
+            {/* Single-page layout */}
+            {shouldShowSinglePage && (
+              <>
+                {menu.pages.map((page: MenuPage) => (
+                  <Page
+                    id={page.id}
+                    name={page.name}
+                    items={page.items}
+                    baseUrl={baseUrl}
+                    settings={settings}
+                    isVisible={true}
+                  />
+                ))}
+              </>
+            )}
+            <Footer />
           </>
         )
       }
@@ -159,23 +109,88 @@ const showDescriptions = menu?.settings?.showDescriptions ?? true;
 
 <style is:global define:vars={{ ...primaryColorShades, theme }}>
   :root {
-    color-scheme: var(--theme);
-    --bg-color: var(--50);
-    --text-color: var(--900);
-    --primary-color: var(--500);
-    --primary-hover: var(--600);
-    --border-color: var(--200);
-    --error-color: #ef4444;
-    --warning-bg: #fef2f2;
-    --warning-text: #b91c1c;
+    --radius: 0.625rem;
+    --background: oklch(100% 0 0);
+    --foreground: oklch(14.5% 0 0);
+    --card: oklch(100% 0 0);
+    --card-foreground: oklch(14.5% 0 0);
+    --popover: oklch(100% 0 0);
+    --popover-foreground: oklch(14.5% 0 0);
+    --primary: oklch(20.5% 0 0);
+    --primary-foreground: oklch(98.5% 0 0);
+    --secondary: oklch(97% 0 0);
+    --secondary-foreground: oklch(20.5% 0 0);
+    --muted: oklch(97% 0 0);
+    --muted-foreground: oklch(55.6% 0 0);
+    --accent: oklch(97% 0 0);
+    --accent-foreground: oklch(20.5% 0 0);
+    --destructive: oklch(57.7% 0.245 27.325);
+    --border: oklch(92.2% 0 0);
+    --input: oklch(92.2% 0 0);
+    --ring: oklch(70.8% 0 0);
+    --chart-1: var(--color-blue-300);
+    --chart-2: var(--color-blue-500);
+    --chart-3: var(--color-blue-600);
+    --chart-4: var(--color-blue-700);
+    --chart-5: var(--color-blue-800);
+    --sidebar: oklch(98.5% 0 0);
+    --sidebar-foreground: oklch(14.5% 0 0);
+    --sidebar-primary: oklch(20.5% 0 0);
+    --sidebar-primary-foreground: oklch(98.5% 0 0);
+    --sidebar-accent: oklch(97% 0 0);
+    --sidebar-accent-foreground: oklch(20.5% 0 0);
+    --sidebar-border: oklch(92.2% 0 0);
+    --sidebar-ring: oklch(70.8% 0 0);
+    --surface: oklch(98% 0 0);
+    --surface-foreground: var(--foreground);
+    --code: var(--surface);
+    --code-foreground: var(--surface-foreground);
+    --code-highlight: oklch(96% 0 0);
+    --code-number: oklch(56% 0 0);
+    --selection: oklch(14.5% 0 0);
+    --selection-foreground: oklch(100% 0 0);
   }
 
   .dark {
-    --bg-color: var(--900);
-    --text-color: var(--100);
-    --border-color: var(--800);
-    --warning-bg: #7f1d1d;
-    --warning-text: #fecaca;
+    --background: oklch(14.5% 0 0);
+    --foreground: oklch(98.5% 0 0);
+    --card: oklch(20.5% 0 0);
+    --card-foreground: oklch(98.5% 0 0);
+    --popover: oklch(26.9% 0 0);
+    --popover-foreground: oklch(98.5% 0 0);
+    --primary: oklch(92.2% 0 0);
+    --primary-foreground: oklch(20.5% 0 0);
+    --secondary: oklch(26.9% 0 0);
+    --secondary-foreground: oklch(98.5% 0 0);
+    --muted: oklch(26.9% 0 0);
+    --muted-foreground: oklch(70.8% 0 0);
+    --accent: oklch(37.1% 0 0);
+    --accent-foreground: oklch(98.5% 0 0);
+    --destructive: oklch(70.4% 0.191 22.216);
+    --border: oklch(100% 0 0 / 0.1);
+    --input: oklch(100% 0 0 / 0.15);
+    --ring: oklch(55.6% 0 0);
+    --chart-1: var(--color-blue-300);
+    --chart-2: var(--color-blue-500);
+    --chart-3: var(--color-blue-600);
+    --chart-4: var(--color-blue-700);
+    --chart-5: var(--color-blue-800);
+    --sidebar: oklch(20.5% 0 0);
+    --sidebar-foreground: oklch(98.5% 0 0);
+    --sidebar-primary: oklch(48.8% 0.243 264.376);
+    --sidebar-primary-foreground: oklch(98.5% 0 0);
+    --sidebar-accent: oklch(26.9% 0 0);
+    --sidebar-accent-foreground: oklch(98.5% 0 0);
+    --sidebar-border: oklch(100% 0 0 / 0.1);
+    --sidebar-ring: oklch(43.9% 0 0);
+    --surface: oklch(20% 0 0);
+    --surface-foreground: oklch(70.8% 0 0);
+    --code: var(--surface);
+    --code-foreground: var(--surface-foreground);
+    --code-highlight: oklch(27% 0 0);
+    --code-number: oklch(72% 0 0);
+    --selection: oklch(92.2% 0 0);
+    --selection-foreground: oklch(20.5% 0 0);
   }
 
   body {
@@ -189,18 +204,10 @@ const showDescriptions = menu?.settings?.showDescriptions ?? true;
       Ubuntu,
       Cantarell,
       sans-serif;
-    /* background-color: var(--bg-color); */
+    background-color: var(--background);
     color: var(--text-color);
     margin: 0;
     padding: 0;
-  }
-
-  main {
-    height: 100dvh;
-  }
-
-  h1 {
-    text-align: center;
   }
 
   footer {
