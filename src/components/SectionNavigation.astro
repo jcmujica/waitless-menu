@@ -13,23 +13,27 @@ const { sections = [] } = Astro.props;
 ---
 
 {sections.length > 0 && (
-  <nav class="sticky top-0 z-10 glassmorphism">
-    <div class="overflow-x-auto scrollbar-hide">
-      <ul class="flex whitespace-nowrap py-3 px-2 gap-4">
-        {sections.map((section) => (
-          <li>
-            <button 
-              class="section-nav-item text-sm font-medium px-3 py-2 rounded-md transition-all duration-300 hover:bg-primary-700/20" 
-              data-section-target={section.id}
-              data-page-id={section.pageId}
-            >
-              {section.name}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </nav>
+  <div class="sticky top-0 z-10 w-full">
+    <nav class="glassmorphism">
+      <div class="overflow-x-auto scrollbar-hide">
+        <ul class="flex whitespace-nowrap py-3 px-3 gap-3 items-center">
+          {sections.map((section, index) => (
+            <li class="flex-shrink-0">
+              <button 
+                class="section-nav-item text-sm font-medium px-4 py-2 rounded-full transition-all duration-300 hover:bg-primary-700/30 flex items-center gap-2" 
+                data-section-target={section.id}
+                data-page-id={section.pageId}
+              >
+                <span>{section.name}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="nav-gradient-left"></div>
+      <div class="nav-gradient-right"></div>
+    </nav>
+  </div>
 )}
 
 <style>
@@ -44,30 +48,78 @@ const { sections = [] } = Astro.props;
   
   /* Glassmorphism effect */
   .glassmorphism {
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Gradient indicators for horizontal scroll */
+  .nav-gradient-left,
+  .nav-gradient-right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.8;
+  }
+  
+  .nav-gradient-left {
+    left: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.3), transparent);
+  }
+  
+  .nav-gradient-right {
+    right: 0;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.3), transparent);
+  }
+  
+  /* Navigation item styling */
+  .section-nav-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .section-nav-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+    opacity: 0.5;
+  }
+  
+  .nav-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
   }
   
   /* Active section styling */
   .section-nav-item.active {
-    color: var(--primary-500);
+    color: var(--primary-300);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-500);
     transform: translateY(-2px);
-    text-shadow: 0 0 10px rgba(var(--primary-500-rgb), 0.5);
-    position: relative;
+    text-shadow: 0 0 10px rgba(var(--primary-500-rgb), 0.6);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px var(--primary-700);
   }
   
-  .section-nav-item.active::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: var(--primary-500);
-    border-radius: 2px;
+  .section-nav-item.active .nav-index {
+    background-color: var(--primary-700);
+    color: var(--primary-300);
   }
 </style>
 

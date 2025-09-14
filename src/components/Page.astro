@@ -1,6 +1,5 @@
 ---
 import Item from "./Item.astro";
-import Modal from "./Modal.astro";
 import type { MenuItem } from "@/types/menu";
 import FloatingButton from "./Buttons/FloatingButton.astro";
 import SectionNavigation from "./SectionNavigation.astro";
@@ -79,10 +78,7 @@ const navigationSections = menuType === "single-page" ? allSections : pageSectio
       })
     }
   </ul>
-  <FloatingButton href={baseUrl} />
-  
-  <!-- Single shared modal for all items in this page -->
-  <Modal />
+  {menuType === "multi-page" && <FloatingButton href={baseUrl} />}
 </main>
 
 
