@@ -3,6 +3,7 @@ import Item from "./Item.astro";
 import type { MenuItem } from "@/types/menu";
 import FloatingButton from "./Buttons/FloatingButton.astro";
 import SectionNavigation from "./SectionNavigation.astro";
+import ItemModal from "./ItemModal.astro";
 interface Props {
   id: string;
   name: string;
@@ -79,6 +80,9 @@ const navigationSections = menuType === "single-page" ? allSections : pageSectio
     }
   </ul>
   {menuType === "multi-page" && <FloatingButton href={baseUrl} />}
+  
+  <!-- Include the modal for item details -->
+  <ItemModal />
 </main>
 
 

@@ -26,12 +26,24 @@ const formatPrice = (price: number) => {
     maximumFractionDigits: 0,
   }).format(price);
 };
+
+// Create a JSON string with the item data for the modal
+const itemData = item ? JSON.stringify({
+  name,
+  price,
+  image_url,
+  description,
+  showPrices,
+  showImages,
+  showDescriptions
+}) : null;
 ---
 
 {item?.type === "item" && (
   <>
     <li
-      class="menu-item relative flex w-full justify-between items-center gap-4 rounded-lg backdrop-blur-sm item-gradient border-gray-200/20 border shadow-sm overflow-hidden"
+      class="menu-item relative flex w-full justify-between items-center gap-4 rounded-lg backdrop-blur-sm item-gradient border-gray-200/20 border shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
+      data-item-modal={itemData}
     >
       {
         showImages && image_url && (
@@ -55,11 +67,6 @@ const formatPrice = (price: number) => {
         showPrices && price !== null && price !== undefined && (
           <div class="flex flex-col gap-2 items-center shrink-0 px-4">
             <p class="text-sm font-bold text-primary-300">{formatPrice(price)}</p>
-            <button
-              class="rounded-md bg-primary-800/40 px-3 py-1 text-xs font-semibold text-white hover:bg-primary-700/60 transition-colors"
-            >
-              More
-            </button>
           </div>
         )
       }
