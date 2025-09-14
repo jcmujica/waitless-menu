@@ -2,7 +2,6 @@
 import Item from "./Item.astro";
 import SharedModal from "./SharedModal.astro";
 import type { MenuItem } from "@/types/menu";
-import ChevronLeft from "../assets/icons/ChevronLeft.svg";
 import FloatingButton from "./Buttons/FloatingButton.astro";
 interface Props {
   id: string;
@@ -43,9 +42,7 @@ const {
       ))
     }
   </ul>
-  <FloatingButton href={baseUrl} variant="primary">
-    <ChevronLeft />
-  </FloatingButton>
+  <FloatingButton href={baseUrl} />
   
   <!-- Single shared modal for all items in this page -->
   <SharedModal />

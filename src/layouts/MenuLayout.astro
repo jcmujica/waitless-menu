@@ -25,7 +25,7 @@ const primaryColorStyles = Object.entries(themeVariables)
   .join("\n        ");
 ---
 
-<html lang="es">
+<html lang="es" class={theme === "dark" ? "bg-black" : "bg-white"}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

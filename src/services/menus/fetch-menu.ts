@@ -15,7 +15,6 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
         main_page_id,
         menu_appearances (
           theme,
-          layout,
           style
         ),
         menu_settings (
@@ -128,7 +127,6 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
       mainPageId: menuData.main_page_id,
       appearance: {
         theme: appearance?.theme || 'light',
-        layout: appearance?.layout || 'grid',
         style: appearance?.style || null,
       },
       settings: {

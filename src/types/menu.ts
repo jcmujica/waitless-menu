@@ -54,7 +54,6 @@ export interface MenuColor {
  */
 export interface MenuAppearance {
   theme: string
-  layout: string
   style: string | null
 }
 
