@@ -1,18 +1,8 @@
 ---
-import { Image } from "astro:assets";
-
-// Helper function to format price
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("es-CL", {
-    style: "currency",
-    currency: "CLP",
-    maximumFractionDigits: 0,
-  }).format(price);
-};
 ---
 
 <!-- Simple Modal Implementation -->
-<div id="item-modal-container" class="fixed inset-0 z-50 hidden items-center justify-center">
+<div id="item-modal-container" class="fixed inset-0 z-50 hidden items-center justify-center m-2">
   <!-- Backdrop -->
   <div id="item-modal-backdrop" class="absolute inset-0 bg-black/70"></div>
   
@@ -29,23 +19,21 @@ const formatPrice = (price: number) => {
     </div>
     
     <!-- Body with glass effect -->
-    <div class="p-6 relative overflow-hidden">
+    <div class="relative overflow-hidden">
       <!-- Decorative elements for glassmorphism effect -->
       <div class="absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-primary-500/10 blur-xl"></div>
       <div class="absolute -top-10 -left-10 w-24 h-24 rounded-full bg-primary-400/10 blur-xl"></div>
       
-      <div class="flex flex-col gap-5 relative z-10">
-        <div id="item-modal-image" class="w-full h-48 rounded-lg overflow-hidden hidden shadow-lg">
+      <div class="flex flex-col relative z-10">
+        <div id="item-modal-image" class="w-full h-48 overflow-hidden hidden shadow-lg">
           <!-- Image placeholder -->
         </div>
         
-        <div id="item-modal-description" class="mt-2 hidden bg-white/5 p-3 rounded-lg">
-          <h4 class="text-sm font-medium text-primary-300 mb-1">Description</h4>
+        <div id="item-modal-description" class="hidden p-3">
           <p class="text-sm text-white/80"></p>
         </div>
         
-        <div id="item-modal-price" class="mt-2 hidden bg-white/5 p-3 rounded-lg">
-          <h4 class="text-sm font-medium text-primary-300 mb-1">Price</h4>
+        <div id="item-modal-price" class="hidden p-3">
           <p class="text-xl font-bold text-primary-300 glow-text"></p>
         </div>
       </div>
