@@ -4,6 +4,7 @@ import type { IMenu, MenuPage, ParsedMenuAppearanceStyle } from "@/types/menu";
 import Page from "./Page.astro";
 import Footer from "./Footer.astro";
 import Home from "./Home.astro";
+import SectionNavigation from "./SectionNavigation.astro";
 
 interface Props {
   menu: IMenu;
@@ -49,6 +50,17 @@ const settings = {
   showDescriptions: menu?.settings?.showDescriptions ?? true,
 };
 
+// Extract all sections from all pages for single-page menu
+const allSections = menu?.pages?.flatMap((page: MenuPage) => {
+  return page.items
+    .filter(item => item.type === "section")
+    .map(section => ({
+      id: `section-${section.id}`,
+      name: section.name,
+      pageId: page.id
+    }));
+}) || [];
+
 const isPageNotFound = isPageView && !currentPage && menu;
 const shouldRedirect = isPageNotFound || error;
 const shouldShowHome = isMultiPage && !isPageView;
@@ -87,13 +99,18 @@ const shouldShowSinglePage = isSinglePage && !isPageView;
                 baseUrl={baseUrl}
                 settings={settings}
                 isVisible={true}
+                menuType={menu?.type}
+                allSections={allSections}
               />
             )}
 
             {/* Single-page layout */}
             {shouldShowSinglePage && (
               <>
-                {menu.pages.map((page: MenuPage) => (
+                {/* Navigation bar for single-page layout */}
+                <SectionNavigation sections={allSections} />
+                
+                {menu.pages.map((page: MenuPage, index: number) => (
                   <Page
                     id={page.id}
                     name={page.name}
@@ -101,6 +118,9 @@ const shouldShowSinglePage = isSinglePage && !isPageView;
                     baseUrl={baseUrl}
                     settings={settings}
                     isVisible={true}
+                    menuType={menu?.type}
+                    allSections={allSections}
+                    showNavigation={false}
                   />
                 ))}
               </>

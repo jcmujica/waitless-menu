@@ -42,11 +42,11 @@ const itemData = item ? JSON.stringify({
 {item?.type === "item" && (
   <>
     <li
-      class="menu-item flex w-full justify-between items-center gap-4 rounded-md border-primary-500 border"
+      class="menu-item relative flex w-full justify-between items-center gap-4 rounded-lg backdrop-blur-sm bg-gradient-to-r from-primary-950/30 to-primary-900/20 border-primary-300/20 border shadow-sm overflow-hidden"
     >
       {
         showImages && image_url && (
-          <div class="h-full rounded-md overflow-hidden shrink-0">
+          <div class="h-full rounded-l-lg overflow-hidden shrink-0">
             <Image
               class="object-cover object-center h-[80px] w-[80px]"
               src={image_url}
@@ -58,35 +58,48 @@ const itemData = item ? JSON.stringify({
           </div>
         )
       }
-      <div class="flex flex-col gap-1 grow">
+      <div class="flex flex-col gap-1 grow py-3">
         <h3 class="font-bold text-sm">{name}</h3>
-        {showDescriptions && description && <p class="text-xs line-clamp-1 opacity-80">{description}</p>}
+        {showDescriptions && description && <p class="text-xs line-clamp-2 opacity-80">{description}</p>}
       </div>
       {
         showPrices && price !== null && price !== undefined && (
-          <div class="flex flex-col gap-2 items-center shrink-0">
-            <p class="text-sm px-4 font-bold text-primary-200">{formatPrice(price)}</p>
+          <div class="flex flex-col gap-2 items-center shrink-0 px-4">
+            <p class="text-sm font-bold text-primary-300">{formatPrice(price)}</p>
             <button
               data-item={itemData}
               data-modal-trigger="shared-modal"
-              class="rounded-md bg-transparent text-xs font-semibold text-white hover:bg-primary-700 underline"
+              class="rounded-md bg-primary-800/40 px-3 py-1 text-xs font-semibold text-white hover:bg-primary-700/60 transition-colors"
             >
               More
             </button>
           </div>
         )
       }
-      <!-- {!is_available && <p>Not Available</p>} -->
+      
+      {/* Subtle decorative gradient */}
+      <div class="absolute bottom-0 left-0 h-1/2 w-full bg-gradient-to-t from-primary-900/20 to-transparent"></div>
     </li>
   </>
 )}
 
 {item?.type === "section" && (
-    <li class="flex w-full rounded-md bg-primary-900 py-2 px-4">
-      <div class="flex flex-col gap-2 grow">
-        <h3 class="font-bold">{name}</h3>
-        {showDescriptions && description && <p class="text-xs">{description}</p>}
+    <li class="relative w-full overflow-hidden">
+      <div class="flex w-full rounded-lg backdrop-blur-sm bg-gradient-to-r from-primary-900/90 to-primary-800/80 px-2 shadow-lg">
+        <div class="flex flex-col gap-2 grow relative z-10">
+          <div class="flex items-center gap-2">
+            <h3 class="font-bold text-lg tracking-wide">{name}</h3>
+          </div>
+          {showDescriptions && description && (
+            <p class="text-xs opacity-90 pl-3 border-l border-primary-700/50">{description}</p>
+          )}
+        </div>
       </div>
+      
+      {/* Decorative elements */}
+      <div class="absolute top-0 right-0 h-full w-1/3 bg-gradient-to-l from-primary-700/20 to-transparent"></div>
+      <div class="absolute -bottom-6 -right-6 h-12 w-12 rounded-full bg-primary-500/20 blur-xl"></div>
+      <div class="absolute -top-6 -left-6 h-12 w-12 rounded-full bg-primary-500/20 blur-xl"></div>
     </li>
 )}
   

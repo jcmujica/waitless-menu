@@ -13,7 +13,7 @@ const { menu, baseUrl } = Astro.props;
     <nav class="flex flex-col gap-4 mb-4 text-center">
       {
         menu.pages.map((page: MenuPage) => (
-          <Button href={`${baseUrl}/${page.id}`} transition:name={page.id}>{page.name}</Button>
+          <Button href={`${baseUrl}/${page.id}`}>{page.name}</Button>
         ))
       }
     </nav>

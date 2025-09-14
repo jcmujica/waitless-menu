@@ -1,8 +1,9 @@
 ---
 import Item from "./Item.astro";
-import SharedModal from "./SharedModal.astro";
+import Modal from "./Modal.astro";
 import type { MenuItem } from "@/types/menu";
 import FloatingButton from "./Buttons/FloatingButton.astro";
+import SectionNavigation from "./SectionNavigation.astro";
 interface Props {
   id: string;
   name: string;
@@ -14,6 +15,13 @@ interface Props {
   };
   isVisible?: boolean;
   baseUrl: string;
+  menuType?: string;
+  allSections?: Array<{
+    id: string;
+    name: string;
+    pageId: string;
+  }>;
+  showNavigation?: boolean;
 }
 
 const {
@@ -23,7 +31,25 @@ const {
   settings,
   isVisible = true,
   baseUrl,
+  menuType = "multi-page",
+  allSections = [],
+  showNavigation = true,
 } = Astro.props;
+
+// Extract sections for the navigation bar from current page items
+const pageSections = items.filter(item => item.type === "section");
+
+// Generate unique IDs for sections based on their names
+const pageSectionIds = pageSections.map(section => ({
+  id: `section-${section.id}`,
+  name: section.name,
+  pageId: id
+}));
+
+// Determine which sections to display in the navigation
+// For single-page menu, use allSections (passed from Menu component)
+// For multi-page menu, use only the sections from the current page
+const navigationSections = menuType === "single-page" ? allSections : pageSectionIds;
 ---
 
 <main
@@ -31,19 +57,34 @@ const {
   class="min-h-screen flex flex-col gap-4"
   style={`display: ${isVisible ? "block" : "none"};`}
 >
-  <h2 class="text-2xl font-bold p-4 text-center" transition:name={id}>{name}</h2>
-  <ul class="flex flex-col gap-2 p-2">
+  {/* Horizontal navigation bar for sections - only shown if showNavigation is true */}
+  {showNavigation && navigationSections.length > 0 && <SectionNavigation sections={navigationSections} />}
+
+  <ul class="flex flex-col gap-3 p-3">
     {
-      items.map((item) => (
-        <Item
-          item={item}
-          settings={settings}
-        />
-      ))
+      items.map((item, index) => {
+        // For section items, add an ID to use as scroll target
+        const sectionId = item.type === "section" ? `section-${item.id}` : "";
+        return (
+          <div 
+            id={sectionId} 
+            class={item.type === "section" ? "scroll-mt-16 not-first:mt-4" : ""}
+          >
+            <Item
+              item={item}
+              settings={settings}
+            />
+          </div>
+        );
+      })
     }
   </ul>
   <FloatingButton href={baseUrl} />
   
   <!-- Single shared modal for all items in this page -->
-  <SharedModal />
+  <Modal />
 </main>
+
+
+
+

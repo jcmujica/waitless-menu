@@ -1,0 +1,244 @@
+---
+interface SectionItem {
+  id: string;
+  name: string;
+  pageId: string;
+}
+
+interface Props {
+  sections: SectionItem[];
+}
+
+const { sections = [] } = Astro.props;
+---
+
+{sections.length > 0 && (
+  <nav class="sticky top-0 z-10 glassmorphism">
+    <div class="overflow-x-auto scrollbar-hide">
+      <ul class="flex whitespace-nowrap py-3 px-2 gap-4">
+        {sections.map((section) => (
+          <li>
+            <button 
+              class="section-nav-item text-sm font-medium px-3 py-2 rounded-md transition-all duration-300 hover:bg-primary-700/20" 
+              data-section-target={section.id}
+              data-page-id={section.pageId}
+            >
+              {section.name}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+)}
+
+<style>
+  /* Hide scrollbar for navigation */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+  
+  /* Glassmorphism effect */
+  .glassmorphism {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Active section styling */
+  .section-nav-item.active {
+    color: var(--primary-500);
+    transform: translateY(-2px);
+    text-shadow: 0 0 10px rgba(var(--primary-500-rgb), 0.5);
+    position: relative;
+  }
+  
+  .section-nav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary-500);
+    border-radius: 2px;
+  }
+</style>
+
+<script>
+  // Add RGB values for primary color to use in rgba() functions
+  document.addEventListener('DOMContentLoaded', () => {
+    // Get the primary-500 color from CSS variables
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-500').trim();
+    
+    // Convert hex to RGB
+    const hexToRgb = (hex: string) => {
+      // Remove # if present
+      hex = hex.replace('#', '');
+      
+      // Convert 3-digit hex to 6-digit
+      if (hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+      }
+      
+      // Convert to RGB
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      
+      return [r, g, b].join(', ');
+    };
+    
+    // Set the RGB values as a CSS variable
+    if (primaryColor) {
+      document.documentElement.style.setProperty('--primary-500-rgb', hexToRgb(primaryColor));
+    }
+  });
+</script>
+
+<script>
+  // This script handles the section navigation functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const navigationContainer = document.querySelector('.overflow-x-auto');
+    const sectionNavItems = document.querySelectorAll('.section-nav-item');
+    const sectionElements = Array.from(sectionNavItems).map(item => {
+      const targetId = item.getAttribute('data-section-target');
+      return {
+        navItem: item,
+        section: document.getElementById(targetId || '')
+      };
+    }).filter(item => item.section);
+    
+    // Function to handle smooth scrolling to sections in the content
+    const scrollToSection = (sectionId: string) => {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
+    // Function to scroll the navigation bar horizontally to show the active item
+    const scrollNavToItem = (navItem: Element) => {
+      if (!navigationContainer) return;
+      
+      const navRect = navigationContainer.getBoundingClientRect();
+      const itemRect = navItem.getBoundingClientRect();
+      
+      // Calculate the scroll position to center the item in the navigation
+      const scrollLeft = itemRect.left + itemRect.width / 2 - navRect.left - navRect.width / 2;
+      
+      // Scroll the navigation container horizontally with smooth behavior
+      navigationContainer.scrollTo({
+        left: navigationContainer.scrollLeft + scrollLeft,
+        behavior: 'smooth'
+      });
+    };
+    
+    // Add click event listeners to section navigation items
+    sectionNavItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const targetId = item.getAttribute('data-section-target');
+        if (targetId) {
+          scrollToSection(targetId);
+          // Also scroll the navigation to center this item
+          scrollNavToItem(item);
+        }
+      });
+    });
+    
+    // Function to update active section based on scroll position
+    const updateActiveSection = () => {
+      // Get current scroll position with some offset for better UX
+      const scrollPosition = window.scrollY + 100;
+      
+      // Calculate section boundaries including all items until the next section
+      const sectionBoundaries = [];
+      
+      // First, get all section elements in the document
+      const allSectionElements = Array.from(document.querySelectorAll('[id^="section-"]'));
+      
+      // Calculate the boundaries for each section
+      for (let i = 0; i < allSectionElements.length; i++) {
+        const currentSection = allSectionElements[i];
+        const nextSection = allSectionElements[i + 1] || null;
+        
+        const sectionTop = (currentSection as HTMLElement).offsetTop;
+        // If this is the last section, use the bottom of the page as the boundary
+        // Otherwise, use the top of the next section as the boundary
+        const sectionBottom = nextSection ? (nextSection as HTMLElement).offsetTop : document.body.scrollHeight;
+        
+        // Find the matching navigation item
+        const sectionId = currentSection.id;
+        const matchingNavItem = Array.from(sectionNavItems).find(item => 
+          item.getAttribute('data-section-target') === sectionId
+        );
+        
+        if (matchingNavItem) {
+          sectionBoundaries.push({
+            top: sectionTop,
+            bottom: sectionBottom,
+            section: currentSection,
+            navItem: matchingNavItem
+          });
+        }
+      }
+      
+      // Find the current section in view based on the calculated boundaries
+      let currentSection = null;
+      let activeNavItem = null;
+      
+      for (const boundary of sectionBoundaries) {
+        if (scrollPosition >= boundary.top && scrollPosition < boundary.bottom) {
+          currentSection = boundary.section;
+          activeNavItem = boundary.navItem;
+          break;
+        }
+      }
+      
+      // If we're before the first section, highlight the first one
+      if (!currentSection && sectionBoundaries.length > 0) {
+        const firstBoundary = sectionBoundaries[0];
+        if (scrollPosition < firstBoundary.top) {
+          currentSection = firstBoundary.section;
+          activeNavItem = firstBoundary.navItem;
+        }
+      }
+      
+      // If we're after the last section, highlight the last one
+      if (!currentSection && sectionBoundaries.length > 0) {
+        const lastBoundary = sectionBoundaries[sectionBoundaries.length - 1];
+        if (scrollPosition >= lastBoundary.bottom) {
+          currentSection = lastBoundary.section;
+          activeNavItem = lastBoundary.navItem;
+        }
+      }
+      
+      // Update active class on navigation items
+      sectionElements.forEach(({ navItem, section }) => {
+        if (section === currentSection) {
+          navItem.classList.add('active');
+        } else {
+          navItem.classList.remove('active');
+        }
+      });
+      
+      // Scroll the navigation to show the active item
+      if (activeNavItem) {
+        scrollNavToItem(activeNavItem);
+      }
+    };
+    
+    // Add scroll event listener to update active section
+    window.addEventListener('scroll', updateActiveSection);
+    
+    // Initialize active section on page load
+    // Wait a bit to ensure all elements are properly rendered
+    setTimeout(updateActiveSection, 100);
+  });
+</script>
