@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import type { MenuItem } from "@/types/menu";
-import ItemModal from './ItemModal.astro'
+import ItemModal from "./ItemModal.astro";
 import { formatPrice } from "@/utils/formatPrice";
 
 // Define the props for the Item component
@@ -36,29 +36,29 @@ const itemData = item
 
 <script>
   // Add click event listeners to all menu items
-  document.addEventListener('DOMContentLoaded', () => {
-    const menuItems = document.querySelectorAll('.menu-item');
-    
-    menuItems.forEach(item => {
-      item.addEventListener('click', () => {
-        const itemId = item.getAttribute('data-item-id');
+  document.addEventListener("DOMContentLoaded", () => {
+    const menuItems = document.querySelectorAll(".menu-item");
+
+    menuItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        const itemId = item.getAttribute("data-item-id");
         const modal = document.getElementById(`item-modal-${itemId}`);
-        
+
         if (modal && modal instanceof HTMLDialogElement) {
           // First set initial state (if not already set by CSS)
-          modal.style.opacity = '0';
-          modal.style.transform = 'scale(0.95) translateY(10px)';
-          
+          modal.style.opacity = "0";
+          modal.style.transform = "scale(0.95) translateY(10px)";
+
           // Show the modal
           modal.showModal();
-          
+
           // Force a reflow to ensure the initial state is applied
           void modal.offsetWidth;
-          
+
           // Then remove the inline styles to let CSS transitions take over
           setTimeout(() => {
-            modal.style.opacity = '';
-            modal.style.transform = '';
+            modal.style.opacity = "";
+            modal.style.transform = "";
           }, 10);
         }
       });
@@ -71,7 +71,7 @@ const itemData = item
     <>
       <li
         id={`item-${item.id}`}
-        class="menu-item relative flex w-full justify-between items-center gap-4 rounded-lg backdrop-blur-sm item-gradient border-gray-200/20 border shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
+        class="menu-item glassmorphism-item relative flex w-full justify-between items-center gap-4 rounded-lg border-gray-200/10 border shadow-sm overflow-hidden cursor-pointer"
         data-item-id={item.id}
         data-item-data={itemData}
       >
@@ -121,28 +121,6 @@ const itemData = item
 }
 
 <style>
-  /* Custom gradients for items using CSS variables */
-  .item-gradient {
-    background: linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.3),
-      rgba(0, 0, 0, 0.2)
-    );
-    position: relative;
-  }
-
-  .item-gradient::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to right,
-      color-mix(in srgb, var(--primary-950) 30%, transparent),
-      color-mix(in srgb, var(--primary-900) 20%, transparent)
-    );
-    z-index: -1;
-  }
-
   /* Subtle decorative gradient for items */
   .menu-item::after {
     content: "";

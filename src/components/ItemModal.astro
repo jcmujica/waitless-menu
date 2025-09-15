@@ -16,11 +16,11 @@ const { name, price, image_url, description } = item || {};
   class="modal rounded-lg overflow-hidden shadow-xl"
 >
   <div
-    class="modal-content w-full max-w-md bg-gradient-to-b from-primary-950/40 to-primary-900/40 backdrop-blur-xl text-white p-0 rounded-lg overflow-hidden border border-white/20 relative"
+    class="modal-content glassmorphism glassmorphism-modal w-full max-w-md text-white p-0 rounded-lg overflow-hidden relative"
   >
     <button
       type="button"
-      class="close-modal absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-black/50 text-white shadow-lg border border-white/20 transition-all duration-200 z-10"
+      class="close-modal absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-black/50 text-white shadow-lg border border-black/10 transition-all duration-200 z-10"
       aria-label="Close modal"
     >
       <svg
@@ -143,10 +143,5 @@ const { name, price, image_url, description } = item || {};
     opacity: 0;
   }
 
-  /* Add subtle glow effect */
-  .modal-content {
-    box-shadow:
-      0 0 20px rgba(0, 0, 0, 0.15),
-      0 0 6px var(--primary-500);
-  }
+  /* Modal content styling is now handled by glassmorphism classes */
 </style>
