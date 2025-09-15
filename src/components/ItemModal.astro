@@ -69,7 +69,6 @@ const { name, price, image_url, description } = item || {};
     </div>
   </div>
 </dialog>
-
 <script define:vars={{ itemId: item.id }}>
   // Get references to the modal and related elements
   const modal = document.getElementById(`item-modal-${itemId}`);
@@ -102,7 +101,6 @@ const { name, price, image_url, description } = item || {};
     }
   });
 </script>
-
 <style>
   .modal::backdrop {
     background-color: rgba(0, 0, 0, 0.2);

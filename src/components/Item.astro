@@ -34,16 +34,17 @@ const itemData = item
   : null;
 ---
 
-<script define:vars={{ itemId: item?.id }}>
-  // Only add event listener if this is an actual item
-  if (itemId) {
-    document.addEventListener('DOMContentLoaded', () => {
-      // Get references to this specific item and its modal
-      const menuItem = document.getElementById(`item-${itemId}`);
-      const modal = document.getElementById(`item-modal-${itemId}`);
-      
-      if (menuItem && modal && modal instanceof HTMLDialogElement) {
-        menuItem.addEventListener('click', () => {
+<script>
+  // Add click event listeners to all menu items
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const itemId = item.getAttribute('data-item-id');
+        const modal = document.getElementById(`item-modal-${itemId}`);
+        
+        if (modal && modal instanceof HTMLDialogElement) {
           // First set initial state (if not already set by CSS)
           modal.style.opacity = '0';
           modal.style.transform = 'scale(0.95) translateY(10px)';
@@ -59,10 +60,10 @@ const itemData = item
             modal.style.opacity = '';
             modal.style.transform = '';
           }, 10);
-        });
-      }
+        }
+      });
     });
-  }
+  });
 </script>
 
 {
