@@ -2,7 +2,11 @@
 
 /* Glassmorphism effect for components */
 .glassmorphism {
-  background: rgba(15, 23, 42, 0.7); /* Dark background with transparency */
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.2)
+  );
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -12,26 +16,18 @@
   position: relative;
 }
 
-/* Add subtle shine effect to the glassmorphism container */
+/* Primary color tint overlay for glassmorphism */
 .glassmorphism::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
+  inset: 0; /* Use inset instead of top/left/width/height */
   background: linear-gradient(
-    to right,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
+    to bottom,
+    color-mix(in srgb, var(--primary-950) 30%, transparent),
+    color-mix(in srgb, var(--primary-900) 20%, transparent)
   );
-  transition: 0.5s;
+  z-index: -1;
   pointer-events: none;
-}
-
-.glassmorphism:hover::before {
-  left: 100%;
 }
 
 /* Text colors for better contrast on dark background */

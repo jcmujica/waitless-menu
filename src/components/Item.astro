@@ -3,7 +3,7 @@ import { Image } from "astro:assets";
 import type { MenuItem } from "@/types/menu";
 import ItemModal from "./ItemModal.astro";
 import { formatPrice } from "@/utils/formatPrice";
-import Section from "./Section.astro";
+import Section from './Section.astro'
 
 // Define the props for the Item component
 interface Props {
@@ -107,7 +107,11 @@ const itemData = item
   )
 }
 
-{item?.type === "section" && <Section name={item.name} />}
+{
+  item?.type === "section" && (
+   <Section name={item.name} />
+  )
+}
 
 <style>
   /* Subtle decorative gradient for items */
