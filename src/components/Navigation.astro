@@ -16,13 +16,13 @@ const { sections = [] } = Astro.props;
   sections.length > 0 && (
     <div class="sticky top-0 z-10 w-full">
       <nav class="glassmorphism glassmorphism-nav">
-        <div class="overflow-x-auto scrollbar-hide">
+        <div class="overflow-x-auto scrollbar-hide" id="nav-container">
           <ul class="flex whitespace-nowrap py-3 px-3 gap-3 items-center">
             {sections.map((section, index) => (
               <li class="flex-shrink-0">
                 <button
                   class="section-nav-item text-sm font-medium px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-2"
-                  data-section-target={section.id}
+                  data-section-target={`section-${section.id}`}
                   data-page-id={section.pageId}
                 >
                   <span>{section.name}</span>
@@ -94,6 +94,118 @@ const { sections = [] } = Astro.props;
 </style>
 
 <script>
-  // Import the navigation functionality from the dedicated script file
-  import "@/scripts/navigation.ts";
+  document.addEventListener('DOMContentLoaded', () => {
+    const navContainer = document.getElementById('nav-container') as HTMLElement;
+    const sectionNavItems = document.querySelectorAll<HTMLElement>('.section-nav-item');
+    
+    // Define the type for section elements
+    interface SectionElement {
+      element: HTMLElement;
+      navItem: HTMLElement;
+    }
+    
+    // Create a record to store section elements
+    const sectionElements: Record<string, SectionElement> = {};
+    
+    // Track scrolling state
+    let isScrolling = false;
+    
+    // Collect all section elements
+    sectionNavItems.forEach(item => {
+      const targetId = item.getAttribute('data-section-target');
+      if (targetId) {
+        const sectionElement = document.getElementById(targetId);
+        if (sectionElement) {
+          sectionElements[targetId] = {
+            element: sectionElement,
+            navItem: item
+          };
+        }
+      }
+    });
+    
+    // Handle click on navigation items
+    sectionNavItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const targetId = item.getAttribute('data-section-target');
+        if (targetId) {
+          const targetElement = document.getElementById(targetId);
+          if (targetElement) {
+            // Scroll to the section
+            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Scroll the navigation to center the clicked item
+            scrollNavToItem(item);
+          }
+        }
+      });
+    });
+    
+    // Function to scroll navigation to center an item
+    function scrollNavToItem(item: HTMLElement): void {
+      if (navContainer && item) {
+        const navRect = navContainer.getBoundingClientRect();
+        const itemRect = item.getBoundingClientRect();
+        
+        // Calculate the scroll position to center the item
+        const scrollLeft = itemRect.left + itemRect.width / 2 - navRect.width / 2;
+        
+        // Scroll the navigation
+        navContainer.scrollTo({
+          left: navContainer.scrollLeft + scrollLeft - navRect.left,
+          behavior: 'smooth'
+        });
+      }
+    }
+    
+    // Update active section based on scroll position
+    function updateActiveSection(): void {
+      if (!navContainer) return;
+      
+      // Get all section elements and their positions
+      const sectionPositions = Object.entries(sectionElements).map(([id, data]) => {
+        const rect = data.element.getBoundingClientRect();
+        return {
+          id,
+          top: rect.top,
+          element: data.element,
+          navItem: data.navItem
+        };
+      });
+      
+      // Find the section that is currently in view (closest to the top)
+      const headerOffset = 100; // Adjust based on your header height
+      const visibleSections = sectionPositions.filter(section => 
+        section.top <= headerOffset
+      );
+      
+      // If we have visible sections, activate the last one (closest to the top)
+      if (visibleSections.length > 0) {
+        const activeSection = visibleSections[visibleSections.length - 1];
+        
+        // Remove active class from all nav items
+        sectionNavItems.forEach(item => item.classList.remove('active'));
+        
+        // Add active class to the current section's nav item
+        activeSection.navItem.classList.add('active');
+        
+        // Scroll the navigation to center the active item (with a small delay to avoid constant scrolling)
+        if (!isScrolling) {
+          isScrolling = true;
+          setTimeout(() => {
+            scrollNavToItem(activeSection.navItem);
+            isScrolling = false;
+          }, 100);
+        }
+      }
+    }
+    
+    // Listen for scroll events
+    window.addEventListener('scroll', () => {
+      requestAnimationFrame(updateActiveSection);
+    }, { passive: true });
+    
+    // Initial update
+    updateActiveSection();
+  });
 </script>

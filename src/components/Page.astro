@@ -1,41 +1,43 @@
 ---
 import Item from "./Item.astro";
-import type { MenuItem } from "@/types/menu";
+import type { MenuItem, MenuPage } from "@/types/menu";
 import FloatingButton from "./Buttons/FloatingButton.astro";
 import Navigation from "./Navigation.astro";
+import type { IMenu } from "@/types/menu";
 interface Props {
   id: string;
-  name: string;
+  menu: IMenu;
   items: MenuItem[];
-  settings: {
-    showPrices: boolean;
-    showImages: boolean;
-    showDescriptions: boolean;
-  };
-  isVisible?: boolean;
   baseUrl: string;
-  menuType?: string;
-  allSections?: Array<{
-    id: string;
-    name: string;
-    pageId: string;
-  }>;
   showNavigation?: boolean;
 }
 
 const {
   id,
-  name,
   items = [],
-  settings,
-  isVisible = true,
+  menu,
   baseUrl,
-  menuType = "multi-page",
-  allSections = [],
   showNavigation = true,
 } = Astro.props;
 
-// Extract sections for the navigation bar from current page items
+const settings = {
+  showPrices: menu?.settings?.showPrices ?? true,
+  showImages: menu?.settings?.showImages ?? true,
+  showDescriptions: menu?.settings?.showDescriptions ?? true,
+};
+const isSinglePage = menu?.type === "single-page";
+
+const allSections =
+  menu?.pages?.flatMap((page: MenuPage) => {
+    return page.items
+      .filter((item: MenuItem) => item.type === "section")
+      .map((section: MenuItem) => ({
+        id: `section-${section.id}`,
+        name: section.name,
+        pageId: page.id,
+      }));
+  }) || [];
+
 const pageSections = items.filter((item) => item.type === "section");
 
 // Generate unique IDs for sections based on their names
@@ -49,16 +51,13 @@ const pageSectionIds = pageSections.map((section) => ({
 // For single-page menu, use allSections (passed from Menu component)
 // For multi-page menu, use only the sections from the current page
 const navigationSections =
-  menuType === "single-page" ? allSections : pageSectionIds;
+  isSinglePage ? allSections : pageSectionIds;
 ---
+
 <main
   id={`page-${id}`}
   class="min-h-screen flex flex-col gap-4"
-  style={`display: ${isVisible ? "block" : "none"};`}
 >
-  {
-    /* Horizontal navigation bar for sections - only shown if showNavigation is true */
-  }
   {
     showNavigation && navigationSections.length > 0 && (
       <Navigation sections={navigationSections} />
@@ -81,5 +80,5 @@ const navigationSections =
       })
     }
   </ul>
-  {menuType === "multi-page" && <FloatingButton href={baseUrl} />}
+  {isSinglePage && <FloatingButton href={baseUrl} />}
 </main>

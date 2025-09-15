@@ -1,5 +1,5 @@
 ---
-import type { IMenu, MenuPage, ParsedMenuAppearanceStyle } from "@/types/menu";
+import type { IMenu, MenuPage } from "@/types/menu";
 import Page from "./Page.astro";
 import Footer from "./Footer.astro";
 import Home from "./Home.astro";
@@ -23,29 +23,23 @@ const isMultiPage = menu?.type === "multi-page";
 const isSinglePage = menu?.type === "single-page";
 
 // Determine the route type for the dynamic routing
-const routeType = isQrRoute ? 'qr' : 'v';
+const routeType = isQrRoute ? "qr" : "v";
 const identifier = isQrRoute ? (account as string) : (accountPath as string);
 
 // Generate the base URL for navigation
-const baseUrl = (identifier && routeType) ? `/${routeType}/${identifier}` : '';
-
-// Extract primary color from styles
-const settings = {
-  showPrices: menu?.settings?.showPrices ?? true,
-  showImages: menu?.settings?.showImages ?? true,
-  showDescriptions: menu?.settings?.showDescriptions ?? true,
-};
+const baseUrl = identifier && routeType ? `/${routeType}/${identifier}` : "";
 
 // Extract all sections from all pages for single-page menu
-const allSections = menu?.pages?.flatMap((page: MenuPage) => {
-  return page.items
-    .filter(item => item.type === "section")
-    .map(section => ({
-      id: `section-${section.id}`,
-      name: section.name,
-      pageId: page.id
-    }));
-}) || [];
+const allSections =
+  menu?.pages?.flatMap((page: MenuPage) => {
+    return page.items
+      .filter((item) => item.type === "section")
+      .map((section) => ({
+        id: `section-${section.id}`,
+        name: section.name,
+        pageId: page.id,
+      }));
+  }) || [];
 
 const isPageNotFound = isPageView && !currentPage && menu;
 const shouldRedirect = isPageNotFound || error;
@@ -79,14 +73,10 @@ const shouldShowSinglePage = isSinglePage && !isPageView;
             {/* Specific page view */}
             {shouldShowPage && (
               <Page
-                id={currentPage.id}
-                name={currentPage.name}
-                items={currentPage.items}
                 baseUrl={baseUrl}
-                settings={settings}
-                isVisible={true}
-                menuType={menu?.type}
-                allSections={allSections}
+                id={currentPage.id}
+                items={currentPage.items}
+                menu={menu}
               />
             )}
 
@@ -95,17 +85,13 @@ const shouldShowSinglePage = isSinglePage && !isPageView;
               <>
                 {/* Navigation bar for single-page layout */}
                 <Navigation sections={allSections} />
-                
-                {menu.pages.map((page: MenuPage, index: number) => (
+
+                {menu.pages.map((page: MenuPage) => (
                   <Page
-                    id={page.id}
-                    name={page.name}
-                    items={page.items}
                     baseUrl={baseUrl}
-                    settings={settings}
-                    isVisible={true}
-                    menuType={menu?.type}
-                    allSections={allSections}
+                    id={page.id}
+                    items={page.items}
+                    menu={menu}
                     showNavigation={false}
                   />
                 ))}
@@ -118,5 +104,3 @@ const shouldShowSinglePage = isSinglePage && !isPageView;
     </div>
   </div>
 </Fragment>
-
-<style is:global></style>
