@@ -1,208 +1,153 @@
 ---
+import { Image } from "astro:assets";
+import type { MenuItem } from "@/types/menu";
+import { formatPrice } from "@/utils/formatPrice";
+
+interface Props {
+  item: MenuItem;
+}
+
+const { item } = Astro.props;
+const { name, price, image_url, description } = item || {};
 ---
 
-<!-- Simple Modal Implementation -->
-<div id="item-modal-container" class="fixed inset-0 z-50 hidden items-center justify-center m-2">
-  <!-- Backdrop -->
-  <div id="item-modal-backdrop" class="absolute inset-0 bg-black/70"></div>
-  
-  <!-- Modal Content -->
-  <div id="item-modal-content" class="relative w-full max-w-md glassmorphism rounded-xl shadow-xl transform transition-all duration-300 scale-95 opacity-0" id="modal-animation">
-    <!-- Header with glow effect -->
-    <div class="flex items-center justify-between p-4 border-b border-primary-200/20">
-      <h3 id="item-modal-title" class="text-xl font-bold text-white glow-text">Item Title</h3>
-      <button id="item-modal-close" class="hover:text-primary-400 focus:outline-none transition-colors duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-    
-    <!-- Body with glass effect -->
-    <div class="relative overflow-hidden">
-      <!-- Decorative elements for glassmorphism effect -->
-      <div class="absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-primary-500/10 blur-xl"></div>
-      <div class="absolute -top-10 -left-10 w-24 h-24 rounded-full bg-primary-400/10 blur-xl"></div>
-      
-      <div class="flex flex-col relative z-10">
-        <div id="item-modal-image" class="w-full h-48 overflow-hidden hidden shadow-lg">
-          <!-- Image placeholder -->
+<dialog
+  id={`item-modal-${item.id}`}
+  class="modal rounded-lg overflow-hidden shadow-xl"
+>
+  <div
+    class="modal-content w-full max-w-md bg-gradient-to-b from-primary-950/40 to-primary-900/40 backdrop-blur-xl text-white p-0 rounded-lg overflow-hidden border border-white/20 relative"
+  >
+    <button
+      type="button"
+      class="close-modal absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-black/50 text-white shadow-lg border border-white/20 transition-all duration-200 z-10"
+      aria-label="Close modal"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    {
+      image_url && (
+        <div class="w-full h-48 overflow-hidden relative">
+          <Image
+            src={image_url}
+            alt={name || ""}
+            width={400}
+            height={300}
+            class="w-full h-full object-cover"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-primary-950/80 to-transparent" />
         </div>
-        
-        <div id="item-modal-description" class="hidden p-3">
-          <p class="text-sm text-white/80"></p>
-        </div>
-        
-        <div id="item-modal-price" class="hidden p-3">
-          <p class="text-xl font-bold text-primary-300 glow-text"></p>
-        </div>
+      )
+    }
+
+    <div class="p-6 pb-8">
+      <div class="flex justify-between items-start mb-4">
+        <h2 class="text-xl font-bold">{name}</h2>
+        {
+          price !== null && price !== undefined && (
+            <p class="text-lg font-bold text-primary-300">
+              {formatPrice(price)}
+            </p>
+          )
+        }
       </div>
+
+      {description && <p class="text-sm opacity-80">{description}</p>}
     </div>
   </div>
-</div>
+</dialog>
 
-<script>
-  // Define the item data interface
-  interface ItemData {
-    name?: string;
-    price?: number;
-    image_url?: string;
-    description?: string;
-    showPrices?: boolean;
-    showImages?: boolean;
-    showDescriptions?: boolean;
-  }
-  
-  document.addEventListener('DOMContentLoaded', () => {
-    const modalContainer = document.getElementById('item-modal-container');
-    const modalBackdrop = document.getElementById('item-modal-backdrop');
-    const modalContent = document.getElementById('item-modal-content');
-    const modalTitle = document.getElementById('item-modal-title');
-    const modalImage = document.getElementById('item-modal-image');
-    const modalDescription = document.getElementById('item-modal-description');
-    const modalPrice = document.getElementById('item-modal-price');
-    const closeButtons = document.querySelectorAll('#item-modal-close, #item-modal-close-btn');
-    
-    // Find all menu items with data-item-modal attribute
-    const menuItems = document.querySelectorAll('.menu-item[data-item-modal]');
-    
-    // Function to open modal with animation
-    function openModal(data: ItemData) {
-      if (!modalContainer || !modalTitle || !modalImage || !modalDescription || !modalPrice || !modalContent) {
-        console.error('Modal elements not found');
-        return;
-      }
-      
-      // Set modal title
-      modalTitle.textContent = data.name || '';
-      
-      // Handle image
-      if (data.image_url && data.showImages) {
-        modalImage.innerHTML = `
-          <img 
-            class="w-full h-full object-cover object-center" 
-            src="${data.image_url}" 
-            alt="${data.name || ''}" 
-            width="400" 
-            height="300"
-          />
-        `;
-        modalImage.classList.remove('hidden');
-      } else {
-        modalImage.classList.add('hidden');
-      }
-      
-      // Handle description
-      if (data.description && data.showDescriptions) {
-        const descriptionText = modalDescription.querySelector('p');
-        if (descriptionText) {
-          descriptionText.textContent = data.description;
-        }
-        modalDescription.classList.remove('hidden');
-      } else {
-        modalDescription.classList.add('hidden');
-      }
-      
-      // Handle price
-      if (data.price !== null && data.price !== undefined && data.showPrices) {
-        const priceText = modalPrice.querySelector('p');
-        if (priceText) {
-          // Format price
-          const formattedPrice = new Intl.NumberFormat("es-CL", {
-            style: "currency",
-            currency: "CLP",
-            maximumFractionDigits: 0,
-          }).format(data.price);
-          
-          priceText.textContent = formattedPrice;
-        }
-        modalPrice.classList.remove('hidden');
-      } else {
-        modalPrice.classList.add('hidden');
-      }
-      
-      // Show modal with animation
-      modalContainer.classList.remove('hidden');
-      modalContainer.classList.add('flex');
-      
-      // Trigger animation after a small delay to ensure display:flex is applied
+<script define:vars={{ itemId: item.id }}>
+  // Get references to the modal and related elements
+  const modal = document.getElementById(`item-modal-${itemId}`);
+  const closeButton = modal?.querySelector(".close-modal");
+
+  // Function to handle smooth closing of the modal
+  const closeModalWithAnimation = () => {
+    if (modal?.open) {
+      // Add a class to trigger the closing animation
+      modal.classList.add("closing");
+
+      // Wait for animation to complete before actually closing
       setTimeout(() => {
-        modalContent.classList.remove('scale-95', 'opacity-0');
-        modalContent.classList.add('scale-100', 'opacity-100');
-      }, 10);
-      
-      document.body.style.overflow = 'hidden'; // Prevent scrolling
+        modal.close();
+        modal.classList.remove("closing");
+      }, 280); // Slightly less than the transition duration
     }
-    
-    // Function to close modal with animation
-    function closeModal() {
-      if (!modalContainer || !modalContent) return;
-      
-      // Start closing animation
-      modalContent.classList.remove('scale-100', 'opacity-100');
-      modalContent.classList.add('scale-95', 'opacity-0');
-      
-      // Hide modal after animation completes
-      setTimeout(() => {
-        modalContainer.classList.add('hidden');
-        modalContainer.classList.remove('flex');
-        document.body.style.overflow = ''; // Restore scrolling
-      }, 200);
+  };
+
+  // Close modal when clicking the close button
+  closeButton?.addEventListener("click", (e) => {
+    e.preventDefault();
+    closeModalWithAnimation();
+  });
+
+  // Close modal when clicking outside the modal content
+  modal?.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeModalWithAnimation();
     }
-    
-    // Add click event listeners to menu items
-    menuItems.forEach(item => {
-      item.addEventListener('click', () => {
-        try {
-          const itemDataStr = item.getAttribute('data-item-modal') || '{}';
-          const itemData: ItemData = JSON.parse(itemDataStr);
-          openModal(itemData);
-        } catch (error) {
-          console.error('Error parsing item data:', error);
-        }
-      });
-    });
-    
-    // Add click event listeners to close buttons
-    closeButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent event from bubbling up
-        closeModal();
-      });
-    });
-    
-    // Close modal when clicking outside
-    modalBackdrop?.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent event from bubbling up
-      closeModal();
-    });
-    
-    // Close modal on Escape key press
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        closeModal();
-      }
-    });
-    
-    // Prevent clicks inside modal content from closing the modal
-    modalContent?.addEventListener('click', (e) => {
-      e.stopPropagation();
-    });
   });
 </script>
 
 <style>
-  /* Modal-specific styling */
-  .glassmorphism .flex.items-center {
-    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+  .modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
   }
-  
-  /* Image hover effect */
-  #item-modal-image img {
-    transition: transform 0.5s ease;
+
+  .modal[open]::backdrop {
+    opacity: 1;
   }
-  
-  #item-modal-image:hover img {
-    transform: scale(1.05);
+
+  .modal {
+    border: none;
+    padding: 0;
+    max-width: 90vw;
+    max-height: 90vh;
+    margin: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+    transition:
+      opacity 0.3s ease-out,
+      transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .modal[open] {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  /* Closing animation */
+  .modal.closing {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+
+  .modal.closing::backdrop {
+    opacity: 0;
+  }
+
+  /* Add subtle glow effect */
+  .modal-content {
+    box-shadow:
+      0 0 20px rgba(0, 0, 0, 0.15),
+      0 0 6px var(--primary-500);
   }
 </style>

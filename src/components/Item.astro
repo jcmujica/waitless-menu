@@ -1,6 +1,8 @@
 ---
 import { Image } from "astro:assets";
 import type { MenuItem } from "@/types/menu";
+import ItemModal from './ItemModal.astro'
+import { formatPrice } from "@/utils/formatPrice";
 
 // Define the props for the Item component
 interface Props {
@@ -18,35 +20,61 @@ const { item, settings } = Astro.props;
 const { name, price, image_url, description, is_available } = item || {};
 const { showPrices, showImages, showDescriptions } = settings;
 
-// Helper function to format price
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("es-CL", {
-    style: "currency",
-    currency: "CLP",
-    maximumFractionDigits: 0,
-  }).format(price);
-};
-
 // Create a JSON string with the item data for the modal
-const itemData = item ? JSON.stringify({
-  name,
-  price,
-  image_url,
-  description,
-  showPrices,
-  showImages,
-  showDescriptions
-}) : null;
+const itemData = item
+  ? JSON.stringify({
+      name,
+      price,
+      image_url,
+      description,
+      showPrices,
+      showImages,
+      showDescriptions,
+    })
+  : null;
 ---
 
-{item?.type === "item" && (
-  <>
-    <li
-      class="menu-item relative flex w-full justify-between items-center gap-4 rounded-lg backdrop-blur-sm item-gradient border-gray-200/20 border shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
-      data-item-modal={itemData}
-    >
-      {
-        showImages && image_url && (
+<script define:vars={{ itemId: item?.id }}>
+  // Only add event listener if this is an actual item
+  if (itemId) {
+    document.addEventListener('DOMContentLoaded', () => {
+      // Get references to this specific item and its modal
+      const menuItem = document.getElementById(`item-${itemId}`);
+      const modal = document.getElementById(`item-modal-${itemId}`);
+      
+      if (menuItem && modal && modal instanceof HTMLDialogElement) {
+        menuItem.addEventListener('click', () => {
+          // First set initial state (if not already set by CSS)
+          modal.style.opacity = '0';
+          modal.style.transform = 'scale(0.95) translateY(10px)';
+          
+          // Show the modal
+          modal.showModal();
+          
+          // Force a reflow to ensure the initial state is applied
+          void modal.offsetWidth;
+          
+          // Then remove the inline styles to let CSS transitions take over
+          setTimeout(() => {
+            modal.style.opacity = '';
+            modal.style.transform = '';
+          }, 10);
+        });
+      }
+    });
+  }
+</script>
+
+{
+  item?.type === "item" && (
+    <>
+      <li
+        id={`item-${item.id}`}
+        class="menu-item relative flex w-full justify-between items-center gap-4 rounded-lg backdrop-blur-sm item-gradient border-gray-200/20 border shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
+        data-item-id={item.id}
+        data-item-data={itemData}
+      >
+        {showImages && image_url && (
           <div class="h-full rounded-l-lg overflow-hidden shrink-0">
             <Image
               class="object-cover object-center h-[80px] w-[80px]"
@@ -57,74 +85,76 @@ const itemData = item ? JSON.stringify({
               inferSize
             />
           </div>
-        )
-      }
-      <div class="flex flex-col gap-1 grow py-3">
-        <h3 class="font-bold text-sm">{name}</h3>
-        {showDescriptions && description && <p class="text-xs line-clamp-2 opacity-80">{description}</p>}
-      </div>
-      {
-        showPrices && price !== null && price !== undefined && (
+        )}
+        <div class="flex flex-col gap-1 grow py-3">
+          <h3 class="font-bold text-sm">{name}</h3>
+          {showDescriptions && description && (
+            <p class="text-xs line-clamp-2 opacity-80">{description}</p>
+          )}
+        </div>
+        {showPrices && price !== null && price !== undefined && (
           <div class="flex flex-col gap-2 items-center shrink-0 px-4">
-            <p class="text-sm font-bold text-primary-300">{formatPrice(price)}</p>
+            <p class="text-sm font-bold text-primary-300">
+              {formatPrice(price)}
+            </p>
           </div>
-        )
-      }
-      
-      {/* Subtle decorative gradient */}
-      <div class="absolute bottom-0 left-0 h-1/2 w-full bg-gradient-to-t from-primary-900/20 to-transparent"></div>
-    </li>
-  </>
-)}
+        )}
+      </li>
+      <ItemModal item={item} />
+    </>
+  )
+}
 
-{item?.type === "section" && (
+{
+  item?.type === "section" && (
     <li class="relative w-full overflow-hidden">
       <div class="flex w-full rounded-lg backdrop-blur-sm px-2 shadow-lg">
         <div class="flex flex-col gap-2 grow relative z-10">
           <div class="flex items-center gap-2">
             <h3 class="font-bold text-lg tracking-wide">{name}</h3>
           </div>
-          {showDescriptions && description && (
-            <p class="text-xs opacity-90 pl-3 border-l border-primary-700/50">{description}</p>
-          )}
         </div>
       </div>
-      
-      {/* Decorative elements */}
-      <div class="absolute top-0 right-0 h-full w-1/3 bg-gradient-to-l from-primary-700/20 to-transparent"></div>
-      <div class="absolute -bottom-6 -right-6 h-12 w-12 rounded-full bg-primary-500/20 blur-xl"></div>
-      <div class="absolute -top-6 -left-6 h-12 w-12 rounded-full bg-primary-500/20 blur-xl"></div>
     </li>
-)}
+  )
+}
 
 <style>
   /* Custom gradients for items using CSS variables */
   .item-gradient {
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2));
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.3),
+      rgba(0, 0, 0, 0.2)
+    );
     position: relative;
   }
-  
+
   .item-gradient::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, 
+    background: linear-gradient(
+      to right,
       color-mix(in srgb, var(--primary-950) 30%, transparent),
-      color-mix(in srgb, var(--primary-900) 20%, transparent));
+      color-mix(in srgb, var(--primary-900) 20%, transparent)
+    );
     z-index: -1;
   }
-  
+
   /* Subtle decorative gradient for items */
   .menu-item::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 0;
     left: 0;
     height: 50%;
     width: 100%;
-    background: linear-gradient(to top, 
+    background: linear-gradient(
+      to top,
       color-mix(in srgb, var(--primary-900) 20%, transparent),
-      transparent);
+      transparent
+    );
     pointer-events: none;
   }
 </style>

@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 import vercel from '@astrojs/vercel';
 
+
 // https://astro.build/config
 export default defineConfig({
   // Enable SSR mode
@@ -14,6 +15,5 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
-  adapter: vercel()
-
+  adapter: vercel(),
 });
