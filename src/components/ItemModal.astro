@@ -69,7 +69,8 @@ const { name, price, image_url, description } = item || {};
     </div>
   </div>
 </dialog>
-<script define:vars={{ itemId: item.id }}>
+
+<script define:vars={{ itemId: item.id }} is:inline>
   // Get references to the modal and related elements
   const modal = document.getElementById(`item-modal-${itemId}`);
   const closeButton = modal?.querySelector(".close-modal");

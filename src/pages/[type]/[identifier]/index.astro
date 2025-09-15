@@ -25,16 +25,9 @@ if (type === 'qr') {
 }
 
 const menu = data as IMenu;
-
-// Extract theme properties for the layout
-const styles = menu?.appearance?.style ? JSON.parse(menu.appearance.style) : {};
-const primaryColor = styles?.colors?.primary?.id?.split("-")[0] || "slate";
-const theme = (menu?.appearance?.theme || "light") as "light" | "dark";
-// Get background style and ensure it doesn't repeat
-let backgroundStyle = styles?.background?.style || {};
 ---
 
-<MenuLayout primaryColor={primaryColor} theme={theme} backgroundStyle={backgroundStyle}>
+<MenuLayout menu={menu}>
   <Menu 
     menu={menu}
     account={type === 'qr' ? identifier : undefined}

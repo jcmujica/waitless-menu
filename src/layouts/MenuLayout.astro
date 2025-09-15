@@ -3,19 +3,20 @@ import "../styles/global.css";
 import "../styles/theme.css";
 import { generateThemeVariables } from "@/utils/themeUtils";
 import { ClientRouter } from "astro:transitions";
+import type { IMenu } from "@/types/menu";
 
 interface Props {
-  primaryColor?: string;
-  theme?: "light" | "dark";
-  backgroundStyle?: Record<string, string>;
+  menu?: IMenu;
 }
 
-const {
-  primaryColor = "slate",
-  theme = "light",
-  backgroundStyle = {},
-} = Astro.props;
+const { menu } = Astro.props;
 
+const theme = (menu?.appearance?.theme || "light") as "light" | "dark";
+const styles = menu?.appearance?.style ? JSON.parse(menu.appearance.style) : {};
+
+// Get background style and ensure it doesn't repeat
+let backgroundStyle = styles?.background?.style || {};
+const primaryColor = styles?.colors?.primary?.id?.split("-")[0] || "slate";
 // Generate theme variables based on the selected primary color
 const themeVariables = generateThemeVariables(primaryColor);
 
@@ -31,7 +32,7 @@ const primaryColorStyles = Object.entries(themeVariables)
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content={theme} />
     <ClientRouter />
-    <title>Waitless Menu</title>
+    <title>{menu?.name || "Menu"}</title>
 
     <!-- Inject primary color variables -->
     <style
@@ -50,12 +51,14 @@ const primaryColorStyles = Object.entries(themeVariables)
 
     <slot name="head" />
   </head>
-  <body
-    class={`${theme} h-screen flex flex-col overflow-scroll `}
-    style={{
-      ...backgroundStyle,
-    }}
-  >
-    <slot />
+  <body class="min-h-screen w-full bg-white relative">
+    <main
+      class={`${theme} h-screen flex flex-col overflow-scroll absolute  inset-0 z-0`}
+      style={{
+        ...backgroundStyle,
+      }}
+    >
+      <slot />
+    </main>
   </body>
 </html>

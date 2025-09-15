@@ -9,12 +9,12 @@ const { type, identifier, page: pageId } = Astro.params;
 
 // Determine which fetch method to use based on the route type
 let data, error;
-if (type === 'qr') {
+if (type === "qr") {
   // For QR routes, fetch by account ID
   const response = await fetchMenu(identifier as string);
   data = response.data;
   error = response.error;
-} else if (type === 'v') {
+} else if (type === "v") {
   // For vanity URL routes, fetch by path
   const response = await fetchMenuByPath(identifier as string);
   data = response.data;
@@ -28,20 +28,13 @@ const menu = data as IMenu;
 
 // Find the current page
 const currentPage = menu?.pages?.find((page: MenuPage) => page.id === pageId);
-
-// Extract theme properties for the layout
-const styles = menu?.appearance?.style ? JSON.parse(menu.appearance.style) : {};
-const primaryColor = styles?.colors?.primary?.id?.split("-")[0] || "slate";
-const theme = (menu?.appearance?.theme || "light") as "light" | "dark";
-// Get background style and ensure it doesn't repeat
-let backgroundStyle = styles?.background?.style || {};
 ---
 
-<MenuLayout primaryColor={primaryColor} theme={theme} backgroundStyle={backgroundStyle}>
+<MenuLayout menu={menu}>
   <Menu
     menu={menu}
-    account={type === 'qr' ? identifier : undefined}
-    accountPath={type === 'v' ? identifier : undefined}
+    account={type === "qr" ? identifier : undefined}
+    accountPath={type === "v" ? identifier : undefined}
     pageId={pageId}
     currentPage={currentPage}
     error={error}
