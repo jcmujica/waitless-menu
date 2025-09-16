@@ -16,7 +16,7 @@ const { name, price, image_url, description } = item || {};
   class="modal rounded-lg overflow-hidden shadow-xl"
 >
   <div
-    class="modal-content glassmorphism glassmorphism-modal w-full max-w-md text-white p-0 rounded-lg overflow-hidden relative"
+    class="modal-content w-full max-w-md text-white p-0 rounded-lg overflow-hidden relative"
   >
     <button
       type="button"
@@ -48,7 +48,6 @@ const { name, price, image_url, description } = item || {};
             height={300}
             class="w-full h-full object-cover"
           />
-          <div class="absolute inset-0 bg-gradient-to-t from-primary-950/80 to-transparent" />
         </div>
       )
     }
@@ -142,6 +141,4 @@ const { name, price, image_url, description } = item || {};
   .modal.closing::backdrop {
     opacity: 0;
   }
-
-  /* Modal content styling is now handled by glassmorphism classes */
 </style>

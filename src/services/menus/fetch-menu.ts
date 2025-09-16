@@ -15,7 +15,9 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
         main_page_id,
         menu_appearances (
           theme,
-          style
+          style,
+          custom_bg_img,
+          custom_bg_props
         ),
         menu_settings (
           show_images,
@@ -70,7 +72,6 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
       return { error: itemsError }
     }
 
-    console.log(JSON.stringify(itemsData, null, 2))
     // 4. Group items by page
     const itemsByPageId = (itemsData || []).reduce<Record<string, MenuItem[]>>((acc, item: any) => {
       const pageId = item.page_id
@@ -128,6 +129,8 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
       appearance: {
         theme: appearance?.theme || 'light',
         style: appearance?.style || null,
+        custom_bg_img: appearance?.custom_bg_img || null,
+        custom_bg_props: appearance?.custom_bg_props || null
       },
       settings: {
         showImages: settings?.show_images ?? true,

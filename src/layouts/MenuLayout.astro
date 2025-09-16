@@ -9,26 +9,58 @@ interface Props {
   menu?: IMenu;
 }
 
+const parseObject = (obj: any) => {
+  try {
+    return JSON.parse(obj);
+  } catch (e) {
+    return obj;
+  }
+};
+
 const { menu } = Astro.props;
 
 const theme = (menu?.appearance?.theme || "light") as "light" | "dark";
-const styles = menu?.appearance?.style ? JSON.parse(menu.appearance.style) : {};
+const standardStyles = menu?.appearance?.style
+  ? parseObject(menu.appearance.style)
+  : {};
+const customBackground = {
+  img: menu?.appearance?.custom_bg_img,
+  props: menu?.appearance?.custom_bg_props
+    ? parseObject(menu.appearance.custom_bg_props)
+    : {},
+};
+const hasCustomBackground =
+  customBackground?.img && customBackground?.props?.mode !== "none";
 
 // Get background style and ensure it doesn't repeat
-let background = styles?.background || {};
-console.log({ background });
-let backgroundStyle = background?.style || {};
-const primaryColor = styles?.colors?.primary?.id?.split("-")[0] || "slate";
+let standardBackground = standardStyles?.background || {};
+let standardBackgroundStyle = standardBackground?.style || {};
+const primaryColor =
+  standardStyles?.colors?.primary?.id?.split("-")[0] || "slate";
 // Generate theme variables based on the selected primary color
 const themeVariables = generateThemeVariables(primaryColor);
 
+console.log({
+  standardBackground: standardBackground,
+  customBackground: customBackground,
+});
+console.log(theme);
+
+const backgroundStyles = hasCustomBackground
+  ? {
+      background: `url(${customBackground.img})`,
+      backgroundSize: customBackground.props?.size || "cover",
+      backgroundPosition: customBackground.props?.position || "center",
+      backgroundRepeat: customBackground.props?.repeat || "no-repeat",
+    }
+  : standardBackgroundStyle;
 // Create a style string for the primary color variables
 const primaryColorStyles = Object.entries(themeVariables)
   .map(([key, value]) => `${key}: ${value};`)
   .join("\n        ");
 ---
 
-<html lang="es" class={theme === "dark" ? "bg-black" : "bg-white"}>
+<html lang="es" class={theme === "dark" ? "dark-mode" : "light-mode"}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -45,22 +77,71 @@ const primaryColorStyles = Object.entries(themeVariables)
     `}
     ></style>
 
-    <!-- Force the theme mode regardless of user preferences -->
-    <script define:vars={{ theme }} is:inline>
-      // Force the theme mode and prevent system preferences from overriding it
-      document.documentElement.classList.toggle("dark", theme === "dark");
-    </script>
-
     <slot name="head" />
   </head>
   <body class="min-h-screen w-full bg-white relative" id="root">
     <main
       class={`${theme} h-screen flex flex-col overflow-scroll absolute  inset-0 z-0`}
       style={{
-        ...backgroundStyle,
+        ...backgroundStyles,
       }}
     >
       <slot />
     </main>
   </body>
 </html>
+
+<style>
+  html {
+    --radius: 0.625rem;
+  }
+  .dark-mode {
+    --background: oklch(14.5% 0 0);
+    --foreground: oklch(98.5% 0 0);
+    --card: oklch(20.5% 0 0);
+    --card-foreground: oklch(98.5% 0 0);
+    --popover: oklch(26.9% 0 0);
+    --popover-foreground: oklch(98.5% 0 0);
+    --muted: oklch(26.9% 0 0);
+    --muted-foreground: oklch(70.8% 0 0);
+    --accent: oklch(37.1% 0 0);
+    --accent-foreground: oklch(98.5% 0 0);
+    --destructive: oklch(70.4% 0.191 22.216);
+    --border: oklch(100% 0 0 / 0.1);
+    --input: oklch(100% 0 0 / 0.15);
+    --ring: oklch(55.6% 0 0);
+    --surface: oklch(20% 0 0);
+    --surface-foreground: oklch(70.8% 0 0);
+    --code: var(--surface);
+    --code-foreground: var(--surface-foreground);
+    --code-highlight: oklch(27% 0 0);
+    --code-number: oklch(72% 0 0);
+    --selection: oklch(92.2% 0 0);
+    --selection-foreground: oklch(20.5% 0 0);
+  }
+  .light-mode {
+    /* Default light theme */
+    --background: oklch(100% 0 0);
+    --foreground: oklch(14.5% 0 0);
+    --card: oklch(100% 0 0);
+    --card-foreground: oklch(14.5% 0 0);
+    --popover: oklch(100% 0 0);
+    --popover-foreground: oklch(14.5% 0 0);
+    --muted: oklch(97% 0 0);
+    --muted-foreground: oklch(55.6% 0 0);
+    --accent: oklch(97% 0 0);
+    --accent-foreground: oklch(20.5% 0 0);
+    --destructive: oklch(57.7% 0.245 27.325);
+    --border: oklch(92.2% 0 0);
+    --input: oklch(92.2% 0 0);
+    --ring: oklch(70.8% 0 0);
+    --surface: oklch(98% 0 0);
+    --surface-foreground: var(--foreground);
+    --code: var(--surface);
+    --code-foreground: var(--surface-foreground);
+    --code-highlight: oklch(96% 0 0);
+    --code-number: oklch(56% 0 0);
+    --selection: oklch(14.5% 0 0);
+    --selection-foreground: oklch(100% 0 0);
+  }
+</style>

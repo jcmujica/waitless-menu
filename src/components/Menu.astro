@@ -3,24 +3,26 @@ import type { IMenu, MenuPage } from "@/types/menu";
 import Page from "./Page.astro";
 import Footer from "./Footer.astro";
 import Home from "./Home.astro";
-import Navigation from "./Navigation.astro";
 
 interface Props {
   menu: IMenu;
   currentPage?: MenuPage;
   account?: string;
   accountPath?: string;
-  pageId?: string;
   error?: Error | unknown;
 }
 
-const { menu, currentPage, account, accountPath, pageId, error } = Astro.props;
+const { menu, currentPage: currentPageProp, account, accountPath, error } = Astro.props;
 
+const isSinglePage = menu?.type === "single-page";
+const isMultiPage = menu?.type === "multi-page";
+let currentPage =
+  currentPageProp ||
+  (isSinglePage &&
+    menu?.pages?.find((page: MenuPage) => page.id === menu?.mainPageId));
 // Determine the route type based on available params
 const isQrRoute = !!account;
-const isPageView = !!pageId || !!currentPage;
-const isMultiPage = menu?.type === "multi-page";
-const isSinglePage = menu?.type === "single-page";
+const isPageView = !!currentPage || (isSinglePage && !menu?.mainPageId);
 
 // Determine the route type for the dynamic routing
 const routeType = isQrRoute ? "qr" : "v";
@@ -29,23 +31,10 @@ const identifier = isQrRoute ? (account as string) : (accountPath as string);
 // Generate the base URL for navigation
 const baseUrl = identifier && routeType ? `/${routeType}/${identifier}` : "";
 
-// Extract all sections from all pages for single-page menu
-const allSections =
-  menu?.pages?.flatMap((page: MenuPage) => {
-    return page.items
-      .filter((item) => item.type === "section")
-      .map((section) => ({
-        id: `section-${section.id}`,
-        name: section.name,
-        pageId: page.id,
-      }));
-  }) || [];
-
 const isPageNotFound = isPageView && !currentPage && menu;
 const shouldRedirect = isPageNotFound || error;
 const shouldShowHome = isMultiPage && !isPageView;
 const shouldShowPage = isPageView && currentPage;
-const shouldShowSinglePage = isSinglePage && !isPageView;
 ---
 
 <Fragment>
@@ -78,24 +67,6 @@ const shouldShowSinglePage = isSinglePage && !isPageView;
                 items={currentPage.items}
                 menu={menu}
               />
-            )}
-
-            {/* Single-page layout */}
-            {shouldShowSinglePage && (
-              <>
-                {/* Navigation bar for single-page layout */}
-                <Navigation sections={allSections} />
-
-                {menu.pages.map((page: MenuPage) => (
-                  <Page
-                    baseUrl={baseUrl}
-                    id={page.id}
-                    items={page.items}
-                    menu={menu}
-                    showNavigation={false}
-                  />
-                ))}
-              </>
             )}
             <Footer />
           </>

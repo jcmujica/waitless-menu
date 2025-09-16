@@ -35,7 +35,6 @@ const currentPage = menu?.pages?.find((page: MenuPage) => page.id === pageId);
     menu={menu}
     account={type === "qr" ? identifier : undefined}
     accountPath={type === "v" ? identifier : undefined}
-    pageId={pageId}
     currentPage={currentPage}
     error={error}
   />

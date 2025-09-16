@@ -1,78 +1,3 @@
-/* Base theme variables */
-:root {
-  /* Border radius */
-  --radius: 0.625rem;
-  
-  /* Default light theme */
-  --background: oklch(100% 0 0);
-  --foreground: oklch(14.5% 0 0);
-  --card: oklch(100% 0 0);
-  --card-foreground: oklch(14.5% 0 0);
-  --popover: oklch(100% 0 0);
-  --popover-foreground: oklch(14.5% 0 0);
-  --muted: oklch(97% 0 0);
-  --muted-foreground: oklch(55.6% 0 0);
-  --accent: oklch(97% 0 0);
-  --accent-foreground: oklch(20.5% 0 0);
-  --destructive: oklch(57.7% 0.245 27.325);
-  --border: oklch(92.2% 0 0);
-  --input: oklch(92.2% 0 0);
-  --ring: oklch(70.8% 0 0);
-  --surface: oklch(98% 0 0);
-  --surface-foreground: var(--foreground);
-  --code: var(--surface);
-  --code-foreground: var(--surface-foreground);
-  --code-highlight: oklch(96% 0 0);
-  --code-number: oklch(56% 0 0);
-  --selection: oklch(14.5% 0 0);
-  --selection-foreground: oklch(100% 0 0);
-  
-  /* Primary color variables will be set dynamically */
-  /* These will be injected via the MenuLayout component */
-}
-
-/* Dark theme */
-.dark {
-  --background: oklch(14.5% 0 0);
-  --foreground: oklch(98.5% 0 0);
-  --card: oklch(20.5% 0 0);
-  --card-foreground: oklch(98.5% 0 0);
-  --popover: oklch(26.9% 0 0);
-  --popover-foreground: oklch(98.5% 0 0);
-  --muted: oklch(26.9% 0 0);
-  --muted-foreground: oklch(70.8% 0 0);
-  --accent: oklch(37.1% 0 0);
-  --accent-foreground: oklch(98.5% 0 0);
-  --destructive: oklch(70.4% 0.191 22.216);
-  --border: oklch(100% 0 0 / 0.1);
-  --input: oklch(100% 0 0 / 0.15);
-  --ring: oklch(55.6% 0 0);
-  --surface: oklch(20% 0 0);
-  --surface-foreground: oklch(70.8% 0 0);
-  --code: var(--surface);
-  --code-foreground: var(--surface-foreground);
-  --code-highlight: oklch(27% 0 0);
-  --code-number: oklch(72% 0 0);
-  --selection: oklch(92.2% 0 0);
-  --selection-foreground: oklch(20.5% 0 0);
-  
-  /* Primary color variables will be set dynamically */
-  /* These will be injected via the MenuLayout component */
-}
-
-/* Prevent system dark mode from overriding our forced theme */
-@media (prefers-color-scheme: dark) {
-  :root:not(.dark) {
-    color-scheme: light;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  :root.dark {
-    color-scheme: dark;
-  }
-}
-
 /* Utility classes for accessing theme colors */
 .bg-primary-50 {
   background-color: var(--primary-50);
@@ -195,22 +120,6 @@
   border-color: var(--primary-900);
 }
 
-/* Light/dark adaptive classes */
-.light-bg-white {
-  background-color: white;
-}
-
-.dark .light-bg-white {
-  background-color: #1e1e1e;
-}
-
-.light-text-dark {
-  color: #1e1e1e;
-}
-
-.dark .light-text-dark {
-  color: white;
-}
 
 /* Common styles */
 body {

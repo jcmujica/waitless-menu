@@ -3,7 +3,7 @@ import { Image } from "astro:assets";
 import type { MenuItem } from "@/types/menu";
 import ItemModal from "./ItemModal.astro";
 import { formatPrice } from "@/utils/formatPrice";
-import Section from './Section.astro'
+import Section from "./Section.astro";
 
 // Define the props for the Item component
 interface Props {
@@ -72,7 +72,7 @@ const itemData = item
     <>
       <li
         id={`item-${item.id}`}
-        class="menu-item glassmorphism-item relative flex w-full justify-between items-center gap-4 rounded-lg border-gray-200/10 border shadow-sm overflow-hidden cursor-pointer"
+        class="menu-item relative flex w-full justify-between items-center gap-4 rounded-lg border shadow-sm overflow-hidden cursor-pointer"
         data-item-id={item.id}
         data-item-data={itemData}
       >
@@ -96,9 +96,7 @@ const itemData = item
         </div>
         {showPrices && price !== null && price !== undefined && (
           <div class="flex flex-col gap-2 items-center shrink-0 pr-4">
-            <p class="text-sm font-bold dark:text-primary-300 text-primary-700">
-              {formatPrice(price)}
-            </p>
+            <p class="text-sm font-bold">{formatPrice(price)}</p>
           </div>
         )}
       </li>
@@ -107,43 +105,18 @@ const itemData = item
   )
 }
 
-{
-  item?.type === "section" && (
-   <Section name={item.name} />
-  )
-}
+{item?.type === "section" && <Section name={item.name} />}
 
 <style>
-  /* Subtle decorative gradient for items */
-  /* Dark mode gradient */
-  .dark .menu-item::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 50%;
-    width: 100%;
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--primary-900) 20%, transparent),
-      transparent
-    );
-    pointer-events: none;
+  :global(.light-mode) {
+    .menu-item {
+      background-color: var(--pink-50);
+    }
   }
-  
-  /* Light mode gradient */
-  :root:not(.dark) .menu-item::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 50%;
-    width: 100%;
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--primary-200) 30%, transparent),
-      transparent
-    );
-    pointer-events: none;
+
+  :global(.dark-mode) {
+    .menu-item {
+      background-color: var(--pink-900);
+    }
   }
 </style>

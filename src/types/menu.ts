@@ -55,6 +55,8 @@ export interface MenuColor {
 export interface MenuAppearance {
   theme: string
   style: string | null
+  custom_bg_img: string | null
+  custom_bg_props: string | null
 }
 
 export interface ParsedMenuAppearanceStyle {
