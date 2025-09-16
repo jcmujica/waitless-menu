@@ -1,4 +1,4 @@
-import { TAILWIND_COLORS } from "../constants/colors";
+import { TAILWIND_COLORS } from "../constants/colors"
 
 /**
  * Generate CSS variables for a theme based on the primary color
@@ -7,35 +7,24 @@ import { TAILWIND_COLORS } from "../constants/colors";
  */
 export function generateThemeVariables(primaryColor: string) {
   // Get the color shades from Tailwind colors
-  const colorPalette = TAILWIND_COLORS[primaryColor as keyof typeof TAILWIND_COLORS] || TAILWIND_COLORS.slate;
-  
+  const colorPalette = TAILWIND_COLORS[primaryColor as keyof typeof TAILWIND_COLORS] || TAILWIND_COLORS.slate
+
   // Generate CSS variables for each shade
-  const cssVars: Record<string, string> = {};
-  
-  // Add each color shade as a CSS variable
+  const cssVars: Record<string, string> = {}
+
+  // Add each color shade as a CSS variable and its RGB version
   Object.entries(colorPalette).forEach(([shade, value]) => {
-    cssVars[`--primary-${shade}`] = value;
-  });
+    cssVars[`--primary-${shade}`] = value
+    cssVars[`--primary-${shade}-rgb`] = hexToRgb(value)
+  })
   
-  return cssVars;
+  return cssVars
 }
 
-/**
- * Convert theme variables to CSS custom properties string
- * @param variables The theme variables object
- * @returns CSS custom properties as a string
- */
-export function themeVariablesToCss(variables: Record<string, string>): string {
-  return Object.entries(variables)
-    .map(([key, value]) => `${key}: ${value};`)
-    .join('\n  ');
-}
+export function hexToRgb(hex: string): string {
+  const match = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i)
+  if (!match) return "0, 0, 0" // Default to black if invalid hex
 
-/**
- * Generate inline style object for HTML elements
- * @param variables The theme variables object
- * @returns An object that can be used with the style attribute
- */
-export function themeVariablesToInlineStyle(variables: Record<string, string>): Record<string, string> {
-  return variables;
+  const [, r, g, b] = match
+  return `${parseInt(r, 16)}, ${parseInt(g, 16)}, ${parseInt(b, 16)}`
 }

@@ -72,7 +72,7 @@ const itemData = item
     <>
       <li
         id={`item-${item.id}`}
-        class="menu-item relative flex w-full justify-between items-center gap-4 rounded-lg border shadow-sm overflow-hidden cursor-pointer"
+        class="glassmorphism tint menu-item relative flex w-full justify-between items-center gap-4 rounded-lg border shadow-sm overflow-hidden cursor-pointer"
         data-item-id={item.id}
         data-item-data={itemData}
       >
@@ -96,7 +96,7 @@ const itemData = item
         </div>
         {showPrices && price !== null && price !== undefined && (
           <div class="flex flex-col gap-2 items-center shrink-0 pr-4">
-            <p class="text-sm font-bold">{formatPrice(price)}</p>
+            <p class="price text-sm font-bold">{formatPrice(price)}</p>
           </div>
         )}
       </li>
@@ -110,13 +110,23 @@ const itemData = item
 <style>
   :global(.light-mode) {
     .menu-item {
-      background-color: var(--pink-50);
+      background-color: var(--neutral-50);
+      border: 1px solid var(--glass-border);
+    }
+
+    .price {
+      color: var(--primary-900);
     }
   }
 
   :global(.dark-mode) {
     .menu-item {
-      background-color: var(--pink-900);
+      background-color: var(--neutral-900);
+      border: 1px solid var(--glass-border);
+    }
+
+    .price {
+      color: var(--primary-100);
     }
   }
 </style>

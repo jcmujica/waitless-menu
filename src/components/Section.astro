@@ -6,8 +6,8 @@ interface Props {
 const { name } = Astro.props;
 ---
 
-<li class="relative w-full overflow-hidden">
-  <div class="flex w-full rounded-lg backdrop-blur-sm px-2 shadow-lg">
+<li class="section-nav-item relative w-full overflow-hidden rounded-lg">
+  <div class="flex w-full rounded-lg backdrop-blur-sm px-2 py-4 shadow-lg">
     <div class="flex flex-col gap-2 grow relative z-10">
       <div class="flex items-center gap-2">
         <h3 class="font-bold text-lg tracking-wide">{name}</h3>
@@ -15,3 +15,21 @@ const { name } = Astro.props;
     </div>
   </div>
 </li>
+
+<style>
+  :global(.light-mode) {
+    .section-nav-item {
+      background-color: var(--neutral-50);
+      border: 1px solid var(--glass-border);
+    }
+
+  }
+
+  :global(.dark-mode) {
+    .section-nav-item {
+      background-color: var(--neutral-900);
+      border: 1px solid var(--glass-border);
+    }
+
+  }
+</style>

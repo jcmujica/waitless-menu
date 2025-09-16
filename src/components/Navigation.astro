@@ -14,7 +14,7 @@ const { sections = [] } = Astro.props;
 
 {
   sections.length > 0 && (
-    <div class="sticky top-0 z-10 w-full">
+    <div class="glassmorphism border-b border-[var(--glass-border)] tint sticky top-0 z-10 w-full">
       <nav class="">
         <div class="overflow-x-auto scrollbar-hide" id="nav-container">
           <ul class="flex whitespace-nowrap py-3 px-3 gap-3 items-center">
@@ -36,7 +36,21 @@ const { sections = [] } = Astro.props;
   )
 }
 
-<style></style>
+<style>
+  :global(.light-mode) {
+    .active {
+      border: 2px solid var(--primary-500);
+      color: var(--primary-900);
+    }
+  }
+
+  :global(.dark-mode) {
+    .active {
+      border: 2px solid var(--primary-500);
+      color: var(--primary-100);
+    }
+  }
+</style>
 
 <script is:inline>
   document.addEventListener("DOMContentLoaded", () => {
