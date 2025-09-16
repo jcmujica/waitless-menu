@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+@layer base {
+  button {
+    @apply appearance-none outline-none border-none bg-transparent p-0 m-0 shadow-none;
+  }
+
+  button:focus {
+    @apply outline-none shadow-none;
+  }
+
+  button::-moz-focus-inner {
+    border: 0;
+  }
+}
+
 /* Glassmorphism effect for components */
 .glassmorphism {
   background: linear-gradient(
