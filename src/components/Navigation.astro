@@ -96,86 +96,78 @@ const { sections = [] } = Astro.props;
 <script is:inline>
   document.addEventListener("DOMContentLoaded", () => {
     const navContainer = document.getElementById("nav-container");
-    const sectionNavItems = Array.from(
+    const navButtons = Array.from(
       document.querySelectorAll(".section-nav-item"),
     );
     const sections = Array.from(document.querySelectorAll('[id^="section-"]'));
 
-    if (!sections.length || !sectionNavItems.length || !navContainer) return;
+    if (!sections.length || !navButtons.length || !navContainer) return;
 
-    // Map sectionId -> nav button
     const navByTarget = new Map();
-    sectionNavItems.forEach((btn, i) => {
+    let userClicking = false;
+
+    navButtons.forEach((btn, i) => {
       const target = btn.dataset.sectionTarget;
       if (target) navByTarget.set(target, btn);
       if (!btn.id) btn.id = `section-nav-item-${i}`;
 
-      // Click: scroll body to section, let observer handle active state
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        const targetId = btn.dataset.sectionTarget;
-        const targetEl = document.getElementById(targetId);
-        if (!targetEl) return;
-        targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      btn.addEventListener("click", () => {
+        const section = document.getElementById(target);
+        if (!section) return;
+        userClicking = true;
+        section.scrollIntoView({ behavior: "smooth", inline: "start" });
+
+        // Reset the flag after the smooth scroll is likely finished
+        setTimeout(() => (userClicking = false), 800);
       });
     });
 
     function clearActive() {
-      sectionNavItems.forEach((b) => b.classList.remove("active"));
+      navButtons.forEach((b) => b.classList.remove("active"));
     }
 
-    function scrollNavItemIntoCenter(btn) {
-      const navRect = navContainer.getBoundingClientRect();
-      const btnRect = btn.getBoundingClientRect();
-      const offset =
-        btnRect.left - navRect.left - (navRect.width / 2 - btnRect.width / 2);
-      navContainer.scrollBy({ left: offset, behavior: "smooth" });
-    }
+    function setActive(sectionId, fromScroll = false) {
+  const btn = navByTarget.get(sectionId);
+  if (!btn) return;
+  clearActive();
+  btn.classList.add("active");
 
-    function setActive(sectionId) {
-      const btn = navByTarget.get(sectionId);
-      if (!btn) return;
-      clearActive();
-      btn.classList.add("active");
-      scrollNavItemIntoCenter(btn);
-    }
+  if (fromScroll && !userClicking) {
+    const containerRect = navContainer.getBoundingClientRect();
+    const btnRect = btn.getBoundingClientRect();
 
-    // Observer picks most visible section
+    const fullyVisible =
+      btnRect.left >= containerRect.left &&
+      btnRect.right <= containerRect.right;
+
+    if (!fullyVisible) {
+      // Instant scroll when triggered by normal scrolling
+      btn.scrollIntoView({ behavior: "auto", inline: "center" });
+    }
+  }
+}
+
+
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries.filter((e) => e.isIntersecting);
         if (!visible.length) return;
-        const best = visible.reduce((a, b) =>
-          a.intersectionRatio > b.intersectionRatio ? a : b,
-        );
-        setActive(best.target.id);
+
+        // Pick the section closest to the top (lowest boundingClientRect.top)
+        const topMost = visible.reduce((prev, curr) => {
+          return prev.boundingClientRect.top < curr.boundingClientRect.top
+            ? prev
+            : curr;
+        });
+
+        setActive(topMost.target.id, true);
       },
       {
-        root: null,
-        rootMargin: "-20% 0px -20% 0px",
-        threshold: [0, 0.25, 0.5, 0.75, 1],
+        rootMargin: "0px 0px -80% 0px",
+        threshold: 0,
       },
     );
 
     sections.forEach((s) => observer.observe(s));
-
-    // Initial active
-    requestAnimationFrame(() => {
-      let best = null;
-      let bestVisible = -1;
-      const vh = window.innerHeight || document.documentElement.clientHeight;
-      sections.forEach((sec) => {
-        const r = sec.getBoundingClientRect();
-        const visible = Math.max(
-          0,
-          Math.min(r.bottom, vh) - Math.max(r.top, 0),
-        );
-        if (visible > bestVisible) {
-          bestVisible = visible;
-          best = sec;
-        }
-      });
-      if (best) setActive(best.id);
-    });
   });
 </script>
