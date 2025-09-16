@@ -15,7 +15,9 @@ const theme = (menu?.appearance?.theme || "light") as "light" | "dark";
 const styles = menu?.appearance?.style ? JSON.parse(menu.appearance.style) : {};
 
 // Get background style and ensure it doesn't repeat
-let backgroundStyle = styles?.background?.style || {};
+let background = styles?.background || {};
+console.log({ background });
+let backgroundStyle = background?.style || {};
 const primaryColor = styles?.colors?.primary?.id?.split("-")[0] || "slate";
 // Generate theme variables based on the selected primary color
 const themeVariables = generateThemeVariables(primaryColor);

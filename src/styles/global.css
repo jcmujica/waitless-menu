@@ -15,7 +15,8 @@
 }
 
 /* Glassmorphism effect for components */
-.glassmorphism {
+/* Dark mode glassmorphism (default) */
+.dark .glassmorphism, .glassmorphism.dark-glass {
   background: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 0.3),
@@ -30,8 +31,24 @@
   position: relative;
 }
 
-/* Primary color tint overlay for glassmorphism */
-.glassmorphism::before {
+/* Light mode glassmorphism */
+:root:not(.dark) .glassmorphism:not(.dark-glass) {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.7),
+    rgba(255, 255, 255, 0.5)
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  color: var(--foreground);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Primary color tint overlay for dark mode glassmorphism */
+.dark .glassmorphism::before, .glassmorphism.dark-glass::before {
   content: '';
   position: absolute;
   inset: 0; /* Use inset instead of top/left/width/height */
@@ -44,27 +61,62 @@
   pointer-events: none;
 }
 
+/* Primary color tint overlay for light mode glassmorphism */
+:root:not(.dark) .glassmorphism:not(.dark-glass)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--primary-100) 50%, transparent),
+    color-mix(in srgb, var(--primary-200) 30%, transparent)
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
 /* Text colors for better contrast on dark background */
-.glassmorphism h3 {
+.dark .glassmorphism h3, .glassmorphism.dark-glass h3 {
   color: white;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.glassmorphism p {
+.dark .glassmorphism p, .glassmorphism.dark-glass p {
   color: rgba(255, 255, 255, 0.8);
 }
 
-.glassmorphism h4 {
+.dark .glassmorphism h4, .glassmorphism.dark-glass h4 {
   color: var(--primary-300);
 }
 
+/* Text colors for better contrast on light background */
+:root:not(.dark) .glassmorphism:not(.dark-glass) h3 {
+  color: var(--foreground);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+:root:not(.dark) .glassmorphism:not(.dark-glass) p {
+  color: var(--foreground);
+}
+
+:root:not(.dark) .glassmorphism:not(.dark-glass) h4 {
+  color: var(--primary-700);
+}
+
 /* Glow text effect */
-.glow-text {
+/* Dark mode glow */
+.dark .glow-text, .glow-text.dark-glow {
   text-shadow: 0 0 10px var(--primary-500);
 }
 
+/* Light mode glow - more subtle */
+:root:not(.dark) .glow-text:not(.dark-glow) {
+  text-shadow: 0 0 8px var(--primary-400);
+}
+
 /* Glass panel variants */
-.glass-panel {
+/* Dark mode glass panels */
+.dark .glass-panel, .glass-panel.dark-glass {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -72,10 +124,31 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Light mode glass panels */
+:root:not(.dark) .glass-panel:not(.dark-glass) {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark glass panel - always dark regardless of theme */
 .glass-panel-dark {
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 0.5rem;
   border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Light glass panel - always light regardless of theme */
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }

@@ -74,7 +74,7 @@ const navigationSections =
             id={sectionId}
             class={item.type === "section" ? "scroll-mt-16 not-first:mt-4" : ""}
           >
-            <Item client:load item={item} settings={settings} />
+            <Item item={item} settings={settings} />
           </div>
         );
       })

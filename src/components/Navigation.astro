@@ -46,15 +46,26 @@ const { sections = [] } = Astro.props;
     display: none; /* Chrome, Safari and Opera */
   }
 
-  .section-nav-item {
+  /* Dark mode navigation item */
+  .dark .section-nav-item {
     background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.8);
     position: relative;
     overflow: hidden;
   }
+  
+  /* Light mode navigation item */
+  :root:not(.dark) .section-nav-item {
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.8);
+    position: relative;
+    overflow: hidden;
+  }
 
-  .section-nav-glassmorphism::before {
+  /* Dark mode glassmorphism effect */
+  .dark .section-nav-glassmorphism::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -65,8 +76,22 @@ const { sections = [] } = Astro.props;
     );
     opacity: 0.5;
   }
+  
+  /* Light mode glassmorphism effect */
+  :root:not(.dark) .section-nav-glassmorphism::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.05),
+      transparent
+    );
+    opacity: 0.5;
+  }
 
-  .nav-index {
+  /* Dark mode nav index */
+  .dark .nav-index {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -76,8 +101,21 @@ const { sections = [] } = Astro.props;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
   }
+  
+  /* Light mode nav index */
+  :root:not(.dark) .nav-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+  }
 
-  .section-nav-item.active {
+  /* Dark mode active state */
+  .dark .section-nav-item.active {
     color: var(--primary-300);
     background-color: rgba(255, 255, 255, 0.1);
     border-color: var(--primary-500);
@@ -87,9 +125,25 @@ const { sections = [] } = Astro.props;
       0 0 0 1px var(--primary-700);
   }
 
-  .section-nav-item.active .nav-index {
+  .dark .section-nav-item.active .nav-index {
     background-color: var(--primary-700);
     color: var(--primary-300);
+  }
+  
+  /* Light mode active state */
+  :root:not(.dark) .section-nav-item.active {
+    color: var(--primary-700);
+    background-color: rgba(0, 0, 0, 0.05);
+    border-color: var(--primary-500);
+    transform: translateY(-2px);
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.1),
+      0 0 0 1px var(--primary-400);
+  }
+
+  :root:not(.dark) .section-nav-item.active .nav-index {
+    background-color: var(--primary-200);
+    color: var(--primary-700);
   }
 </style>
 

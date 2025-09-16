@@ -96,7 +96,7 @@ const itemData = item
         </div>
         {showPrices && price !== null && price !== undefined && (
           <div class="flex flex-col gap-2 items-center shrink-0 pr-4">
-            <p class="text-sm font-bold text-primary-300">
+            <p class="text-sm font-bold dark:text-primary-300 text-primary-700">
               {formatPrice(price)}
             </p>
           </div>
@@ -115,7 +115,8 @@ const itemData = item
 
 <style>
   /* Subtle decorative gradient for items */
-  .menu-item::after {
+  /* Dark mode gradient */
+  .dark .menu-item::after {
     content: "";
     position: absolute;
     bottom: 0;
@@ -125,6 +126,22 @@ const itemData = item
     background: linear-gradient(
       to top,
       color-mix(in srgb, var(--primary-900) 20%, transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
+  
+  /* Light mode gradient */
+  :root:not(.dark) .menu-item::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 50%;
+    width: 100%;
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--primary-200) 30%, transparent),
       transparent
     );
     pointer-events: none;
