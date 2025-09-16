@@ -478,3 +478,27 @@ html {
   );
   pointer-events: none;
 }
+
+.tint-soft::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-200-rgb), 0.1),
+    rgba(var(--primary-200-rgb), 0.05)
+  );
+  pointer-events: none;
+}
+
+.tint-strong::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-900-rgb), 0.1),
+    rgba(var(--primary-900-rgb), 0.05)
+  );
+  pointer-events: none;
+}

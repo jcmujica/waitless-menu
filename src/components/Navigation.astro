@@ -14,7 +14,7 @@ const { sections = [] } = Astro.props;
 
 {
   sections.length > 0 && (
-    <div class="glassmorphism border-b border-[var(--glass-border)] tint sticky top-0 z-10 w-full">
+    <div class="glassmorphism border-b border-[var(--glass-border)] tint-soft sticky top-0 z-10 w-full">
       <nav class="">
         <div class="overflow-x-auto scrollbar-hide" id="nav-container">
           <ul class="flex whitespace-nowrap py-3 px-3 gap-3 items-center">
@@ -53,7 +53,13 @@ const { sections = [] } = Astro.props;
 </style>
 
 <script is:inline>
-  document.addEventListener("DOMContentLoaded", () => {
+  // Function to initialize navigation
+  function initializeNavigation() {
+    // Clean up any previous observers to avoid duplicates
+    if (window.currentNavObserver) {
+      window.currentNavObserver.disconnect();
+    }
+    
     const navContainer = document.getElementById("nav-container");
     const navButtons = Array.from(
       document.querySelectorAll(".section-nav-item"),
@@ -65,7 +71,20 @@ const { sections = [] } = Astro.props;
     const navByTarget = new Map();
     let userClicking = false;
 
-    navButtons.forEach((btn, i) => {
+    // Remove any previous event listeners
+    navButtons.forEach((btn) => {
+      const newBtn = btn.cloneNode(true);
+      if (btn.parentNode) {
+        btn.parentNode.replaceChild(newBtn, btn);
+      }
+    });
+
+    // Get fresh references after replacing
+    const freshNavButtons = Array.from(
+      document.querySelectorAll(".section-nav-item"),
+    );
+
+    freshNavButtons.forEach((btn, i) => {
       const target = btn.dataset.sectionTarget;
       if (target) navByTarget.set(target, btn);
       if (!btn.id) btn.id = `section-nav-item-${i}`;
@@ -82,7 +101,7 @@ const { sections = [] } = Astro.props;
     });
 
     function clearActive() {
-      navButtons.forEach((b) => b.classList.remove("active"));
+      freshNavButtons.forEach((b) => b.classList.remove("active"));
     }
 
     function setActive(sectionId, fromScroll = false) {
@@ -126,6 +145,16 @@ const { sections = [] } = Astro.props;
       },
     );
 
+    // Store the observer in a global variable so we can disconnect it later
+    window.currentNavObserver = observer;
+
     sections.forEach((s) => observer.observe(s));
-  });
+  }
+
+  // Run on initial page load
+  document.addEventListener("DOMContentLoaded", initializeNavigation);
+
+  // Also run when the page content changes (e.g., after navigation)
+  document.addEventListener("astro:page-load", initializeNavigation);
+  document.addEventListener("astro:after-swap", initializeNavigation);
 </script>
