@@ -7,7 +7,7 @@ const { name } = Astro.props;
 ---
 
 <li class="glassmorphism tint-strong section-nav-item relative w-full overflow-hidden rounded-lg">
-  <div class="flex w-full rounded-lg backdrop-blur-sm px-2 py-4 shadow-lg">
+  <div class="flex w-full rounded-lg backdrop-blur-sm px-4 py-2 shadow-lg">
     <div class="flex flex-col gap-2 grow relative z-10">
       <div class="flex items-center gap-2">
         <h3 class="font-bold text-lg tracking-wide">{name}</h3>
@@ -19,7 +19,8 @@ const { name } = Astro.props;
 <style>
   :global(.light-mode) {
     .section-nav-item {
-      background-color: var(--neutral-50);
+      background-color: var(--primary-50);
+      color: var(--primary-900);
       border: 1px solid var(--glass-border);
     }
 
@@ -27,7 +28,8 @@ const { name } = Astro.props;
 
   :global(.dark-mode) {
     .section-nav-item {
-      background-color: var(--neutral-900);
+      background-color: var(--primary-900);
+      color: var(--primary-100);
       border: 1px solid var(--glass-border);
     }
 
