@@ -13,10 +13,10 @@ const { name, price, image_url, description } = item || {};
 
 <dialog
   id={`item-modal-${item.id}`}
-  class="modal rounded-lg overflow-hidden shadow-xl"
+  class="modal tint-soft rounded-lg overflow-hidden shadow-xl"
 >
   <div
-    class="modal-content w-full max-w-md text-white p-0 rounded-lg overflow-hidden relative"
+    class="w-full max-w-md text-white p-0 rounded-lg overflow-hidden relative"
   >
     <button
       type="button"
@@ -52,14 +52,12 @@ const { name, price, image_url, description } = item || {};
       )
     }
 
-    <div class="p-6 pb-8">
+    <div class="description p-4">
       <div class="flex justify-between items-start mb-4">
         <h2 class="text-xl font-bold">{name}</h2>
         {
           price !== null && price !== undefined && (
-            <p class="text-lg font-bold text-primary-300">
-              {formatPrice(price)}
-            </p>
+            <p class="text-lg font-bold">{formatPrice(price)}</p>
           )
         }
       </div>
@@ -101,9 +99,9 @@ const { name, price, image_url, description } = item || {};
     }
   });
 </script>
+
 <style>
   .modal::backdrop {
-    background-color: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(12px);
     opacity: 0;
     transition: opacity 0.3s ease-out;
@@ -119,9 +117,9 @@ const { name, price, image_url, description } = item || {};
     max-width: 90vw;
     max-height: 90vh;
     margin: auto;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     opacity: 0;
     transform: scale(0.95) translateY(10px);
+    box-shadow: 0 8px 32px rgba(24, 13, 13, 0.2);
     transition:
       opacity 0.3s ease-out,
       transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -132,7 +130,6 @@ const { name, price, image_url, description } = item || {};
     transform: scale(1) translateY(0);
   }
 
-  /* Closing animation */
   .modal.closing {
     opacity: 0;
     transform: scale(0.95) translateY(10px);
@@ -140,5 +137,41 @@ const { name, price, image_url, description } = item || {};
 
   .modal.closing::backdrop {
     opacity: 0;
+  }
+
+  :global(.light-mode) {
+    .modal {
+      border: 1px solid var(--glass-border);
+    }
+    .modal::backdrop {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .description {
+      background-color: rgba(var(--primary-50-rgb), 0.1);
+      color: var(--black);
+
+      p {
+        color: var(--black);
+      }
+    }
+  }
+
+  :global(.dark-mode) {
+    .modal {
+      border: 1px solid var(--glass-border);
+    }
+    .modal::backdrop {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .description {
+      background-color: rgba(var(--primary-900-rgb), 0.1);
+      color: var(--white);
+
+      p {
+        color: var(--white);
+      }
+    }
   }
 </style>

@@ -73,7 +73,7 @@ const primaryColorStyles = Object.entries(themeVariables)
 
     <slot name="head" />
   </head>
-  <body class="min-h-screen w-full bg-white relative" id="root">
+  <body class="min-h-screen w-full relative" id="root">
     <main
       class={`${theme} h-screen flex flex-col overflow-scroll absolute  inset-0 z-0`}
       style={{
@@ -114,6 +114,7 @@ const primaryColorStyles = Object.entries(themeVariables)
     --selection-foreground: oklch(20.5% 0 0);
     --glass-bg: rgba(0, 0, 0, 0.35); /* darker glass */
     --glass-border: rgba(0, 0, 0, 0.35);
+    background-color: var(--black);
   }
   .light-mode {
     /* Default light theme */
@@ -141,5 +142,6 @@ const primaryColorStyles = Object.entries(themeVariables)
     --selection-foreground: oklch(100% 0 0);
     --glass-bg: rgba(255, 255, 255, 0.35);
     --glass-border: rgba(255, 255, 255, 0.35);
+    background-color: var(--white);
   }
 </style>

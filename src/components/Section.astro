@@ -9,10 +9,10 @@ const { name } = Astro.props;
 <li
   class="section-item section-nav-item relative w-full overflow-hidden rounded-lg"
 >
-  <div class="flex w-full rounded-lg backdrop-blur-sm py shadow-lg">
+  <div class="flex w-full rounded-lg p-2 shadow-lg">
     <div class="flex flex-col gap-2 grow relative z-10">
       <div class="flex items-center gap-2">
-        <h3 class="font-bold text-lg tracking-wide">{name}</h3>
+        <h3 class="font-bold text-2xl tracking-wide">{name}</h3>
       </div>
     </div>
   </div>
@@ -21,17 +21,24 @@ const { name } = Astro.props;
 <style>
   :global(.light-mode) {
     .section-item {
-      /* background-color: rgba(var(--primary-50-rgb), 0.005); */
+      background-color: rgba(255, 255, 255, 0.95);
       color: var(--primary-900);
-      border: 1px solid var(--glass-border);
     }
   }
 
   :global(.dark-mode) {
     .section-item {
-      /* background-color: rgba(var(--primary-900-rgb), 0.005); */
+      background-color: rgba(0, 0, 0, 0.9);
       color: var(--primary-100);
-      border: 1px solid var(--glass-border);
+      h3 {
+        background-image: linear-gradient(
+          to bottom right,
+          var(--primary-100),
+          var(--primary-300)
+        );
+        color: transparent;
+        background-clip: text;
+      }
     }
   }
 </style>
