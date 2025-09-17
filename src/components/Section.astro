@@ -7,15 +7,9 @@ const { name } = Astro.props;
 ---
 
 <li
-  class="section-item section-nav-item relative w-full overflow-hidden rounded-lg"
+  class="section-item section-nav-item relative w-full overflow-hidden rounded-lg p-2"
 >
-  <div class="flex w-full rounded-lg p-2 shadow-lg">
-    <div class="flex flex-col gap-2 grow relative z-10">
-      <div class="flex items-center gap-2">
-        <h3 class="font-bold text-2xl tracking-wide">{name}</h3>
-      </div>
-    </div>
-  </div>
+  <h3 class="font-bold text-2xl tracking-wide">{name}</h3>
 </li>
 
 <style>
