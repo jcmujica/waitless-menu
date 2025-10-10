@@ -14,6 +14,7 @@ export interface MenuItem {
   image_url: string | null
   is_available: boolean
   type: string
+  classes: string[]
   description?: string
 }
 

@@ -4,6 +4,10 @@ import type { MenuItem } from "@/types/menu";
 import ItemModal from "./ItemModal.astro";
 import { formatPrice } from "@/utils/formatPrice";
 import Section from "./Section.astro";
+import { ITEM_CLASSES } from "@/constants/items";
+import SpicySvg from "@/assets/icons/spicy.svg";
+import VeganSvg from "@/assets/icons/vegan.svg";
+import GlutenFreeSvg from "@/assets/icons/gluten-free.svg";
 
 // Define the props for the Item component
 interface Props {
@@ -13,13 +17,15 @@ interface Props {
     showImages: boolean;
     showDescriptions: boolean;
   };
+  hasItemsWithClasses?: boolean;
 }
 
 // Destructure the props
-const { item, settings } = Astro.props;
+const { item, settings, hasItemsWithClasses = false } = Astro.props;
 
-const { name, price, image_url, description, is_available } = item || {};
+const { name, price, image_url, description, classes } = item || {};
 const { showPrices, showImages, showDescriptions } = settings;
+const extraSpace = hasItemsWithClasses && (!classes || classes.length === 0);
 
 // Create a JSON string with the item data for the modal
 const itemData = item
@@ -77,9 +83,9 @@ const itemData = item
         data-item-data={itemData}
       >
         {showImages && image_url && (
-          <div class="h-full rounded-l-lg overflow-hidden shrink-0">
+          <div class="rounded-l-lg overflow-hidden shrink-0 self-stretch">
             <Image
-              class="object-cover object-center h-[80px] w-[80px]"
+              class="object-cover object-center h-full w-[80px]"
               src={image_url}
               alt={name || ""}
               width={80}
@@ -88,11 +94,37 @@ const itemData = item
             />
           </div>
         )}
-        <div class="flex flex-col gap-1 grow py-3">
-          <h3 class="font-bold text-md">{name}</h3>
+        <div class={`flex flex-col gap-1 grow py-3`}>
+          {extraSpace && <div class="h-2.5 mt-1" />}
+          <h3 class="font-bold text-md line-clamp-1">{name}</h3>
           {showDescriptions && description && (
             <p class="text-xs line-clamp-1 opacity-70">{description}</p>
           )}
+          {classes && classes.length > 0 && (
+            <div class="flex gap-2 mt-1">
+              {classes.map((classId: string) => {
+                const itemClass = ITEM_CLASSES[parseInt(classId)];
+
+                switch (itemClass.id) {
+                  case "spicy":
+                    return (
+                      <SpicySvg class="w-5 h-5 opacity-70 fill-amber-50" />
+                    );
+                  case "vegan":
+                    return (
+                      <VeganSvg class="w-5 h-5 opacity-70 fill-amber-50" />
+                    );
+                  case "gluten-free":
+                    return (
+                      <GlutenFreeSvg class="w-5 h-5 opacity-70 fill-amber-50" />
+                    );
+                  default:
+                    return null;
+                }
+              })}
+            </div>
+          )}
+          {extraSpace && <div class="h-2.5 mt-1" />}
         </div>
         {showPrices && price !== null && price !== undefined && (
           <div class="flex flex-col gap-2 items-center shrink-0 pr-4">

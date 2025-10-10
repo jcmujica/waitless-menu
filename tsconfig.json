@@ -30,6 +30,9 @@
       ],
       "@/scripts/*": [
         "src/scripts/*"
+      ],
+      "@/constants/*": [
+        "src/constants/*"
       ]
     }
   }

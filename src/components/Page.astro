@@ -52,6 +52,11 @@ const pageSectionIds = pageSections.map((section) => ({
 // For multi-page menu, use only the sections from the current page
 const navigationSections =
   isSinglePage ? allSections : pageSectionIds;
+
+// Check if any items have classes to maintain consistent height
+const hasItemsWithClasses = items.some(
+  (item) => item.type === "item" && item.classes && item.classes.length > 0
+);
 ---
 
 <main
@@ -74,7 +79,7 @@ const navigationSections =
             id={sectionId}
             class={item.type === "section" ? "scroll-mt-16 not-first:mt-4" : ""}
           >
-            <Item item={item} settings={settings} />
+            <Item item={item} settings={settings} hasItemsWithClasses={hasItemsWithClasses} />
           </div>
         );
       })

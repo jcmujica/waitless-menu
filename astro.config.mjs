@@ -10,10 +10,15 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   // Enable SSR mode
   output: 'server',
-
+  redirects: {
+    
+    "/": {
+      status: 302,
+      destination: "https://waitless.tech"
+    }
+  },
   vite: {
     plugins: [tailwindcss()]
   },
-
   adapter: vercel(),
 });

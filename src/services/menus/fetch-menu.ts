@@ -61,6 +61,7 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
           image_url,
           description,
           is_available,
+          classes,
           type
         )
       `)
@@ -87,6 +88,7 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
         image_url: itemData.image_url,
         description: itemData.description,
         is_available: itemData.is_available,
+        classes: itemData.classes,
         type: itemData.type || 'item'
       }
 

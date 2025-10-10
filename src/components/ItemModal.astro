@@ -2,13 +2,17 @@
 import { Image } from "astro:assets";
 import type { MenuItem } from "@/types/menu";
 import { formatPrice } from "@/utils/formatPrice";
+import { ITEM_CLASSES } from "@/constants/items";
+import SpicySvg from "@/assets/icons/spicy.svg";
+import VeganSvg from "@/assets/icons/vegan.svg";
+import GlutenFreeSvg from "@/assets/icons/gluten-free.svg";
 
 interface Props {
   item: MenuItem;
 }
 
 const { item } = Astro.props;
-const { name, price, image_url, description } = item || {};
+const { name, price, image_url, description, classes } = item || {};
 ---
 
 <dialog
@@ -61,6 +65,40 @@ const { name, price, image_url, description } = item || {};
           )
         }
       </div>
+
+      {classes && classes.length > 0 && (
+        <div class="flex gap-3 mb-4 flex-wrap">
+          {classes.map((classId: string) => {
+            const itemClass = ITEM_CLASSES[parseInt(classId)];
+            
+            switch (itemClass?.id) {
+              case "spicy":
+                return (
+                  <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20">
+                    <SpicySvg class="w-4 h-4 fill-current" />
+                    <span class="text-sm font-medium">Picante</span>
+                  </div>
+                );
+              case "vegan":
+                return (
+                  <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20">
+                    <VeganSvg class="w-4 h-4 fill-current" />
+                    <span class="text-sm font-medium">Vegano</span>
+                  </div>
+                );
+              case "gluten-free":
+                return (
+                  <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20">
+                    <GlutenFreeSvg class="w-4 h-4 fill-current" />
+                    <span class="text-sm font-medium">Sin gluten</span>
+                  </div>
+                );
+              default:
+                return null;
+            }
+          })}
+        </div>
+      )}
 
       {description && <p class="text-sm opacity-80">{description}</p>}
     </div>
