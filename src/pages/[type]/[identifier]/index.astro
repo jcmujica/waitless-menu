@@ -1,6 +1,7 @@
 ---
 import { fetchMenu } from "@/services/menus/fetch-menu";
 import { fetchMenuByPath } from "@/services/menus/fetch-menu-by-path";
+import { fetchRestaurantSettings } from "@/services/menus/fetch-restaurant-settings";
 import type { IMenu } from "@/types/menu";
 import Menu from "@/components/Menu.astro";
 import MenuLayout from "@/layouts/MenuLayout.astro";
@@ -8,16 +9,21 @@ import MenuLayout from "@/layouts/MenuLayout.astro";
 const { type, identifier } = Astro.params;
 
 // Determine which fetch method to use based on the route type
-let data, error;
-if (type === 'qr') {
+let data, error, accountSettings;
+if (type === "qr") {
   // For QR routes, fetch by account ID
   const response = await fetchMenu(identifier as string);
   data = response.data;
   error = response.error;
-} else if (type === 'v') {
+  
+  // Fetch account settings
+  const settingsResponse = await fetchRestaurantSettings(identifier as string);
+  accountSettings = settingsResponse.data;
+} else if (type === "v") {
   // For vanity URL routes, fetch by path
   const response = await fetchMenuByPath(identifier as string);
   data = response.data;
+  accountSettings = response.accountSettings;
   error = response.error;
 } else {
   // Handle unknown route types
@@ -28,11 +34,11 @@ const menu = data as IMenu;
 ---
 
 <MenuLayout menu={menu}>
-  <Menu 
+  <Menu
     menu={menu}
-    account={type === 'qr' ? identifier : undefined}
-    accountPath={type === 'v' ? identifier : undefined}
+    account={type === "qr" ? identifier : undefined}
+    accountPath={type === "v" ? identifier : undefined}
+    accountSettings={accountSettings}
     error={error}
   />
 </MenuLayout>
- 

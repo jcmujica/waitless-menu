@@ -1,4 +1,6 @@
 ---
+import type { AccountSettings } from '@/types/menu';
+
 interface SectionItem {
   id: string;
   name: string;
@@ -7,9 +9,10 @@ interface SectionItem {
 
 interface Props {
   sections: SectionItem[];
+  accountSettings?: AccountSettings;
 }
 
-const { sections = [] } = Astro.props;
+const { sections = [], accountSettings } = Astro.props;
 ---
 
 {
@@ -18,6 +21,11 @@ const { sections = [] } = Astro.props;
       <nav class="">
         <div class="overflow-x-auto scrollbar-hide" id="nav-container">
           <ul class="flex whitespace-nowrap py-3 px-3 gap-3 items-center">
+            {accountSettings?.logo_url && (
+              <li class="flex-shrink-0">
+                <img src={accountSettings.logo_url} alt="Logo" class="w-16 h-16" />
+              </li>
+            )}
             {sections.map((section, index) => (
               <li class="flex-shrink-0">
                 <button

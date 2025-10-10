@@ -1,5 +1,5 @@
 ---
-import type { IMenu, MenuPage } from "@/types/menu";
+import type { AccountSettings, IMenu, MenuPage } from "@/types/menu";
 import Page from "./Page.astro";
 import Footer from "./Footer.astro";
 import Home from "./Home.astro";
@@ -9,11 +9,18 @@ interface Props {
   currentPage?: MenuPage;
   account?: string;
   accountPath?: string;
+  accountSettings?: AccountSettings;
   error?: Error | unknown;
 }
 
-const { menu, currentPage: currentPageProp, account, accountPath, error } = Astro.props;
-
+const {
+  menu,
+  currentPage: currentPageProp,
+  account,
+  accountPath,
+  accountSettings,
+  error,
+} = Astro.props;
 const isSinglePage = menu?.type === "single-page";
 const isMultiPage = menu?.type === "multi-page";
 let currentPage =
@@ -56,7 +63,7 @@ const shouldShowPage = isPageView && currentPage;
         menu && (
           <>
             {/* Navigation for multi-page menus when not in page view */}
-            {shouldShowHome && <Home menu={menu} baseUrl={baseUrl} />}
+            {shouldShowHome && <Home menu={menu} baseUrl={baseUrl} accountSettings={accountSettings} />}
 
             {/* Main content area */}
             {/* Specific page view */}
@@ -66,6 +73,7 @@ const shouldShowPage = isPageView && currentPage;
                 id={currentPage.id}
                 items={currentPage.items}
                 menu={menu}
+                accountSettings={accountSettings}
               />
             )}
             <Footer />

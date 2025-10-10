@@ -2,13 +2,25 @@
 import Button from "./Buttons/Button.astro";
 import type { MenuPage } from "@/types/menu";
 
-const { menu, baseUrl } = Astro.props;
+const { menu, baseUrl, accountSettings } = Astro.props;
+const hasLogo = !!accountSettings?.logo_url;
 ---
 
 <main class="h-screen flex flex-col gap-4 justify-center">
-  <div class="mt-[-2rem]">
+  <div class="mt-[-148px]">
     <header class="p-4 w-full">
-      <h1 class="text-2xl font-bold text-center">{menu?.name || "Menu"}</h1>
+      <div class="flex items-center justify-center">
+        {
+          hasLogo && (
+            <img src={accountSettings?.logo_url} alt="Logo" class="w-48 h-48" />
+          )
+        }
+      </div>
+      {
+        !hasLogo && (
+          <h1 class="text-2xl font-bold text-center">{menu?.name || "Menu"}</h1>
+        )
+      }
     </header>
     <nav class="flex flex-col gap-4 mb-4 text-center">
       {

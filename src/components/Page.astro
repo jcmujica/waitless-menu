@@ -1,6 +1,6 @@
 ---
 import Item from "./Item.astro";
-import type { MenuItem, MenuPage } from "@/types/menu";
+import type { AccountSettings, MenuItem, MenuPage } from "@/types/menu";
 import FloatingButton from "./Buttons/FloatingButton.astro";
 import Navigation from "./Navigation.astro";
 import type { IMenu } from "@/types/menu";
@@ -10,6 +10,7 @@ interface Props {
   items: MenuItem[];
   baseUrl: string;
   showNavigation?: boolean;
+  accountSettings?: AccountSettings;
 }
 
 const {
@@ -18,8 +19,8 @@ const {
   menu,
   baseUrl,
   showNavigation = true,
+  accountSettings,
 } = Astro.props;
-
 const settings = {
   showPrices: menu?.settings?.showPrices ?? true,
   showImages: menu?.settings?.showImages ?? true,
@@ -50,22 +51,21 @@ const pageSectionIds = pageSections.map((section) => ({
 // Determine which sections to display in the navigation
 // For single-page menu, use allSections (passed from Menu component)
 // For multi-page menu, use only the sections from the current page
-const navigationSections =
-  isSinglePage ? allSections : pageSectionIds;
+const navigationSections = isSinglePage ? allSections : pageSectionIds;
 
 // Check if any items have classes to maintain consistent height
 const hasItemsWithClasses = items.some(
-  (item) => item.type === "item" && item.classes && item.classes.length > 0
+  (item) => item.type === "item" && item.classes && item.classes.length > 0,
 );
 ---
 
-<main
-  id={`page-${id}`}
-  class="min-h-screen flex flex-col"
->
+<main id={`page-${id}`} class="min-h-screen flex flex-col">
   {
     showNavigation && navigationSections.length > 0 && (
-      <Navigation sections={navigationSections} />
+      <Navigation
+        sections={navigationSections}
+        accountSettings={accountSettings}
+      />
     )
   }
 
@@ -79,7 +79,11 @@ const hasItemsWithClasses = items.some(
             id={sectionId}
             class={item.type === "section" ? "scroll-mt-16 not-first:mt-4" : ""}
           >
-            <Item item={item} settings={settings} hasItemsWithClasses={hasItemsWithClasses} />
+            <Item
+              item={item}
+              settings={settings}
+              hasItemsWithClasses={hasItemsWithClasses}
+            />
           </div>
         );
       })

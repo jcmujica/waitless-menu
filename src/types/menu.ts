@@ -98,5 +98,30 @@ export interface IMenu {
  */
 export interface MenuResponse {
   data?: IMenu
+  accountSettings?: AccountSettings
+  error?: Error | null
+}
+
+/**
+ * Account settings data structure
+ */
+export interface AccountSettings {
+  account_id: string
+  path: string | null
+  logo_url: string | null
+  name: string | null
+  description: string | null
+  contact_email: string | null
+  contact_phone: string | null
+  address: string | null
+  created_at?: string
+  updated_at?: string
+}
+
+/**
+ * Response structure for account settings fetching operations
+ */
+export interface AccountResponse {
+  data?: AccountSettings
   error?: Error | null
 }
