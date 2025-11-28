@@ -35,6 +35,7 @@ const hasCustomBackground =
 // Get background style and ensure it doesn't repeat
 let standardBackground = standardStyles?.background || {};
 let standardBackgroundStyle = standardBackground?.style || {};
+let containerBackgroundStyle = standardBackground?.containerStyle || {};
 const primaryColor =
   standardStyles?.colors?.primary?.id?.split("-")[0] || "slate";
 // Generate theme variables based on the selected primary color
@@ -47,7 +48,7 @@ const backgroundStyles = hasCustomBackground
       backgroundPosition: customBackground.props?.position || "center",
       backgroundRepeat: customBackground.props?.repeat || "no-repeat",
     }
-  : standardBackgroundStyle;
+  : containerBackgroundStyle;
 // Create a style string for the primary color variables
 const primaryColorStyles = Object.entries(themeVariables)
   .map(([key, value]) => `${key}: ${value};`)
@@ -75,11 +76,19 @@ const primaryColorStyles = Object.entries(themeVariables)
   </head>
   <body class="min-h-screen w-full relative" id="root">
     <main
-      class={`${theme} h-screen flex flex-col overflow-scroll absolute  inset-0 z-0`}
+      class={`${theme} h-screen flex flex-col overflow-scroll absolute inset-0 z-0`}
       style={{
         ...backgroundStyles,
       }}
     >
+      {!hasCustomBackground && standardBackgroundStyle && Object.keys(standardBackgroundStyle).length > 0 && (
+        <div
+          class="absolute inset-0 -z-10"
+          style={{
+            ...standardBackgroundStyle,
+          }}
+        />
+      )}
       <slot />
     </main>
   </body>
