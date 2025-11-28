@@ -3,6 +3,8 @@
  * Centralized types used across the application
  */
 
+type BackgroundStyle = Record<string, string | number>
+
 /**
  * Represents a single menu item
  */
@@ -33,13 +35,7 @@ export interface MenuPage {
  */
 export interface MenuBackground {
   id: string
-  style: {
-    background?: string
-    backgroundImage?: string
-    backgroundSize?: string
-    backgroundPosition?: string
-    backgroundRepeat?: string
-  }
+  style: BackgroundStyle
 }
 
 /**
