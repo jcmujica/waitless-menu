@@ -2,6 +2,7 @@
 import { fetchMenu } from "@/services/menus/fetch-menu";
 import { fetchMenuByPath } from "@/services/menus/fetch-menu-by-path";
 import { fetchRestaurantSettings } from "@/services/menus/fetch-restaurant-settings";
+import { trackMenuView } from "@/services/analytics/track-menu-view";
 import type { IMenu, MenuPage } from "@/types/menu";
 import Menu from "@/components/Menu.astro";
 import MenuLayout from "@/layouts/MenuLayout.astro";
@@ -31,6 +32,11 @@ if (type === "qr") {
 }
 
 const menu = data as IMenu;
+
+// Track the menu view (fire and forget)
+if (menu?.id && accountSettings?.account_id) {
+  trackMenuView(menu.id, accountSettings.account_id);
+}
 
 // Find the current page
 const currentPage = menu?.pages?.find((page: MenuPage) => page.id === pageId);
