@@ -93,24 +93,32 @@ function closeModalWithAnimation(modal: HTMLDialogElement): void {
  * Handle menu item click
  */
 function handleItemClick(item: HTMLElement): void {
-  const itemId = item.getAttribute('data-item-id');
+  // Get menu item ID (for modal) and tracking item ID (for analytics)
+  const menuItemId = item.getAttribute('data-menu-item-id'); // menu_items.id (for modal)
+  const trackingItemId = item.getAttribute('data-item-id'); // items.id (for tracking)
   const menuId = item.getAttribute('data-menu-id');
   const accountId = item.getAttribute('data-account-id');
   const supabaseUrl = item.getAttribute('data-supabase-url');
   const supabaseAnonKey = item.getAttribute('data-supabase-anon-key');
 
-  if (!itemId) {
-    console.warn('Item ID not found');
+  if (!menuItemId) {
+    console.warn('Menu item ID not found');
     return;
   }
 
-  // Track click (fire and forget)
-  if (itemId && menuId && accountId && supabaseUrl && supabaseAnonKey) {
-    trackItemClick({ itemId, menuId, accountId, supabaseUrl, supabaseAnonKey });
+  // Track click using items table ID (fire and forget)
+  if (trackingItemId && menuId && accountId && supabaseUrl && supabaseAnonKey) {
+    trackItemClick({ 
+      itemId: trackingItemId, 
+      menuId, 
+      accountId, 
+      supabaseUrl, 
+      supabaseAnonKey 
+    });
   }
 
-  // Open modal
-  openItemModal(itemId);
+  // Open modal using menu_items table ID
+  openItemModal(menuItemId);
 }
 
 /**

@@ -26,8 +26,11 @@ interface Props {
 // Destructure the props
 const { item, settings, hasItemsWithClasses = false, menuId, accountId } = Astro.props;
 
-// Use item_id for tracking (FK to items table), not id (menu_items PK)
-const trackingItemId = item?.item_id || item?.id;
+// Store both IDs:
+// - item.id: menu_items table ID (for modal)
+// - item.item_id: items table ID (for tracking/analytics)
+const menuItemId = item?.id || ''; // For modal
+const trackingItemId = item?.item_id || item?.id || ''; // For analytics
 
 // Get Supabase credentials for client-side tracking
 const supabaseUrl = (() => {
@@ -77,6 +80,7 @@ const itemData = item
       <li
         id={`item-${item.id}`}
         class="menu-item relative flex w-full justify-between items-center gap-4 rounded-lg border shadow-xs overflow-hidden cursor-pointer"
+        data-menu-item-id={menuItemId}
         data-item-id={trackingItemId}
         data-item-data={itemData}
         data-menu-id={menuId}
@@ -92,6 +96,7 @@ const itemData = item
               alt={name || ""}
               width={80}
               height={80}
+              loading="eager"
               inferSize
             />
           </div>
