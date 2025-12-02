@@ -4,6 +4,21 @@
   --black: #000000;
   --white: #ffffff;
 
+  /* Primary color contrast variables - ensures readable text on colored backgrounds */
+  /* Light shades (50-400) need dark text */
+  --primary-50-contrast: var(--primary-900);
+  --primary-100-contrast: var(--primary-900);
+  --primary-200-contrast: var(--primary-900);
+  --primary-300-contrast: var(--primary-800);
+  --primary-400-contrast: var(--primary-800);
+  
+  /* Dark shades (500-900) need light text */
+  --primary-500-contrast: #ffffff;
+  --primary-600-contrast: #ffffff;
+  --primary-700-contrast: #ffffff;
+  --primary-800-contrast: #ffffff;
+  --primary-900-contrast: #ffffff;
+
   /* Tailwind default colors */
   --slate-50: #f8fafc;
   --slate-100: #f1f5f9;
@@ -465,40 +480,4 @@ html {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-}
-
-.tint::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(var(--primary-500-rgb), 0.1),
-    rgba(var(--primary-500-rgb), 0.05)
-  );
-  pointer-events: none;
-}
-
-.tint-soft::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(var(--primary-200-rgb), 0.1),
-    rgba(var(--primary-200-rgb), 0.05)
-  );
-  pointer-events: none;
-}
-
-.tint-strong::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(var(--primary-900-rgb), 0.1),
-    rgba(var(--primary-900-rgb), 0.05)
-  );
-  pointer-events: none;
 }

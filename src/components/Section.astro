@@ -16,14 +16,26 @@ const { name } = Astro.props;
   :global(.light-mode) {
     .section-item {
       color: var(--primary-900);
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      /* Text border using multiple text-shadows */
+      text-shadow: 
+        -1px -1px 0 rgba(255, 255, 255, 0.8),
+        1px -1px 0 rgba(255, 255, 255, 0.8),
+        -1px 1px 0 rgba(255, 255, 255, 0.8),
+        1px 1px 0 rgba(255, 255, 255, 0.8),
+        0 0 3px rgba(255, 255, 255, 0.5);
     }
   }
 
   :global(.dark-mode) {
     .section-item {
       color: var(--primary-100);
-      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      /* Text border using multiple text-shadows */
+      text-shadow: 
+        -1px -1px 0 rgba(0, 0, 0, 0.9),
+        1px -1px 0 rgba(0, 0, 0, 0.9),
+        -1px 1px 0 rgba(0, 0, 0, 0.9),
+        1px 1px 0 rgba(0, 0, 0, 0.9),
+        0 0 3px rgba(0, 0, 0, 0.7);
     }
   }
 </style>

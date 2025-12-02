@@ -6,26 +6,35 @@ const { menu, baseUrl, accountSettings } = Astro.props;
 const hasLogo = !!accountSettings?.logo_url;
 ---
 
-<main class="h-screen flex flex-col gap-4 justify-center">
+<main class="h-screen flex flex-col gap-4 justify-center" transition:animate="fade">
   <div class="mt-[-148px]">
     <header class="p-4 w-full">
       <div class="flex items-center justify-center">
         {
           hasLogo && (
-            <img src={accountSettings?.logo_url} alt="Logo" class="w-48 h-48" />
+            <img 
+              src={accountSettings?.logo_url} 
+              alt="Logo" 
+              class="w-48 h-48"
+              transition:name="logo" 
+            />
           )
         }
       </div>
       {
         !hasLogo && (
-          <h1 class="text-2xl font-bold text-center">{menu?.name || "Menu"}</h1>
+          <h1 class="text-2xl font-bold text-center" transition:name="menu-title">
+            {menu?.name || "Menu"}
+          </h1>
         )
       }
     </header>
-    <nav class="flex flex-col gap-4 mb-4 text-center">
+    <nav class="flex flex-col gap-4 mb-4 text-center px-4">
       {
-        menu.pages.map((page: MenuPage) => (
-          <Button href={`${baseUrl}/${page.id}`}>{page.name}</Button>
+        menu.pages.map((page: MenuPage, index: number) => (
+          <div style={`animation-delay: ${(index + 1) * 50}ms`}>
+            <Button href={`${baseUrl}/${page.id}`}>{page.name}</Button>
+          </div>
         ))
       }
     </nav>

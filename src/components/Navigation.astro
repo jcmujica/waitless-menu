@@ -17,7 +17,10 @@ const { sections = [], accountSettings } = Astro.props;
 
 {
   sections.length > 0 && (
-    <div class="glassmorphism border-b border-[var(--glass-border)] tint-soft sticky top-0 z-10 w-full">
+    <div 
+      class="glassmorphism border-b border-[var(--glass-border)] sticky top-0 z-10 w-full"
+      transition:persist="navigation"
+    >
       <nav class="">
         <div class="overflow-x-auto scrollbar-hide" id="nav-container">
           <ul class="flex whitespace-nowrap py-3 px-3 gap-3 items-center">

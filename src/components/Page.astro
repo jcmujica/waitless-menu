@@ -69,7 +69,7 @@ const hasItemsWithClasses = items.some(
     )
   }
 
-  <ul class="flex flex-col gap-3 p-3">
+  <ul class="flex flex-col gap-3 p-3" transition:animate="fade">
     {
       items.map((item, index) => {
         // For section items, add an ID to use as scroll target
@@ -78,6 +78,7 @@ const hasItemsWithClasses = items.some(
           <div
             id={sectionId}
             class={item.type === "section" ? "scroll-mt-16 not-first:mt-4" : ""}
+            style={`animation-delay: ${index * 30}ms`}
           >
             <Item
               item={item}

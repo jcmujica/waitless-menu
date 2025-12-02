@@ -27,7 +27,14 @@ interface Props {
 const { item, settings, hasItemsWithClasses = false, menuId, accountId } = Astro.props;
 
 // Get Supabase URL for client-side tracking
-const supabaseUrl = getSecret('SUPABASE_URL');
+const supabaseUrl = (() => {
+  try {
+    return getSecret('SUPABASE_URL');
+  } catch (error) {
+    console.warn('SUPABASE_URL not configured for analytics tracking');
+    return '';
+  }
+})();
 
 const { name, price, image_url, description, classes } = item || {};
 const { showPrices, showImages, showDescriptions } = settings;
@@ -47,54 +54,9 @@ const itemData = item
   : null;
 ---
 
-<script is:inline>
-  // Add click event listeners to all menu items
-  document.addEventListener("DOMContentLoaded", () => {
-    const menuItems = document.querySelectorAll(".menu-item");
-
-    menuItems.forEach((item) => {
-      item.addEventListener("click", () => {
-        const itemId = item.getAttribute("data-item-id");
-        const menuId = item.getAttribute("data-menu-id");
-        const accountId = item.getAttribute("data-account-id");
-        const supabaseUrl = item.getAttribute("data-supabase-url");
-        const modal = document.getElementById(`item-modal-${itemId}`);
-
-        // Track item click (fire and forget)
-        if (itemId && menuId && accountId && supabaseUrl) {
-          fetch(`${supabaseUrl}/functions/v1/trackItemClick`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              item_id: itemId,
-              menu_id: menuId,
-              account_id: accountId,
-            }),
-          }).catch((err) => console.debug("Tracking failed:", err));
-        }
-
-        if (modal && modal instanceof HTMLDialogElement) {
-          // First set initial state (if not already set by CSS)
-          modal.style.opacity = "0";
-          modal.style.transform = "scale(0.95) translateY(10px)";
-
-          // Show the modal
-          modal.showModal();
-
-          // Force a reflow to ensure the initial state is applied
-          void modal.offsetWidth;
-
-          // Then remove the inline styles to let CSS transitions take over
-          setTimeout(() => {
-            modal.style.opacity = "";
-            modal.style.transform = "";
-          }, 10);
-        }
-      });
-    });
-  });
+<script>
+  import { initializeMenuItems } from '@/scripts/item-click-handler';
+  initializeMenuItems();
 </script>
 
 {
@@ -102,7 +64,7 @@ const itemData = item
     <>
       <li
         id={`item-${item.id}`}
-        class="glassmorphism tint menu-item relative flex w-full justify-between items-center gap-4 rounded-lg border shadow-xs overflow-hidden cursor-pointer"
+        class="menu-item relative flex w-full justify-between items-center gap-4 rounded-lg border shadow-xs overflow-hidden cursor-pointer"
         data-item-id={item.id}
         data-item-data={itemData}
         data-menu-id={menuId}

@@ -17,7 +17,7 @@ const { name, price, image_url, description, classes } = item || {};
 
 <dialog
   id={`item-modal-${item.id}`}
-  class="modal tint-soft rounded-lg overflow-hidden shadow-xl"
+  class="modal rounded-lg overflow-hidden shadow-xl"
 >
   <div
     class="w-full max-w-md text-white p-0 rounded-lg overflow-hidden relative"
@@ -105,38 +105,6 @@ const { name, price, image_url, description, classes } = item || {};
   </div>
 </dialog>
 
-<script define:vars={{ itemId: item.id }} is:inline>
-  // Get references to the modal and related elements
-  const modal = document.getElementById(`item-modal-${itemId}`);
-  const closeButton = modal?.querySelector(".close-modal");
-
-  // Function to handle smooth closing of the modal
-  const closeModalWithAnimation = () => {
-    if (modal?.open) {
-      // Add a class to trigger the closing animation
-      modal.classList.add("closing");
-
-      // Wait for animation to complete before actually closing
-      setTimeout(() => {
-        modal.close();
-        modal.classList.remove("closing");
-      }, 280); // Slightly less than the transition duration
-    }
-  };
-
-  // Close modal when clicking the close button
-  closeButton?.addEventListener("click", (e) => {
-    e.preventDefault();
-    closeModalWithAnimation();
-  });
-
-  // Close modal when clicking outside the modal content
-  modal?.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      closeModalWithAnimation();
-    }
-  });
-</script>
 
 <style>
   .modal::backdrop {
