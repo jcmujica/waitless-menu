@@ -7,6 +7,7 @@ export async function trackItemClick(
 ): Promise<void> {
   try {
     const supabaseUrl = getSecret('SUPABASE_URL');
+    const supabaseAnonKey = getSecret('SUPABASE_ANON_KEY');
     const trackingUrl = `${supabaseUrl}/functions/v1/trackItemClick`;
 
     // Fire and forget - don't wait for response
@@ -14,6 +15,7 @@ export async function trackItemClick(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseAnonKey}`,
       },
       body: JSON.stringify({
         item_id: itemId,

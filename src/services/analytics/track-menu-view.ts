@@ -3,6 +3,7 @@ import { getSecret } from 'astro:env/server';
 export async function trackMenuView(menuId: string, accountId: string): Promise<void> {
   try {
     const supabaseUrl = getSecret('SUPABASE_URL');
+    const supabaseAnonKey = getSecret('SUPABASE_ANON_KEY');
     const trackingUrl = `${supabaseUrl}/functions/v1/trackMenuView`;
 
     // Fire and forget - don't wait for response
@@ -10,6 +11,7 @@ export async function trackMenuView(menuId: string, accountId: string): Promise<
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseAnonKey}`,
       },
       body: JSON.stringify({
         menu_id: menuId,

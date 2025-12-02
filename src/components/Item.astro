@@ -26,12 +26,21 @@ interface Props {
 // Destructure the props
 const { item, settings, hasItemsWithClasses = false, menuId, accountId } = Astro.props;
 
-// Get Supabase URL for client-side tracking
+// Get Supabase credentials for client-side tracking
 const supabaseUrl = (() => {
   try {
     return getSecret('SUPABASE_URL');
   } catch (error) {
     console.warn('SUPABASE_URL not configured for analytics tracking');
+    return '';
+  }
+})();
+
+const supabaseAnonKey = (() => {
+  try {
+    return getSecret('SUPABASE_ANON_KEY');
+  } catch (error) {
+    console.warn('SUPABASE_ANON_KEY not configured for analytics tracking');
     return '';
   }
 })();
@@ -70,6 +79,7 @@ const itemData = item
         data-menu-id={menuId}
         data-account-id={accountId}
         data-supabase-url={supabaseUrl}
+        data-supabase-anon-key={supabaseAnonKey}
       >
         {showImages && image_url && (
           <div class="rounded-l-lg overflow-hidden shrink-0 self-stretch">

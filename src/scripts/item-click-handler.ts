@@ -8,6 +8,7 @@ interface TrackingData {
   menuId: string;
   accountId: string;
   supabaseUrl: string;
+  supabaseAnonKey: string;
 }
 
 const INITIALIZED_ATTR = 'data-initialized';
@@ -16,9 +17,9 @@ const INITIALIZED_ATTR = 'data-initialized';
  * Track item click in analytics
  */
 async function trackItemClick(data: TrackingData): Promise<void> {
-  const { itemId, menuId, accountId, supabaseUrl } = data;
+  const { itemId, menuId, accountId, supabaseUrl, supabaseAnonKey } = data;
 
-  if (!itemId || !menuId || !accountId || !supabaseUrl) {
+  if (!itemId || !menuId || !accountId || !supabaseUrl || !supabaseAnonKey) {
     console.debug('Tracking data incomplete, skipping analytics');
     return;
   }
@@ -28,6 +29,7 @@ async function trackItemClick(data: TrackingData): Promise<void> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseAnonKey}`,
       },
       body: JSON.stringify({
         item_id: itemId,
@@ -89,6 +91,7 @@ function handleItemClick(item: HTMLElement): void {
   const menuId = item.getAttribute('data-menu-id');
   const accountId = item.getAttribute('data-account-id');
   const supabaseUrl = item.getAttribute('data-supabase-url');
+  const supabaseAnonKey = item.getAttribute('data-supabase-anon-key');
 
   if (!itemId) {
     console.warn('Item ID not found');
@@ -96,8 +99,8 @@ function handleItemClick(item: HTMLElement): void {
   }
 
   // Track click (fire and forget)
-  if (menuId && accountId && supabaseUrl) {
-    trackItemClick({ itemId, menuId, accountId, supabaseUrl });
+  if (itemId && menuId && accountId && supabaseUrl && supabaseAnonKey) {
+    trackItemClick({ itemId, menuId, accountId, supabaseUrl, supabaseAnonKey });
   }
 
   // Open modal
