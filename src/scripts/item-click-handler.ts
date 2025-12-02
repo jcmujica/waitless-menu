@@ -25,7 +25,7 @@ async function trackItemClick(data: TrackingData): Promise<void> {
   }
 
   try {
-    await fetch(`${supabaseUrl}/functions/v1/trackItemClick`, {
+    const response = await fetch(`${supabaseUrl}/functions/v1/trackItemClick`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -37,6 +37,12 @@ async function trackItemClick(data: TrackingData): Promise<void> {
         account_id: accountId,
       }),
     });
+    
+    // Silently skip if item not found (404)
+    if (!response.ok && response.status === 404) {
+      console.debug(`Item ${itemId} not found, skipping analytics`);
+      return;
+    }
   } catch (err) {
     console.debug('Tracking failed:', err);
   }

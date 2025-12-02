@@ -26,6 +26,9 @@ interface Props {
 // Destructure the props
 const { item, settings, hasItemsWithClasses = false, menuId, accountId } = Astro.props;
 
+// Use item_id for tracking (FK to items table), not id (menu_items PK)
+const trackingItemId = item?.item_id || item?.id;
+
 // Get Supabase credentials for client-side tracking
 const supabaseUrl = (() => {
   try {
@@ -74,7 +77,7 @@ const itemData = item
       <li
         id={`item-${item.id}`}
         class="menu-item relative flex w-full justify-between items-center gap-4 rounded-lg border shadow-xs overflow-hidden cursor-pointer"
-        data-item-id={item.id}
+        data-item-id={trackingItemId}
         data-item-data={itemData}
         data-menu-id={menuId}
         data-account-id={accountId}
