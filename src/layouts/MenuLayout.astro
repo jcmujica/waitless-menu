@@ -9,47 +9,34 @@ interface Props {
   menu?: IMenu;
 }
 
-const parseObject = (obj: any) => {
+const parseJSON = (obj: any) => {
   try {
-    return JSON.parse(obj);
-  } catch (e) {
-    return obj;
+    return typeof obj === 'string' ? JSON.parse(obj) : obj;
+  } catch {
+    return {};
   }
 };
 
 const { menu } = Astro.props;
 
 const theme = (menu?.appearance?.theme || "light") as "light" | "dark";
-const standardStyles = menu?.appearance?.style
-  ? parseObject(menu.appearance.style)
-  : {};
-const customBackground = {
-  img: menu?.appearance?.custom_bg_img,
-  props: menu?.appearance?.custom_bg_props
-    ? parseObject(menu.appearance.custom_bg_props)
-    : {},
-};
-const hasCustomBackground =
-  customBackground?.img && customBackground?.props?.mode !== "none";
-
-// Get background style and ensure it doesn't repeat
-let standardBackground = standardStyles?.background || {};
-let standardBackgroundStyle = standardBackground?.style || {};
-let containerBackgroundStyle = standardBackground?.containerStyle || {};
-const primaryColor =
-  standardStyles?.colors?.primary?.id?.split("-")[0] || "slate";
-// Generate theme variables based on the selected primary color
+const styleData = parseJSON(menu?.appearance?.style);
+const primaryColor = styleData?.colors?.primary?.id?.split("-")[0] || "slate";
 const themeVariables = generateThemeVariables(primaryColor);
 
-const backgroundStyles = hasCustomBackground
-  ? {
-      background: `url(${customBackground.img})`,
-      backgroundSize: customBackground.props?.size || "cover",
-      backgroundPosition: customBackground.props?.position || "center",
-      backgroundRepeat: customBackground.props?.repeat || "no-repeat",
-    }
-  : containerBackgroundStyle;
-// Create a style string for the primary color variables
+// Custom background handling
+const customBgImg = menu?.appearance?.custom_bg_img;
+const customBgProps = parseJSON(menu?.appearance?.custom_bg_props);
+const hasCustomBg = customBgImg && customBgProps?.mode !== "none";
+
+// Pattern implementation
+const implementation = styleData?.background?.implementation;
+const containerClass = implementation?.container?.className || "";
+const containerStyle = parseJSON(implementation?.container?.style) || {};
+const bgClass = implementation?.background?.className || "";
+const bgStyle = parseJSON(implementation?.background?.style) || {};
+const animation = implementation?.animation;
+
 const primaryColorStyles = Object.entries(themeVariables)
   .map(([key, value]) => `${key}: ${value};`)
   .join("\n        ");
@@ -69,6 +56,7 @@ const primaryColorStyles = Object.entries(themeVariables)
       :root {
         ${primaryColorStyles}
       }
+      ${animation?.keyframes ? animation.keyframes : ''}
     `}
     ></style>
 
@@ -76,20 +64,29 @@ const primaryColorStyles = Object.entries(themeVariables)
   </head>
   <body class="min-h-screen w-full relative" id="root">
     <main
-      class={`${theme} h-screen flex flex-col overflow-scroll absolute inset-0 z-0`}
+      class={`${theme} ${hasCustomBg ? 'min-h-screen w-full relative' : (containerClass || 'min-h-screen w-full relative')}`}
       style={{
-        ...backgroundStyles,
+        ...(hasCustomBg ? {
+          backgroundImage: `url(${customBgImg})`,
+          backgroundSize: customBgProps.mode === 'pattern' ? '50px' : customBgProps.mode === 'centered' ? 'auto 80%' : 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: customBgProps.mode === 'pattern' ? 'repeat' : 'no-repeat',
+        } : containerStyle),
       }}
     >
-      {!hasCustomBackground && standardBackgroundStyle && Object.keys(standardBackgroundStyle).length > 0 && (
+      {!hasCustomBg && (bgStyle && Object.keys(bgStyle).length > 0) && (
         <div
-          class="absolute inset-0 -z-10"
+          class={bgClass || "absolute inset-0 z-0"}
           style={{
-            ...standardBackgroundStyle,
+            ...bgStyle,
+            ...(animation?.name ? { animation: animation.name } : {}),
           }}
         />
       )}
-      <slot />
+      
+      <div class="relative z-10">
+        <slot />
+      </div>
     </main>
   </body>
 </html>
