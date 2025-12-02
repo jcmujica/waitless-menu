@@ -1,9 +1,10 @@
 ---
-import "../styles/global.css";
-import "../styles/theme.css";
 import { generateThemeVariables } from "@/utils/themeUtils";
 import { ClientRouter } from "astro:transitions";
 import type { IMenu } from "@/types/menu";
+
+import "../styles/global.css";
+import "../styles/theme.css";
 
 interface Props {
   menu?: IMenu;
@@ -11,7 +12,7 @@ interface Props {
 
 const parseJSON = (obj: any) => {
   try {
-    return typeof obj === 'string' ? JSON.parse(obj) : obj;
+    return typeof obj === "string" ? JSON.parse(obj) : obj;
   } catch {
     return {};
   }
@@ -31,10 +32,14 @@ const hasCustomBg = customBgImg && customBgProps?.mode !== "none";
 
 // Pattern implementation
 const implementation = styleData?.background?.implementation;
-const containerClass = implementation?.container?.className || "";
-const containerStyle = parseJSON(implementation?.container?.style) || {};
-const bgClass = implementation?.background?.className || "";
-const bgStyle = parseJSON(implementation?.background?.style) || {};
+const container = {
+  className: implementation?.container?.className || "",
+  style: parseJSON(implementation?.container?.style) || {},
+};
+const background = {
+  className: implementation?.background?.className || "",
+  style: parseJSON(implementation?.background?.style) || {},
+};
 const animation = implementation?.animation;
 
 const primaryColorStyles = Object.entries(themeVariables)
@@ -56,34 +61,54 @@ const primaryColorStyles = Object.entries(themeVariables)
       :root {
         ${primaryColorStyles}
       }
-      ${animation?.keyframes ? animation.keyframes : ''}
+      ${animation?.keyframes ? animation.keyframes : ""}
     `}
     ></style>
 
     <slot name="head" />
   </head>
-  <body class="min-h-screen w-full relative" id="root">
-    <main
-      class={`${theme} ${hasCustomBg ? 'min-h-screen w-full relative' : (containerClass || 'min-h-screen w-full relative')}`}
-      style={{
-        ...(hasCustomBg ? {
-          backgroundImage: `url(${customBgImg})`,
-          backgroundSize: customBgProps.mode === 'pattern' ? '50px' : customBgProps.mode === 'centered' ? 'auto 80%' : 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: customBgProps.mode === 'pattern' ? 'repeat' : 'no-repeat',
-        } : containerStyle),
-      }}
-    >
-      {!hasCustomBg && (bgStyle && Object.keys(bgStyle).length > 0) && (
+  <body
+    id="root"
+    class={`${hasCustomBg ? "min-h-screen w-full relative" : (container?.className || "min-h-screen w-full relative")}`}
+    style={container?.style}
+  >
+    {/* Fixed background layer - Pattern backgrounds */}
+    {
+      !hasCustomBg &&
+        background.style &&
+        Object.keys(background.style).length > 0 && (
+          <div
+            class="fixed inset-0 z-0"
+            style={{
+              ...background.style,
+              ...(animation?.name ? { animation: animation.name } : {}),
+            }}
+          />
+        )
+    }
+
+    {/* Fixed background layer - Custom images */}
+    {
+      hasCustomBg && (
         <div
-          class={bgClass || "absolute inset-0 z-0"}
+          class="fixed inset-0 z-0"
           style={{
-            ...bgStyle,
-            ...(animation?.name ? { animation: animation.name } : {}),
+            backgroundImage: `url(${customBgImg})`,
+            backgroundSize:
+              customBgProps.mode === "pattern"
+                ? "50px"
+                : customBgProps.mode === "centered"
+                  ? "auto 80%"
+                  : "cover",
+            backgroundPosition: "center",
+            backgroundRepeat:
+              customBgProps.mode === "pattern" ? "repeat" : "no-repeat",
           }}
         />
-      )}
-      
+      )
+    }
+
+    <main class={`${theme} min-h-screen w-full relative`}>
       <div class="relative z-10">
         <slot />
       </div>
