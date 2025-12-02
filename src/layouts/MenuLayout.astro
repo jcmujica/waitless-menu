@@ -1,13 +1,14 @@
 ---
 import { generateThemeVariables } from "@/utils/themeUtils";
 import { ClientRouter } from "astro:transitions";
-import type { IMenu } from "@/types/menu";
+import type { IMenu, AccountSettings } from "@/types/menu";
 
 import "../styles/global.css";
 import "../styles/theme.css";
 
 interface Props {
   menu?: IMenu;
+  accountSettings?: AccountSettings;
 }
 
 const parseJSON = (obj: any) => {
@@ -18,7 +19,7 @@ const parseJSON = (obj: any) => {
   }
 };
 
-const { menu } = Astro.props;
+const { menu, accountSettings } = Astro.props;
 
 const theme = (menu?.appearance?.theme || "light") as "light" | "dark";
 const styleData = parseJSON(menu?.appearance?.style);
@@ -55,6 +56,11 @@ const primaryColorStyles = Object.entries(themeVariables)
     <ClientRouter fallback="swap" />
     <title>{menu?.name || "Menu"}</title>
     <meta name="view-transition" content="same-origin" />
+    
+    <!-- Dynamic favicon from restaurant logo -->
+    {accountSettings?.logo_url && (
+      <link rel="icon" type="image/png" href={accountSettings.logo_url} />
+    )}
 
     <!-- Inject primary color variables -->
     <style

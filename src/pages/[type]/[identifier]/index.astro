@@ -44,7 +44,7 @@ if (menu?.id && accountSettings?.account_id) {
 }
 ---
 
-<MenuLayout menu={menu}>
+<MenuLayout menu={menu} accountSettings={accountSettings}>
   <Menu
     menu={menu}
     account={type === PATH_TYPES.ACCOUNT_ID ? identifier : undefined}

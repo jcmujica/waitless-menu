@@ -42,7 +42,7 @@ if (menu?.id && accountSettings?.account_id) {
 const currentPage = menu?.pages?.find((page: MenuPage) => page.id === pageId);
 ---
 
-<MenuLayout menu={menu}>
+<MenuLayout menu={menu} accountSettings={accountSettings}>
   <Menu
     menu={menu}
     account={type === "qr" ? identifier : undefined}
