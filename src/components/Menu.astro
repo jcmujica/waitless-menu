@@ -3,6 +3,7 @@ import type { AccountSettings, IMenu, MenuPage } from "@/types/menu";
 import Page from "./Page.astro";
 import Footer from "./Footer.astro";
 import Home from "./Home.astro";
+import { getSecret } from "astro:env/server";
 
 interface Props {
   menu: IMenu;
@@ -47,6 +48,25 @@ const isPageNotFound = isPageView && !currentPage && menu;
 const shouldRedirect = isPageNotFound || error;
 const shouldShowHome = isMultiPage && !isPageView;
 const shouldShowPage = isPageView && currentPage;
+
+// Get Supabase credentials for client-side tracking
+const supabaseUrl = (() => {
+  try {
+    return getSecret('SUPABASE_URL') || '';
+  } catch (error) {
+    console.warn('SUPABASE_URL not configured for analytics tracking');
+    return '';
+  }
+})();
+
+const supabaseAnonKey = (() => {
+  try {
+    return getSecret('SUPABASE_ANON_KEY') || '';
+  } catch (error) {
+    console.warn('SUPABASE_ANON_KEY not configured for analytics tracking');
+    return '';
+  }
+})();
 ---
 
 <Fragment>
@@ -56,6 +76,36 @@ const shouldShowPage = isPageView && currentPage;
       window.location.href = baseUrl;
     }
   </script>
+  {menu?.id && accountSettings?.account_id && supabaseUrl && supabaseAnonKey && !isPreviewRoute && (
+    <script define:vars={{ menuId: menu.id, accountId: accountSettings.account_id, supabaseUrl, supabaseAnonKey }} is:inline>
+      (function() {
+        // Only track once per page load
+        if (document.documentElement.hasAttribute('data-menu-view-tracked')) {
+          return;
+        }
+        
+        // Mark as tracked
+        document.documentElement.setAttribute('data-menu-view-tracked', 'true');
+        
+        // Track the view (fire and forget)
+        if (menuId && accountId && supabaseUrl && supabaseAnonKey) {
+          fetch(`${supabaseUrl}/functions/v1/trackMenuView`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${supabaseAnonKey}`,
+            },
+            body: JSON.stringify({
+              menu_id: menuId,
+              account_id: accountId,
+            }),
+          }).catch((err) => {
+            console.debug('Menu view tracking error:', err);
+          });
+        }
+      })();
+    </script>
+  )}
 
   <div class="w-full">
     <div class="max-w-2xl mx-auto">
