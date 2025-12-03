@@ -1,12 +1,19 @@
 import { supabase } from "../supabase/client"
 import type { IMenu, MenuItem, MenuPage, MenuResponse } from "../../types/menu"
 
-export const fetchMenu = async (account: string): Promise<MenuResponse> => {
+type MenuResponseWithAccountId = MenuResponse & { accountId?: string }
+
+/**
+ * Fetches a specific menu by ID (for preview purposes)
+ * This bypasses the is_active filter to allow previewing inactive menus
+ * @param menuId - The menu ID to fetch
+ * @returns Promise with menu data or error, including accountId for fetching settings
+ */
+export const fetchMenuById = async (menuId: string): Promise<MenuResponseWithAccountId> => {
   try {
     const supabaseClient = supabase()
 
-    // 1. Fetch the ACTIVE menu with nested appearance and settings in a single query
-    // A venue can have multiple menus, but only one active menu is displayed via QR code
+    // 1. Fetch menu by ID with nested appearance and settings
     const { data: menuData, error: menuError } = await supabaseClient
       .from('menus')
       .select(`
@@ -14,6 +21,7 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
         name,
         type,
         main_page_id,
+        account_id,
         menu_appearances (
           theme,
           style,
@@ -26,20 +34,11 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
           show_prices
         )
       `)
-      .eq('account_id', account)
-      .eq('is_active', true)
+      .eq('id', menuId)
       .single()
 
     if (menuError || !menuData) {
-      console.error('Error fetching menu:', menuError)
-      
-      // Provide more specific error message when no active menu is found
-      if (menuError?.code === 'PGRST116' || menuError?.message?.includes('No rows')) {
-        return { 
-          error: new Error('No active menu found. Please set a menu as active in the admin panel.') 
-        }
-      }
-      
+      console.error('Error fetching menu by ID:', menuError)
       return { error: menuError || new Error('Menu not found') }
     }
 
@@ -152,9 +151,14 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
       pages
     }
 
-    return { data: menu }
+    // Return menu with account_id for fetching account settings
+    return { 
+      data: menu,
+      accountId: menuData.account_id as string | undefined
+    }
   } catch (error) {
-    console.error('Error fetching menu:', error)
+    console.error('Error fetching menu by ID:', error)
     return { error: error instanceof Error ? error : new Error('Unknown error') }
   }
 }
+

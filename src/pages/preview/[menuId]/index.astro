@@ -1,0 +1,36 @@
+---
+import { fetchMenuById } from "@/services/menus/fetch-menu-by-id";
+import { fetchRestaurantSettings } from "@/services/menus/fetch-restaurant-settings";
+import type { IMenu } from "@/types/menu";
+import Menu from "@/components/Menu.astro";
+import MenuLayout from "@/layouts/MenuLayout.astro";
+
+const { menuId } = Astro.params;
+
+// Fetch menu by ID (for preview - allows inactive menus)
+const response = await fetchMenuById(menuId as string);
+const menu = response.data as IMenu;
+const error = response.error;
+const accountId = response.accountId;
+
+// Fetch account settings using the account_id from the menu
+let accountSettings = null;
+if (accountId) {
+  const settingsResponse = await fetchRestaurantSettings(accountId);
+  accountSettings = settingsResponse.data;
+}
+
+// IMPORTANT: Do NOT track analytics for preview views
+// This is a preview mode for the admin panel
+// Analytics tracking is intentionally omitted here
+---
+
+<MenuLayout menu={menu} accountSettings={accountSettings}>
+  <Menu
+    menu={menu}
+    accountSettings={accountSettings}
+    error={error}
+    menuId={menuId as string}
+  />
+</MenuLayout>
+

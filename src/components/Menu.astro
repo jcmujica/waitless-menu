@@ -11,6 +11,7 @@ interface Props {
   accountPath?: string;
   accountSettings?: AccountSettings;
   error?: Error | unknown;
+  menuId?: string; // For preview routes
 }
 
 const {
@@ -20,6 +21,7 @@ const {
   accountPath,
   accountSettings,
   error,
+  menuId,
 } = Astro.props;
 const isSinglePage = menu?.type === "single-page";
 const isMultiPage = menu?.type === "multi-page";
@@ -29,11 +31,14 @@ let currentPage =
     menu?.pages?.find((page: MenuPage) => page.id === menu?.mainPageId));
 // Determine the route type based on available params
 const isQrRoute = !!account;
+const isPreviewRoute = !!menuId;
 const isPageView = !!currentPage || (isSinglePage && !menu?.mainPageId);
 
 // Determine the route type for the dynamic routing
-const routeType = isQrRoute ? "qr" : "v";
-const identifier = isQrRoute ? (account as string) : (accountPath as string);
+const routeType = isPreviewRoute ? "preview" : (isQrRoute ? "qr" : "v");
+const identifier = isPreviewRoute 
+  ? menuId 
+  : (isQrRoute ? (account as string) : (accountPath as string));
 
 // Generate the base URL for navigation
 const baseUrl = identifier && routeType ? `/${routeType}/${identifier}` : "";
