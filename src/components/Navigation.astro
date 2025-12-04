@@ -1,5 +1,6 @@
 ---
-import type { AccountSettings } from '@/types/menu';
+import { Image } from "astro:assets";
+import type { AccountSettings } from "@/types/menu";
 
 interface SectionItem {
   id: string;
@@ -13,23 +14,35 @@ interface Props {
 }
 
 const { sections = [], accountSettings } = Astro.props;
+const hasSections = sections.length > 0;
 ---
 
-{
-  sections.length > 0 && (
-    <div 
-      class="glassmorphism border-b border-[var(--glass-border)] sticky top-0 z-10 w-full"
-      transition:persist="navigation"
-    >
-      <nav class="">
-        <div class="overflow-x-auto scrollbar-hide" id="nav-container">
-          <ul class="flex whitespace-nowrap py-3 px-3 gap-3 items-center">
-            {accountSettings?.logo_url && (
-              <li class="flex-shrink-0">
-                <img src={accountSettings.logo_url} alt="Logo" class="w-16 h-16" />
-              </li>
-            )}
-            {sections.map((section, index) => (
+<div
+  class="glassmorphism border-b border-[var(--glass-border)] sticky top-0 z-10 w-full"
+  transition:persist="navigation"
+>
+  <nav class="">
+    <div class="overflow-x-auto scrollbar-hide" id="nav-container">
+      <ul class="flex whitespace-nowrap py-3 px-3 gap-3 items-center">
+        {
+          accountSettings?.logo_url && (
+            <li class={"flex-shrink-0 " + (!hasSections ? "mx-auto" : "")}>
+              <Image
+                src={accountSettings.logo_url}
+                width={64}
+                height={64}
+                alt="Logo"
+                class="w-16 h-16"
+              />
+            </li>
+          )
+        }
+        {
+          hasSections && sections.map((section, index) => {
+            if (section.pageId === "home") {
+              return null;
+            }
+            return (
               <li class="flex-shrink-0">
                 <button
                   class="section-nav-item text-sm font-medium px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-2"
@@ -39,13 +52,13 @@ const { sections = [], accountSettings } = Astro.props;
                   <span>{section.name}</span>
                 </button>
               </li>
-            ))}
-          </ul>
-        </div>
-      </nav>
+            );
+          })
+        }
+      </ul>
     </div>
-  )
-}
+  </nav>
+</div>
 
 <style>
   :global(.light-mode) {
@@ -70,7 +83,7 @@ const { sections = [], accountSettings } = Astro.props;
     if (window.currentNavObserver) {
       window.currentNavObserver.disconnect();
     }
-    
+
     const navContainer = document.getElementById("nav-container");
     const navButtons = Array.from(
       document.querySelectorAll(".section-nav-item"),
