@@ -20,6 +20,10 @@ if (accountId) {
   accountSettings = settingsResponse.data;
 }
 
+// IMPORTANT: Do NOT cache preview pages
+// Admins need to see real-time changes when editing menus
+Astro.response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+
 // IMPORTANT: Do NOT track analytics for preview views
 // This is a preview mode for the admin panel
 // Analytics tracking is intentionally omitted here
@@ -33,4 +37,3 @@ if (accountId) {
     menuId={menuId as string}
   />
 </MenuLayout>
-

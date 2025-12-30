@@ -36,6 +36,20 @@ if (type === PATH_TYPES.ACCOUNT_ID) {
 }
 
 const menu = data as IMenu;
+
+// Cache the response at Vercel's edge for better performance
+// - s-maxage=60: Cache at CDN edge for 60 seconds
+// - stale-while-revalidate=300: Serve stale content for up to 5 min while revalidating in background
+// This means: instant loads for 60s, then fast loads with background refresh for 5min
+if (!error && menu) {
+  Astro.response.headers.set(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=300'
+  );
+} else {
+  // Don't cache error responses
+  Astro.response.headers.set('Cache-Control', 'no-store');
+}
 ---
 
 <MenuLayout menu={menu} accountSettings={accountSettings}>
