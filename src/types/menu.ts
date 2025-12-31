@@ -6,6 +6,25 @@
 type BackgroundStyle = Record<string, string | number>
 
 /**
+ * Account status from database enum
+ */
+export type AccountStatus = 'active' | 'inactive' | 'suspended'
+
+/**
+ * Access level for the account
+ */
+export type AccountAccessLevel = 'active' | 'trial' | 'grace_period' | 'expired' | 'inactive' | 'suspended'
+
+/**
+ * Account access check result
+ */
+export interface AccountAccess {
+  hasAccess: boolean
+  level: AccountAccessLevel
+  message?: string
+}
+
+/**
  * Represents a single menu item
  */
 export interface MenuItem {

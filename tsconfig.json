@@ -33,6 +33,15 @@
       ],
       "@/constants/*": [
         "src/constants/*"
+      ],
+      "@/providers/*": [
+        "src/providers/*"
+      ],
+      "@/hooks/*": [
+        "src/hooks/*"
+      ],
+      "@/services/account/*": [
+        "src/services/account/*"
       ]
     }
   }

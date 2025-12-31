@@ -2,6 +2,7 @@
 import { generateThemeVariables } from "@/utils/themeUtils";
 import { ClientRouter } from "astro:transitions";
 import type { IMenu, AccountSettings } from "@/types/menu";
+import LoadingOverlay from "@/components/LoadingOverlay.astro";
 
 import "../styles/global.css";
 import "../styles/theme.css";
@@ -116,6 +117,11 @@ const primaryColorStyles = Object.entries(themeVariables)
         />
       )
     }
+
+    {/* Loading overlay - shows during View Transitions */}
+    <div transition:persist="loading-overlay">
+      <LoadingOverlay accountSettings={accountSettings} theme={theme} />
+    </div>
 
     <main class={`${theme} min-h-screen w-full relative`}>
       <div class="relative z-10">

@@ -69,16 +69,20 @@ const hasItemsWithClasses = items.some(
     )
   }
 
-  <ul class="flex flex-col gap-3 p-3" transition:animate="fade">
+  <ul class="menu-items-list flex flex-col gap-3 p-3">
     {
       items.map((item, index) => {
         // For section items, add an ID to use as scroll target
         const sectionId = item.type === "section" ? `section-${item.id}` : "";
+        const isSection = item.type === "section";
+        
         return (
           <div
             id={sectionId}
-            class={item.type === "section" ? "scroll-mt-16 not-first:mt-4" : ""}
-            style={`animation-delay: ${index * 30}ms`}
+            class={`menu-item-wrapper ${isSection ? "scroll-mt-16 not-first:mt-4" : ""}`}
+            style={`--item-index: ${index}`}
+            transition:name={`item-${item.id}`}
+            transition:animate="slide"
           >
             <Item
               item={item}
@@ -94,3 +98,76 @@ const hasItemsWithClasses = items.some(
   </ul>
   {!isSinglePage && <FloatingButton href={baseUrl} />}
 </main>
+
+<style>
+  /* Staggered entrance animation for menu items */
+  .menu-item-wrapper {
+    animation: itemSlideIn 0.4s ease-out backwards;
+    animation-delay: calc(var(--item-index) * 40ms);
+  }
+
+  @keyframes itemSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .menu-item-wrapper {
+      animation: none;
+    }
+  }
+</style>
+
+<style is:global>
+  /* View Transition: Subtle slide for menu items */
+  @keyframes item-slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes item-slide-out {
+    from {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.98);
+    }
+  }
+
+  /* Apply to items during view transitions */
+  [transition\:name^="item-"]::view-transition-old(root) {
+    animation: item-slide-out 200ms ease-in forwards;
+  }
+
+  [transition\:name^="item-"]::view-transition-new(root) {
+    animation: item-slide-in 300ms ease-out forwards;
+  }
+
+  /* Stagger the view transitions for items */
+  ::view-transition-group(item-*) {
+    animation-delay: calc(var(--item-index, 0) * 30ms);
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    [transition\:name^="item-"]::view-transition-old(root),
+    [transition\:name^="item-"]::view-transition-new(root) {
+      animation: none;
+    }
+  }
+</style>

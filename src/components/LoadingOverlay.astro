@@ -1,0 +1,367 @@
+---
+import type { AccountSettings } from "@/types/menu";
+
+interface Props {
+  accountSettings?: AccountSettings;
+  theme?: "light" | "dark";
+}
+
+const { accountSettings, theme = "light" } = Astro.props;
+const logoUrl = accountSettings?.logo_url;
+---
+
+<!-- Loading Overlay - Shows during View Transitions -->
+<div 
+  id="loading-overlay" 
+  class="loading-overlay"
+  data-theme={theme}
+  aria-hidden="true"
+  role="presentation"
+>
+  <!-- Animated backdrop -->
+  <div class="loading-backdrop">
+    <!-- Radial gradient orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  
+  <!-- Glass container -->
+  <div class="loading-content">
+    {logoUrl ? (
+      <div class="logo-container">
+        <img 
+          src={logoUrl} 
+          alt="Loading..."
+          class="loading-logo"
+        />
+        <div class="logo-ring"></div>
+      </div>
+    ) : (
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring spinner-ring-2"></div>
+      </div>
+    )}
+    
+    <!-- Loading dots -->
+    <div class="loading-dots">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 200ms ease-out, visibility 200ms ease-out;
+  }
+
+  /* Show overlay during Astro transitions */
+  :global(html.astro-transitioning) .loading-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* Backdrop with animated orbs */
+  .loading-backdrop {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  /* Light theme backdrop */
+  .loading-overlay[data-theme="light"] .loading-backdrop {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(var(--primary-100-rgb, 241, 245, 249), 0.9) 50%,
+      rgba(255, 255, 255, 0.95) 100%
+    );
+    backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  /* Dark theme backdrop */
+  .loading-overlay[data-theme="dark"] .loading-backdrop {
+    background: linear-gradient(
+      135deg,
+      rgba(10, 10, 15, 0.97) 0%,
+      rgba(var(--primary-950-rgb, 15, 23, 42), 0.95) 50%,
+      rgba(10, 10, 15, 0.97) 100%
+    );
+    backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  /* Animated gradient orbs */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .loading-overlay[data-theme="light"] .orb {
+    background: radial-gradient(
+      circle,
+      rgba(var(--primary-400-rgb, 148, 163, 184), 0.4) 0%,
+      rgba(var(--primary-300-rgb, 203, 213, 225), 0.2) 50%,
+      transparent 70%
+    );
+  }
+
+  .loading-overlay[data-theme="dark"] .orb {
+    background: radial-gradient(
+      circle,
+      rgba(var(--primary-500-rgb, 100, 116, 139), 0.3) 0%,
+      rgba(var(--primary-600-rgb, 71, 85, 105), 0.15) 50%,
+      transparent 70%
+    );
+  }
+
+  .orb-1 {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    left: -50px;
+    animation-delay: 0s;
+  }
+
+  .orb-2 {
+    width: 250px;
+    height: 250px;
+    bottom: -80px;
+    right: -60px;
+    animation-delay: -2s;
+  }
+
+  .orb-3 {
+    width: 200px;
+    height: 200px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: -4s;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(30px, -30px) scale(1.05);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.95);
+    }
+  }
+
+  .orb-3 {
+    animation: float-center 6s ease-in-out infinite;
+  }
+
+  @keyframes float-center {
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    33% {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+    66% {
+      transform: translate(-50%, -50%) scale(0.9);
+    }
+  }
+
+  /* Content container */
+  .loading-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    z-index: 1;
+  }
+
+  /* Logo container with ring animation */
+  .logo-container {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .loading-logo {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    border-radius: 16px;
+    animation: pulse-logo 2s ease-in-out infinite;
+    z-index: 2;
+  }
+
+  .loading-overlay[data-theme="light"] .loading-logo {
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+  }
+
+  .loading-overlay[data-theme="dark"] .loading-logo {
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+  }
+
+  @keyframes pulse-logo {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(0.95);
+      opacity: 0.85;
+    }
+  }
+
+  /* Rotating ring around logo */
+  .logo-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    animation: spin-ring 2s linear infinite;
+  }
+
+  .loading-overlay[data-theme="light"] .logo-ring {
+    border-top-color: var(--primary-500, #64748b);
+    border-right-color: rgba(var(--primary-500-rgb, 100, 116, 139), 0.3);
+    border-bottom-color: rgba(var(--primary-500-rgb, 100, 116, 139), 0.1);
+    border-left-color: rgba(var(--primary-500-rgb, 100, 116, 139), 0.3);
+  }
+
+  .loading-overlay[data-theme="dark"] .logo-ring {
+    border-top-color: var(--primary-400, #94a3b8);
+    border-right-color: rgba(var(--primary-400-rgb, 148, 163, 184), 0.3);
+    border-bottom-color: rgba(var(--primary-400-rgb, 148, 163, 184), 0.1);
+    border-left-color: rgba(var(--primary-400-rgb, 148, 163, 184), 0.3);
+  }
+
+  @keyframes spin-ring {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Fallback spinner when no logo */
+  .loading-spinner {
+    position: relative;
+    width: 64px;
+    height: 64px;
+  }
+
+  .spinner-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    animation: spin-ring 1.2s linear infinite;
+  }
+
+  .loading-overlay[data-theme="light"] .spinner-ring {
+    border-top-color: var(--primary-600, #475569);
+  }
+
+  .loading-overlay[data-theme="dark"] .spinner-ring {
+    border-top-color: var(--primary-400, #94a3b8);
+  }
+
+  .spinner-ring-2 {
+    inset: 8px;
+    animation-direction: reverse;
+    animation-duration: 0.8s;
+  }
+
+  .loading-overlay[data-theme="light"] .spinner-ring-2 {
+    border-top-color: var(--primary-400, #94a3b8);
+  }
+
+  .loading-overlay[data-theme="dark"] .spinner-ring-2 {
+    border-top-color: var(--primary-500, #64748b);
+  }
+
+  /* Loading dots */
+  .loading-dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: bounce-dot 1.4s ease-in-out infinite;
+  }
+
+  .loading-overlay[data-theme="light"] .dot {
+    background: var(--primary-500, #64748b);
+  }
+
+  .loading-overlay[data-theme="dark"] .dot {
+    background: var(--primary-400, #94a3b8);
+  }
+
+  .dot:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes bounce-dot {
+    0%, 80%, 100% {
+      transform: scale(0.6);
+      opacity: 0.4;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .orb,
+    .loading-logo,
+    .logo-ring,
+    .spinner-ring,
+    .dot {
+      animation: none;
+    }
+    
+    .loading-logo {
+      transform: scale(1);
+      opacity: 1;
+    }
+    
+    .dot {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+  }
+</style>
+

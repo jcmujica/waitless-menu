@@ -1,0 +1,330 @@
+---
+import type { AccountSettings, AccountAccessLevel } from "@/types/menu";
+
+interface Props {
+  accountSettings?: AccountSettings;
+  theme?: "light" | "dark";
+  level?: AccountAccessLevel;
+  message?: string;
+}
+
+const { 
+  accountSettings, 
+  theme = "light",
+  level = "inactive",
+  message = "This menu is currently unavailable"
+} = Astro.props;
+
+const logoUrl = accountSettings?.logo_url;
+const accountName = accountSettings?.name;
+
+// Different messages based on access level
+const getDisplayMessage = () => {
+  switch (level) {
+    case 'suspended':
+      return {
+        title: 'Menu Temporarily Unavailable',
+        subtitle: 'This menu is temporarily unavailable. Please check back later.',
+        icon: 'pause'
+      }
+    case 'expired':
+      return {
+        title: 'Menu Unavailable',
+        subtitle: 'This menu is currently not available. The business may be updating their subscription.',
+        icon: 'clock'
+      }
+    case 'inactive':
+    default:
+      return {
+        title: 'Menu Unavailable',
+        subtitle: message || 'This menu is currently not available.',
+        icon: 'info'
+      }
+  }
+}
+
+const displayInfo = getDisplayMessage();
+---
+
+<div 
+  class="unavailable-container"
+  data-theme={theme}
+>
+  <!-- Subtle background pattern -->
+  <div class="background-pattern"></div>
+  
+  <!-- Content -->
+  <div class="content">
+    <!-- Logo or Icon -->
+    <div class="logo-section">
+      {logoUrl ? (
+        <img 
+          src={logoUrl} 
+          alt={accountName || "Restaurant"}
+          class="logo"
+        />
+      ) : (
+        <div class="icon-container">
+          {displayInfo.icon === 'pause' && (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="10" y1="15" x2="10" y2="9"/>
+              <line x1="14" y1="15" x2="14" y2="9"/>
+            </svg>
+          )}
+          {displayInfo.icon === 'clock' && (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          )}
+          {displayInfo.icon === 'info' && (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+          )}
+        </div>
+      )}
+    </div>
+
+    <!-- Restaurant Name (if available) -->
+    {accountName && (
+      <h2 class="restaurant-name">{accountName}</h2>
+    )}
+
+    <!-- Message -->
+    <div class="message-section">
+      <h1 class="title">{displayInfo.title}</h1>
+      <p class="subtitle">{displayInfo.subtitle}</p>
+    </div>
+
+    <!-- Contact Info (if available) -->
+    {(accountSettings?.contact_email || accountSettings?.contact_phone) && (
+      <div class="contact-section">
+        <p class="contact-label">For inquiries, please contact:</p>
+        {accountSettings.contact_phone && (
+          <a href={`tel:${accountSettings.contact_phone}`} class="contact-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="contact-icon">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            {accountSettings.contact_phone}
+          </a>
+        )}
+        {accountSettings.contact_email && (
+          <a href={`mailto:${accountSettings.contact_email}`} class="contact-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="contact-icon">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            {accountSettings.contact_email}
+          </a>
+        )}
+      </div>
+    )}
+
+    <!-- Footer -->
+    <div class="footer">
+      <p class="powered-by">
+        Powered by <a href="https://waitless.tech" target="_blank" rel="noopener noreferrer">Waitless</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .unavailable-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Light theme */
+  .unavailable-container[data-theme="light"] {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    color: #1e293b;
+  }
+
+  .unavailable-container[data-theme="light"] .background-pattern {
+    background-image: radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.15) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+
+  /* Dark theme */
+  .unavailable-container[data-theme="dark"] {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #f1f5f9;
+  }
+
+  .unavailable-container[data-theme="dark"] .background-pattern {
+    background-image: radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.08) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+
+  .background-pattern {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+  }
+
+  /* Logo Section */
+  .logo-section {
+    margin-bottom: 24px;
+  }
+
+  .logo {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    border-radius: 16px;
+    opacity: 0.7;
+  }
+
+  .unavailable-container[data-theme="light"] .logo {
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+  }
+
+  .unavailable-container[data-theme="dark"] .logo {
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  }
+
+  .icon-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .unavailable-container[data-theme="light"] .icon-container {
+    background: rgba(148, 163, 184, 0.15);
+    color: #64748b;
+  }
+
+  .unavailable-container[data-theme="dark"] .icon-container {
+    background: rgba(148, 163, 184, 0.1);
+    color: #94a3b8;
+  }
+
+  .icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Restaurant Name */
+  .restaurant-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    opacity: 0.7;
+  }
+
+  /* Message Section */
+  .message-section {
+    margin-bottom: 32px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    line-height: 1.6;
+    opacity: 0.7;
+    max-width: 320px;
+  }
+
+  /* Contact Section */
+  .contact-section {
+    padding: 20px 24px;
+    border-radius: 12px;
+    margin-bottom: 32px;
+    width: 100%;
+  }
+
+  .unavailable-container[data-theme="light"] .contact-section {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  .unavailable-container[data-theme="dark"] .contact-section {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+  }
+
+  .contact-label {
+    font-size: 0.875rem;
+    opacity: 0.6;
+    margin-bottom: 12px;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    padding: 8px 0;
+    transition: opacity 0.2s;
+  }
+
+  .unavailable-container[data-theme="light"] .contact-link {
+    color: var(--primary-600, #475569);
+  }
+
+  .unavailable-container[data-theme="dark"] .contact-link {
+    color: var(--primary-400, #94a3b8);
+  }
+
+  .contact-link:hover {
+    opacity: 0.8;
+  }
+
+  .contact-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: auto;
+  }
+
+  .powered-by {
+    font-size: 0.75rem;
+    opacity: 0.4;
+  }
+
+  .powered-by a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .powered-by a:hover {
+    text-decoration: underline;
+  }
+</style>
+

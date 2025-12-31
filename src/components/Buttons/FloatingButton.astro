@@ -6,7 +6,8 @@ interface Props {
 const { href } = Astro.props;
 ---
 
-<a href={href}>
+<!-- Use 'viewport' for instant prefetch on both mobile and desktop -->
+<a href={href} data-astro-prefetch="viewport">
   <button
     type="button"
     class={"fixed bottom-4 left-4 cursor-pointer rounded-full bg-primary-500 [&_svg]:size-8 [&_svg]:text-primary-50 flex items-center justify-center h-12 w-12"}

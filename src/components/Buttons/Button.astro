@@ -2,6 +2,15 @@
 interface Props {
   href: string;
   variant?: "primary" | "secondary" | "outline" | "ghost";
+  /** 
+   * Prefetch strategy:
+   * - 'viewport': Prefetch when visible (best for menu buttons - works on mobile)
+   * - 'hover': Prefetch on hover (desktop only)
+   * - 'tap': Prefetch on touchstart (mobile)
+   * - 'load': Prefetch immediately
+   * - false: Disable prefetch
+   */
+  prefetch?: 'viewport' | 'hover' | 'tap' | 'load' | false;
 }
 
 // Base classes shared by all button variants
@@ -19,10 +28,14 @@ const variantClasses = {
     "text-[var(--primary-600)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-700)] dark:hover:bg-accent/50",
 };
 
-const { href, variant = "primary" } = Astro.props;
+// Default to 'viewport' - works on both desktop and mobile
+const { href, variant = "primary", prefetch = 'viewport' } = Astro.props;
 ---
 
-<a href={href}>
+<a 
+  href={href}
+  data-astro-prefetch={prefetch ? prefetch : undefined}
+>
   <button
     type="button"
     class={`cursor-pointer w-full max-w-xs mx-auto ${baseClasses} ${variantClasses[variant]}`}
