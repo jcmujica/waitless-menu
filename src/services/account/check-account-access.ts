@@ -27,12 +27,29 @@ export async function checkAccountAccess(accountId: string): Promise<AccountAcce
       .eq('id', accountId)
       .single()
 
-    if (accountError || !account) {
+    if (accountError) {
+      // Check if account doesn't exist (PGRST116 = no rows found)
+      if (accountError.code === 'PGRST116' || accountError.message?.includes('0 rows')) {
+        return {
+          hasAccess: false,
+          level: 'inactive',
+          message: 'Account not found'
+        }
+      }
       console.error('Error fetching account:', accountError)
-      // If we can't find the account, allow access (menu already validates account exists)
+      // For other errors, allow access - don't block menus due to transient errors
       return {
         hasAccess: true,
         level: 'active'
+      }
+    }
+
+    if (!account) {
+      // Account doesn't exist
+      return {
+        hasAccess: false,
+        level: 'inactive',
+        message: 'Account not found'
       }
     }
 
