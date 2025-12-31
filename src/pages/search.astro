@@ -1,0 +1,712 @@
+---
+import { searchMenus, type SearchResult } from "@/services/search/search-menus";
+import "../styles/global.css";
+import "../styles/theme.css";
+
+// Get search query from URL params
+const url = new URL(Astro.request.url);
+const query = url.searchParams.get('q') || '';
+
+// Perform search if query exists
+let results: SearchResult[] = [];
+let searchError: Error | null = null;
+
+if (query.trim().length >= 2) {
+  const response = await searchMenus(query);
+  if (response.error) {
+    searchError = response.error;
+  } else {
+    results = response.data || [];
+  }
+}
+
+// Generate menu URL for a result
+const getMenuUrl = (result: SearchResult) => {
+  return result.path ? `/v/${result.path}` : `/qr/${result.accountId}`;
+};
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>Search Menus | Waitless</title>
+    <meta name="description" content="Search for restaurant menus on Waitless" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div class="search-page">
+      <!-- Background effects -->
+      <div class="background-gradient"></div>
+      <div class="background-pattern"></div>
+      <div class="glow-effect glow-1"></div>
+      <div class="glow-effect glow-2"></div>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Header -->
+        <header class="header">
+          <a href="https://waitless.tech" class="logo-link" target="_blank" rel="noopener noreferrer">
+            <div class="logo-wrapper">
+              <img 
+                src="https://pandgryacrtbbgtnphwc.supabase.co/storage/v1/object/public/public_assets/waitless/waitless.webp" 
+                alt="Waitless" 
+                class="logo-image"
+              />
+            </div>
+          </a>
+        </header>
+
+        <!-- Search Section -->
+        <div class="search-section">
+          <h1 class="title">Find a Menu</h1>
+          <p class="subtitle">Search restaurants and browse their digital menus</p>
+          
+          <form action="/search" method="get" class="search-form">
+            <div class="search-input-wrapper">
+              <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+              <input
+                type="text"
+                name="q"
+                value={query}
+                placeholder="Restaurant name or URL..."
+                class="search-input"
+                autofocus
+                autocomplete="off"
+              />
+              {query && (
+                <a href="/search" class="clear-button" aria-label="Clear search">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </a>
+              )}
+            </div>
+            <button type="submit" class="search-button">
+              Search
+            </button>
+          </form>
+        </div>
+
+        <!-- Results Section -->
+        {query.trim().length >= 2 && (
+          <div class="results-section">
+            {searchError ? (
+              <div class="error-message">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <p>Something went wrong. Please try again.</p>
+              </div>
+            ) : results.length === 0 ? (
+              <div class="no-results">
+                <div class="no-results-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                  </svg>
+                </div>
+                <h3>No menus found</h3>
+                <p>We couldn't find any menus matching "<strong>{query}</strong>"</p>
+                <p class="hint">Try a different search term or check the spelling</p>
+              </div>
+            ) : (
+              <>
+                <p class="results-count">
+                  Found <strong>{results.length}</strong> {results.length === 1 ? 'menu' : 'menus'}
+                </p>
+                <div class="results-grid">
+                  {results.map((result, index) => (
+                    <a 
+                      href={getMenuUrl(result)} 
+                      class="result-card"
+                      style={`--index: ${index}`}
+                    >
+                      <div class="result-logo">
+                        {result.logoUrl ? (
+                          <img src={result.logoUrl} alt={result.accountName} />
+                        ) : (
+                          <div class="logo-placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M3 11l18-5v12L3 14v-3z"/>
+                              <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <div class="result-info">
+                        <h3 class="result-name">{result.accountName}</h3>
+                        <p class="result-menu">{result.menuName}</p>
+                        {result.path && (
+                          <span class="result-path">waitless.tech/v/{result.path}</span>
+                        )}
+                      </div>
+                      <div class="result-arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M5 12h14"/>
+                          <path d="M12 5l7 7-7 7"/>
+                        </svg>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        <!-- Empty state when no search -->
+        {!query && (
+          <div class="empty-state">
+            <div class="suggestions">
+              <p class="suggestions-label">Popular searches</p>
+              <div class="suggestion-tags">
+                <a href="/search?q=pizza" class="suggestion-tag">Pizza</a>
+                <a href="/search?q=sushi" class="suggestion-tag">Sushi</a>
+                <a href="/search?q=cafe" class="suggestion-tag">Café</a>
+                <a href="/search?q=burger" class="suggestion-tag">Burger</a>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <!-- Footer -->
+        <footer class="footer">
+          <p>
+            Powered by <a href="https://waitless.tech" target="_blank" rel="noopener noreferrer">Waitless</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .search-page {
+        min-height: 100vh;
+        background: var(--neutral-950);
+        color: var(--neutral-100);
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Background effects */
+      .background-gradient {
+        position: fixed;
+        inset: 0;
+        background: 
+          radial-gradient(ellipse 80% 50% at 50% -20%, rgba(244, 63, 94, 0.12) 0%, transparent 50%),
+          radial-gradient(ellipse 60% 40% at 100% 100%, rgba(244, 63, 94, 0.08) 0%, transparent 40%),
+          linear-gradient(180deg, var(--neutral-950) 0%, var(--neutral-900) 100%);
+        pointer-events: none;
+      }
+
+      .background-pattern {
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(circle at 1px 1px, var(--neutral-800) 1px, transparent 0);
+        background-size: 40px 40px;
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      .glow-effect {
+        position: fixed;
+        border-radius: 50%;
+        pointer-events: none;
+        filter: blur(80px);
+      }
+
+      .glow-1 {
+        top: 10%;
+        left: 20%;
+        width: 400px;
+        height: 400px;
+        background: rgba(244, 63, 94, 0.08);
+        animation: float 15s ease-in-out infinite;
+      }
+
+      .glow-2 {
+        bottom: 20%;
+        right: 10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(244, 63, 94, 0.06);
+        animation: float 20s ease-in-out infinite reverse;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(30px, -30px); }
+      }
+
+      /* Content container */
+      .content {
+        position: relative;
+        z-index: 1;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px 20px 48px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Header */
+      .header {
+        padding: 16px 0 32px;
+      }
+
+      .logo-link {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        transition: opacity 0.2s;
+      }
+
+      .logo-link:hover {
+        opacity: 0.8;
+      }
+
+      .logo-wrapper {
+        background: var(--rose-500);
+        padding: 8px 12px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .logo-image {
+        height: 24px;
+        width: auto;
+        object-fit: contain;
+      }
+
+      /* Search Section */
+      .search-section {
+        padding: 32px 0 48px;
+        text-align: center;
+      }
+
+      .title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 12px;
+        background: linear-gradient(135deg, var(--neutral-50) 0%, var(--neutral-300) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        font-size: 1.125rem;
+        color: var(--neutral-400);
+        margin-bottom: 32px;
+      }
+
+      .search-form {
+        display: flex;
+        gap: 12px;
+        max-width: 560px;
+        margin: 0 auto;
+      }
+
+      .search-input-wrapper {
+        flex: 1;
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 14px;
+        width: 18px;
+        height: 18px;
+        color: var(--neutral-500);
+        pointer-events: none;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 10px 40px;
+        font-size: 0.9375rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(244, 63, 94, 0.2);
+        border-radius: 10px;
+        color: var(--neutral-100);
+        outline: none;
+        transition: all 0.2s;
+      }
+
+      .search-input::placeholder {
+        color: var(--neutral-500);
+      }
+
+      .search-input:focus {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--rose-500);
+        box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15);
+      }
+
+      .clear-button {
+        position: absolute;
+        right: 12px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        color: var(--neutral-400);
+        transition: all 0.2s;
+      }
+
+      .clear-button:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--neutral-200);
+      }
+
+      .clear-button svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .search-button {
+        padding: 10px 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, var(--rose-500) 0%, var(--rose-600) 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+
+      .search-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(244, 63, 94, 0.3);
+      }
+
+      .search-button:active {
+        transform: translateY(0);
+      }
+
+      /* Results Section */
+      .results-section {
+        flex: 1;
+      }
+
+      .results-count {
+        font-size: 0.875rem;
+        color: var(--neutral-400);
+        margin-bottom: 20px;
+      }
+
+      .results-count strong {
+        color: var(--rose-400);
+      }
+
+      .results-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .result-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 20px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s;
+        animation: slideIn 0.4s ease-out backwards;
+        animation-delay: calc(var(--index) * 50ms);
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .result-card:hover {
+        background: rgba(244, 63, 94, 0.08);
+        border-color: rgba(244, 63, 94, 0.2);
+        transform: translateX(4px);
+      }
+
+      .result-logo {
+        width: 56px;
+        height: 56px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--neutral-800);
+      }
+
+      .result-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .logo-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--neutral-500);
+      }
+
+      .logo-placeholder svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .result-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .result-name {
+        font-size: 1.0625rem;
+        font-weight: 600;
+        color: var(--neutral-100);
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .result-menu {
+        font-size: 0.875rem;
+        color: var(--neutral-400);
+        margin-bottom: 4px;
+      }
+
+      .result-path {
+        font-size: 0.75rem;
+        color: var(--rose-400);
+        font-family: monospace;
+      }
+
+      .result-arrow {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        color: var(--neutral-500);
+        transition: all 0.2s;
+      }
+
+      .result-card:hover .result-arrow {
+        color: var(--rose-400);
+        transform: translateX(4px);
+      }
+
+      .result-arrow svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      /* No results */
+      .no-results {
+        text-align: center;
+        padding: 48px 20px;
+      }
+
+      .no-results-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(244, 63, 94, 0.1);
+        border-radius: 50%;
+        color: var(--rose-400);
+      }
+
+      .no-results-icon svg {
+        width: 32px;
+        height: 32px;
+      }
+
+      .no-results h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--neutral-100);
+      }
+
+      .no-results p {
+        color: var(--neutral-400);
+        margin-bottom: 4px;
+      }
+
+      .no-results strong {
+        color: var(--neutral-200);
+      }
+
+      .no-results .hint {
+        font-size: 0.875rem;
+        color: var(--neutral-500);
+        margin-top: 12px;
+      }
+
+      /* Error message */
+      .error-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 20px;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 12px;
+        color: var(--red-400);
+      }
+
+      .error-message svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+
+      /* Empty state */
+      .empty-state {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 0;
+      }
+
+      .suggestions {
+        text-align: center;
+      }
+
+      .suggestions-label {
+        font-size: 0.8125rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--neutral-500);
+        margin-bottom: 16px;
+      }
+
+      .suggestion-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .suggestion-tag {
+        padding: 10px 18px;
+        font-size: 0.9375rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 100px;
+        color: var(--neutral-300);
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+
+      .suggestion-tag:hover {
+        background: rgba(244, 63, 94, 0.1);
+        border-color: rgba(244, 63, 94, 0.3);
+        color: var(--rose-300);
+      }
+
+      /* Footer */
+      .footer {
+        padding: 32px 0 0;
+        text-align: center;
+      }
+
+      .footer p {
+        font-size: 0.75rem;
+        color: var(--neutral-600);
+      }
+
+      .footer a {
+        color: var(--rose-500);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+
+      .footer a:hover {
+        color: var(--rose-400);
+      }
+
+      /* Responsive */
+      @media (max-width: 640px) {
+        .title {
+          font-size: 2rem;
+        }
+
+        .subtitle {
+          font-size: 1rem;
+        }
+
+        .search-form {
+          flex-direction: column;
+        }
+
+        .search-button {
+          width: 100%;
+        }
+
+        .result-card {
+          padding: 14px 16px;
+        }
+
+        .result-logo {
+          width: 48px;
+          height: 48px;
+        }
+
+        .result-name {
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </body>
+</html>
+

@@ -1,6 +1,6 @@
-import { c as createComponent, a as createAstro, r as renderComponent, b as renderTemplate } from '../../../chunks/astro/server_BXBsx2gE.mjs';
-import { f as fetchMenuById } from '../../../chunks/fetch-menu-by-id_DOhi9zZV.mjs';
-import { f as fetchRestaurantSettings, $ as $$MenuLayout, a as $$AccountUnavailable, M as MenuCache, b as $$Menu } from '../../../chunks/MenuCache_B5cElaqR.mjs';
+import { c as createComponent, a as createAstro, r as renderComponent, b as renderTemplate } from '../../../chunks/astro/server_DkQs4QDD.mjs';
+import { f as fetchMenuById } from '../../../chunks/fetch-menu-by-id_CWAc0sg5.mjs';
+import { f as fetchRestaurantSettings, $ as $$MenuLayout, a as $$AccountUnavailable, M as MenuCache, b as $$Menu } from '../../../chunks/MenuCache_ODoAO_Kv.mjs';
 export { renderers } from '../../../renderers.mjs';
 
 const $$Astro = createAstro();

@@ -1,6 +1,6 @@
-import { s as supabase } from './MenuCache_B5cElaqR.mjs';
+import { s as supabase } from './index_BOrtUAlT.mjs';
 
-const fetchMenuById = async (menuId) => {
+const fetchMenu = async (account) => {
   try {
     const supabaseClient = supabase();
     const { data: menuData, error: menuError } = await supabaseClient.from("menus").select(`
@@ -8,7 +8,6 @@ const fetchMenuById = async (menuId) => {
         name,
         type,
         main_page_id,
-        account_id,
         menu_appearances (
           theme,
           style,
@@ -20,9 +19,14 @@ const fetchMenuById = async (menuId) => {
           show_descriptions,
           show_prices
         )
-      `).eq("id", menuId).single();
+      `).eq("account_id", account).eq("is_active", true).single();
     if (menuError || !menuData) {
-      console.error("Error fetching menu by ID:", menuError);
+      console.error("Error fetching menu:", menuError);
+      if (menuError?.code === "PGRST116" || menuError?.message?.includes("No rows")) {
+        return {
+          error: new Error("No active menu found. Please set a menu as active in the admin panel.")
+        };
+      }
       return { error: menuError || new Error("Menu not found") };
     }
     const { data: pagesData, error: pagesError } = await supabaseClient.from("menu_pages").select("id, name, position").eq("menu_id", menuData.id).order("position");
@@ -101,14 +105,50 @@ const fetchMenuById = async (menuId) => {
       },
       pages
     };
-    return {
-      data: menu,
-      accountId: menuData.account_id
-    };
+    return { data: menu };
   } catch (error) {
-    console.error("Error fetching menu by ID:", error);
+    console.error("Error fetching menu:", error);
     return { error: error instanceof Error ? error : new Error("Unknown error") };
   }
 };
 
-export { fetchMenuById as f };
+async function checkAccountAccess(accountId) {
+  try {
+    const supabaseClient = supabase();
+    const { data: account, error: accountError } = await supabaseClient.from("accounts").select("account_status").eq("id", accountId).single();
+    if (accountError || !account) {
+      console.error("Error fetching account:", accountError);
+      return {
+        hasAccess: true,
+        level: "active"
+      };
+    }
+    const accountData = account;
+    if (accountData.account_status === "inactive") {
+      return {
+        hasAccess: false,
+        level: "inactive",
+        message: "This menu is currently unavailable"
+      };
+    }
+    if (accountData.account_status === "suspended") {
+      return {
+        hasAccess: false,
+        level: "suspended",
+        message: "This menu is temporarily unavailable"
+      };
+    }
+    return {
+      hasAccess: true,
+      level: "active"
+    };
+  } catch (error) {
+    console.error("Error checking account access:", error);
+    return {
+      hasAccess: true,
+      level: "active"
+    };
+  }
+}
+
+export { checkAccountAccess as c, fetchMenu as f };

@@ -142,9 +142,16 @@ const displayInfo = getDisplayMessage();
 
     <!-- Footer -->
     <div class="footer">
-      <p class="powered-by">
-        Powered by <a href="https://waitless.tech" target="_blank" rel="noopener noreferrer">Waitless</a>
-      </p>
+      <a href="https://waitless.tech" target="_blank" rel="noopener noreferrer" class="powered-by-link">
+        <span class="powered-by-text">Powered by</span>
+        <div class="powered-by-logo-wrapper">
+          <img 
+            src="https://pandgryacrtbbgtnphwc.supabase.co/storage/v1/object/public/public_assets/waitless/waitless.webp" 
+            alt="Waitless" 
+            class="powered-by-logo"
+          />
+        </div>
+      </a>
     </div>
   </div>
 </div>
@@ -344,20 +351,36 @@ const displayInfo = getDisplayMessage();
     margin-top: auto;
   }
 
-  .powered-by {
-    font-size: 0.75rem;
-    color: var(--neutral-600);
-  }
-
-  .powered-by a {
-    color: var(--rose-500);
+  .powered-by-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     text-decoration: none;
-    font-weight: 600;
-    transition: color 0.2s ease;
+    transition: opacity 0.2s;
   }
 
-  .powered-by a:hover {
-    color: var(--rose-400);
+  .powered-by-link:hover {
+    opacity: 0.8;
+  }
+
+  .powered-by-text {
+    font-size: 0.75rem;
+    color: var(--neutral-500);
+  }
+
+  .powered-by-logo-wrapper {
+    background: var(--rose-500);
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .powered-by-logo {
+    height: 14px;
+    width: auto;
+    object-fit: contain;
   }
 
   /* Responsive adjustments */

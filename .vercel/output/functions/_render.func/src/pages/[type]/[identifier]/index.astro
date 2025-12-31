@@ -113,8 +113,8 @@ if (menu && accountAccess.hasAccess) {
 }
 ---
 
-{/* Show unavailable page if account doesn't have access */}
-{!accountAccess.hasAccess ? (
+{/* Show unavailable page if account doesn't have access or menu is missing */}
+{!accountAccess.hasAccess || !menu ? (
   <MenuLayout menu={menu} accountSettings={accountSettings}>
     <AccountUnavailable 
       accountSettings={accountSettings}
@@ -126,15 +126,13 @@ if (menu && accountAccess.hasAccess) {
 ) : (
   <MenuLayout menu={menu} accountSettings={accountSettings}>
     {/* Client-side cache for instant navigation between menu pages */}
-    {menu && (
-      <MenuCache 
-        client:load
-        type={type as 'qr' | 'v'}
-        identifier={identifier as string}
-        menu={menu}
-        accountSettings={accountSettings}
-      />
-    )}
+    <MenuCache 
+      client:load
+      type={type as 'qr' | 'v'}
+      identifier={identifier as string}
+      menu={menu}
+      accountSettings={accountSettings}
+    />
     <Menu
       menu={menu}
       account={type === PATH_TYPES.ACCOUNT_ID ? identifier : undefined}
