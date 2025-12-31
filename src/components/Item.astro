@@ -103,7 +103,7 @@ const itemData = item
         )}
         <div class={`flex flex-col gap-1 grow py-3`}>
           {extraSpace && <div class="h-2.5 mt-1" />}
-          <h3 class="font-bold text-md line-clamp-1">{name}</h3>
+          <h3 class="font-bold text-md line-clamp-1 item-name">{name}</h3>
           {showDescriptions && description && (
             <p class="text-xs line-clamp-1 opacity-70">{description}</p>
           )}
@@ -161,6 +161,10 @@ const itemData = item
       border: 1px solid var(--glass-border);
     }
 
+    .item-name {
+      color: var(--primary-700);
+    }
+
     .price {
       color: var(--primary-800);
     }
@@ -170,6 +174,10 @@ const itemData = item
     .menu-item {
       background-color: var(--neutral-900);
       border: 1px solid var(--glass-border);
+    }
+
+    .item-name {
+      color: var(--primary-300);
     }
 
     .price {
