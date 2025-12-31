@@ -10,8 +10,26 @@ const { href } = Astro.props;
 <a href={href} data-astro-prefetch="viewport">
   <button
     type="button"
-    class={"fixed bottom-4 left-4 cursor-pointer rounded-full bg-primary-500 [&_svg]:size-8 [&_svg]:text-primary-50 flex items-center justify-center h-12 w-12"}
+    class={"fixed bottom-4 left-4 cursor-pointer rounded-full bg-primary-500 [&_svg]:size-8 [&_svg]:text-primary-50 flex items-center justify-center h-12 w-12 border-2 border-white/20 transition-shadow"}
   >
     <ChevronLeft />
   </button>
 </a>
+
+<style>
+  :global(.light-mode) a[data-astro-prefetch] button {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  :global(.light-mode) a[data-astro-prefetch] button:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  :global(.dark-mode) a[data-astro-prefetch] button {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  :global(.dark-mode) a[data-astro-prefetch] button:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+</style>

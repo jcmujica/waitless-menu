@@ -148,27 +148,17 @@ const itemData = item
 
 <style>
   .menu-item {
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-    will-change: transform;
-  }
-
-  .menu-item:hover {
-    transform: translateY(-2px);
+    transition: transform 0.15s ease;
   }
 
   .menu-item:active {
-    transform: translateY(0) scale(0.98);
+    transform: scale(0.98);
   }
 
   :global(.light-mode) {
     .menu-item {
       background-color: var(--primary-50);
       border: 1px solid var(--glass-border);
-    }
-
-    .menu-item:hover {
-      background-color: var(--primary-100);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     .price {
@@ -182,11 +172,6 @@ const itemData = item
       border: 1px solid var(--glass-border);
     }
 
-    .menu-item:hover {
-      background-color: var(--neutral-800);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
     .price {
       color: var(--primary-200);
     }
@@ -198,7 +183,6 @@ const itemData = item
       transition: none;
     }
     
-    .menu-item:hover,
     .menu-item:active {
       transform: none;
     }
