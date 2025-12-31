@@ -47,10 +47,8 @@ if (!isValidRouteType) {
 } else if (type === PATH_TYPES.ACCOUNT_PATH) {
   // Vanity URL - resolve path to account ID first
   const settingsResponse = await fetchRestaurantSettingsByPath(identifier as string);
-  accountSettings = settingsResponse.data;
-  accountId = accountSettings?.account_id;
   
-  if (!accountId) {
+  if (settingsResponse.error || !settingsResponse.data) {
     // Path doesn't exist
     accountAccess = { 
       hasAccess: false, 
@@ -58,8 +56,20 @@ if (!isValidRouteType) {
       message: 'This menu doesn\'t exist. Please check the URL and try again.' 
     };
   } else {
-    // Check account access
-    accountAccess = await checkAccountAccess(accountId);
+    accountSettings = settingsResponse.data;
+    accountId = accountSettings?.account_id;
+    
+    if (!accountId) {
+      // Path exists but no account_id (shouldn't happen, but handle gracefully)
+      accountAccess = { 
+        hasAccess: false, 
+        level: 'not_found', 
+        message: 'This menu doesn\'t exist. Please check the URL and try again.' 
+      };
+    } else {
+      // Check account access
+      accountAccess = await checkAccountAccess(accountId);
+    }
   }
 }
 
@@ -71,29 +81,49 @@ if (accountAccess.hasAccess && accountId) {
       fetchMenu(accountId),
       fetchRestaurantSettings(accountId)
     ]);
-    menu = menuResponse.data;
-    accountSettings = settingsResponse.data;
     
-    // If menu doesn't exist for valid account
-    if (!menu && !menuResponse.error) {
+    if (menuResponse.error) {
+      // Error fetching menu - show unavailable
       accountAccess = { 
         hasAccess: false, 
-        level: 'not_found', 
-        message: 'This restaurant hasn\'t set up their menu yet. Please check back later.' 
+        level: 'inactive', 
+        message: 'This menu is currently unavailable.' 
       };
+    } else {
+      menu = menuResponse.data;
+      accountSettings = settingsResponse.data;
+      
+      // If menu doesn't exist for valid account
+      if (!menu) {
+        accountAccess = { 
+          hasAccess: false, 
+          level: 'not_found', 
+          message: 'This restaurant hasn\'t set up their menu yet. Please check back later.' 
+        };
+      }
     }
   } else if (type === PATH_TYPES.ACCOUNT_PATH) {
     // We already have settings from above, just fetch menu
     const menuResponse = await fetchMenu(accountId);
-    menu = menuResponse.data;
     
-    // If menu doesn't exist for valid account
-    if (!menu && !menuResponse.error) {
+    if (menuResponse.error) {
+      // Error fetching menu - show unavailable
       accountAccess = { 
         hasAccess: false, 
-        level: 'not_found', 
-        message: 'This restaurant hasn\'t set up their menu yet. Please check back later.' 
+        level: 'inactive', 
+        message: 'This menu is currently unavailable.' 
       };
+    } else {
+      menu = menuResponse.data;
+      
+      // If menu doesn't exist for valid account
+      if (!menu) {
+        accountAccess = { 
+          hasAccess: false, 
+          level: 'not_found', 
+          message: 'This restaurant hasn\'t set up their menu yet. Please check back later.' 
+        };
+      }
     }
   }
 }
