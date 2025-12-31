@@ -10,7 +10,7 @@ const { href } = Astro.props;
 <a href={href} data-astro-prefetch="viewport">
   <button
     type="button"
-    class={"fixed bottom-4 left-4 cursor-pointer rounded-full bg-primary-500 [&_svg]:size-8 [&_svg]:text-primary-50 flex items-center justify-center h-12 w-12 border-2 border-white/20 transition-shadow"}
+    class={"fixed bottom-6 left-6 cursor-pointer rounded-full bg-primary-500 [&_svg]:size-10 [&_svg]:text-primary-50 flex items-center justify-center h-16 w-16 border-2 border-white/30 transition-shadow z-50"}
   >
     <ChevronLeft />
   </button>
@@ -18,18 +18,18 @@ const { href } = Astro.props;
 
 <style>
   :global(.light-mode) a[data-astro-prefetch] button {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.15);
   }
 
   :global(.light-mode) a[data-astro-prefetch] button:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25), 0 4px 8px rgba(0, 0, 0, 0.2);
   }
 
   :global(.dark-mode) a[data-astro-prefetch] button {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
   }
 
   :global(.dark-mode) a[data-astro-prefetch] button:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4);
   }
 </style>
