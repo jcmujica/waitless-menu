@@ -13,7 +13,7 @@ export type AccountStatus = 'active' | 'inactive' | 'suspended'
 /**
  * Access level for the account
  */
-export type AccountAccessLevel = 'active' | 'trial' | 'grace_period' | 'expired' | 'inactive' | 'suspended'
+export type AccountAccessLevel = 'active' | 'trial' | 'grace_period' | 'expired' | 'inactive' | 'suspended' | 'not_found'
 
 /**
  * Account access check result

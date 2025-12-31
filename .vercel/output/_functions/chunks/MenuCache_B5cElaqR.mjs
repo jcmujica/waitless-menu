@@ -121,9 +121,9 @@ const VeganSvg = createSvgComponent({"meta":{"src":"/_astro/vegan.CgFPQ2A2.svg",
 
 const GlutenFreeSvg = createSvgComponent({"meta":{"src":"/_astro/gluten-free.BLxbQfKU.svg","width":24,"height":24,"format":"svg"},"attributes":{"width":"24","height":"24","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","stroke-width":"2","stroke-linecap":"round","stroke-linejoin":"round","class":"icon icon-tabler icons-tabler-outline icon-tabler-wheat-off"},"children":"<path stroke=\"none\" d=\"M0 0h24v24H0z\" fill=\"none\" /><path d=\"M3 3l18 18\" /><path d=\"M12 21.5v-3.75\" /><path d=\"M5.916 9.49l-.43 1.604c-.712 2.659 .866 5.392 3.524 6.104c.997 .268 1.994 .535 2.99 .802v-3.44c-.164 -2.105 -1.637 -3.879 -3.677 -4.426l-2.407 -.644z\" /><path d=\"M10.249 4.251c.007 -.007 .014 -.014 .021 -.021l1.73 -1.73\" /><path d=\"M10.27 11.15c-.589 -.589 -1.017 -1.318 -1.246 -2.118\" /><path d=\"M14.988 8.988c.229 -.834 .234 -1.713 .013 -2.549c-.221 -.836 -.659 -1.598 -1.271 -2.209l-1.73 -1.73\" /><path d=\"M16.038 10.037l2.046 -.547l.431 1.604c.142 .53 .193 1.063 .162 1.583\" /><path d=\"M16.506 16.505c-.45 .307 -.959 .544 -1.516 .694c-.997 .268 -1.994 .535 -2.99 .801v-3.44c.055 -.708 .259 -1.379 .582 -1.978\" />"});
 
-const $$Astro$b = createAstro();
+const $$Astro$c = createAstro();
 const $$ItemModal = createComponent(($$result, $$props, $$slots) => {
-  const Astro2 = $$result.createAstro($$Astro$b, $$props, $$slots);
+  const Astro2 = $$result.createAstro($$Astro$c, $$props, $$slots);
   Astro2.self = $$ItemModal;
   const { item } = Astro2.props;
   const { name, price, image_url, description, classes } = item || {};
@@ -142,17 +142,17 @@ const $$ItemModal = createComponent(($$result, $$props, $$slots) => {
   })} </div>`} ${description && renderTemplate`<p class="text-sm opacity-80" data-astro-cid-mq5vgy2k>${description}</p>`} </div> </div> </dialog> `;
 }, "/Users/jcmujica/Code/jc/waitless/waitless-menu/src/components/ItemModal.astro", void 0);
 
-const $$Astro$a = createAstro();
+const $$Astro$b = createAstro();
 const $$Section = createComponent(($$result, $$props, $$slots) => {
-  const Astro2 = $$result.createAstro($$Astro$a, $$props, $$slots);
+  const Astro2 = $$result.createAstro($$Astro$b, $$props, $$slots);
   Astro2.self = $$Section;
   const { name } = Astro2.props;
   return renderTemplate`${maybeRenderHead()}<li class="section-item section-nav-item relative w-full overflow-hidden rounded-lg p-2" data-astro-cid-sh445jdo> <h3 class="font-bold text-2xl tracking-wide" data-astro-cid-sh445jdo>${name}</h3> </li> `;
 }, "/Users/jcmujica/Code/jc/waitless/waitless-menu/src/components/Section.astro", void 0);
 
-const $$Astro$9 = createAstro();
+const $$Astro$a = createAstro();
 const $$Item = createComponent(($$result, $$props, $$slots) => {
-  const Astro2 = $$result.createAstro($$Astro$9, $$props, $$slots);
+  const Astro2 = $$result.createAstro($$Astro$a, $$props, $$slots);
   Astro2.self = $$Item;
   const { item, settings, hasItemsWithClasses = false, menuId, accountId } = Astro2.props;
   const menuItemId = item?.id || "";
@@ -202,9 +202,9 @@ const $$Item = createComponent(($$result, $$props, $$slots) => {
 
 const ChevronLeft = createSvgComponent({"meta":{"src":"/_astro/ChevronLeft.BWAWr1kh.svg","width":24,"height":24,"format":"svg"},"attributes":{"width":"24","height":"24","viewBox":"0 0 15 15","fill":"none"},"children":"<path d=\"M8.84182 3.13514C9.04327 3.32401 9.05348 3.64042 8.86462 3.84188L5.43521 7.49991L8.86462 11.1579C9.05348 11.3594 9.04327 11.6758 8.84182 11.8647C8.64036 12.0535 8.32394 12.0433 8.13508 11.8419L4.38508 7.84188C4.20477 7.64955 4.20477 7.35027 4.38508 7.15794L8.13508 3.15794C8.32394 2.95648 8.64036 2.94628 8.84182 3.13514Z\" fill=\"currentColor\" fill-rule=\"evenodd\" clip-rule=\"evenodd\"></path>"});
 
-const $$Astro$8 = createAstro();
+const $$Astro$9 = createAstro();
 const $$FloatingButton = createComponent(($$result, $$props, $$slots) => {
-  const Astro2 = $$result.createAstro($$Astro$8, $$props, $$slots);
+  const Astro2 = $$result.createAstro($$Astro$9, $$props, $$slots);
   Astro2.self = $$FloatingButton;
   const { href } = Astro2.props;
   return renderTemplate`<!-- Use 'viewport' for instant prefetch on both mobile and desktop -->${maybeRenderHead()}<a${addAttribute(href, "href")} data-astro-prefetch="viewport"> <button type="button"${addAttribute("fixed bottom-4 left-4 cursor-pointer rounded-full bg-primary-500 [&_svg]:size-8 [&_svg]:text-primary-50 flex items-center justify-center h-12 w-12", "class")}> ${renderComponent($$result, "ChevronLeft", ChevronLeft, {})} </button> </a>`;
@@ -214,9 +214,9 @@ var __freeze$1 = Object.freeze;
 var __defProp$1 = Object.defineProperty;
 var __template$1 = (cooked, raw) => __freeze$1(__defProp$1(cooked, "raw", { value: __freeze$1(raw || cooked.slice()) }));
 var _a$1;
-const $$Astro$7 = createAstro();
+const $$Astro$8 = createAstro();
 const $$Navigation = createComponent(($$result, $$props, $$slots) => {
-  const Astro2 = $$result.createAstro($$Astro$7, $$props, $$slots);
+  const Astro2 = $$result.createAstro($$Astro$8, $$props, $$slots);
   Astro2.self = $$Navigation;
   const { sections = [], accountSettings } = Astro2.props;
   const hasSections = sections.length > 0;
@@ -228,9 +228,9 @@ const $$Navigation = createComponent(($$result, $$props, $$slots) => {
   }));
 }, "/Users/jcmujica/Code/jc/waitless/waitless-menu/src/components/Navigation.astro", "self");
 
-const $$Astro$6 = createAstro();
+const $$Astro$7 = createAstro();
 const $$Page = createComponent(($$result, $$props, $$slots) => {
-  const Astro2 = $$result.createAstro($$Astro$6, $$props, $$slots);
+  const Astro2 = $$result.createAstro($$Astro$7, $$props, $$slots);
   Astro2.self = $$Page;
   const {
     id,
@@ -274,9 +274,9 @@ const $$Footer = createComponent(($$result, $$props, $$slots) => {
   return renderTemplate`${maybeRenderHead()}<footer data-astro-cid-sz7xmlte> <p data-astro-cid-sz7xmlte>Powered by <a href="https://waitless.tech" target="_blank" rel="noopener noreferrer" class="text-rose-500 hover:underline" data-astro-cid-sz7xmlte>Waitless</a></p> </footer> `;
 }, "/Users/jcmujica/Code/jc/waitless/waitless-menu/src/components/Footer.astro", void 0);
 
-const $$Astro$5 = createAstro();
+const $$Astro$6 = createAstro();
 const $$Button = createComponent(($$result, $$props, $$slots) => {
-  const Astro2 = $$result.createAstro($$Astro$5, $$props, $$slots);
+  const Astro2 = $$result.createAstro($$Astro$6, $$props, $$slots);
   Astro2.self = $$Button;
   const baseClasses = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-9 px-4 py-2 has-[>svg]:px-3";
   const variantClasses = {
@@ -289,9 +289,9 @@ const $$Button = createComponent(($$result, $$props, $$slots) => {
   return renderTemplate`${maybeRenderHead()}<a${addAttribute(href, "href")}${addAttribute(prefetch ? prefetch : void 0, "data-astro-prefetch")}> <button type="button"${addAttribute(`cursor-pointer w-full max-w-xs mx-auto ${baseClasses} ${variantClasses[variant]}`, "class")}> ${renderSlot($$result, $$slots["default"])} </button> </a>`;
 }, "/Users/jcmujica/Code/jc/waitless/waitless-menu/src/components/Buttons/Button.astro", void 0);
 
-const $$Astro$4 = createAstro();
+const $$Astro$5 = createAstro();
 const $$Home = createComponent(($$result, $$props, $$slots) => {
-  const Astro2 = $$result.createAstro($$Astro$4, $$props, $$slots);
+  const Astro2 = $$result.createAstro($$Astro$5, $$props, $$slots);
   Astro2.self = $$Home;
   const { menu, baseUrl, accountSettings } = Astro2.props;
   const hasLogo = !!accountSettings?.logo_url;
@@ -302,9 +302,9 @@ var __freeze = Object.freeze;
 var __defProp = Object.defineProperty;
 var __template = (cooked, raw) => __freeze(__defProp(cooked, "raw", { value: __freeze(raw || cooked.slice()) }));
 var _a, _b;
-const $$Astro$3 = createAstro();
+const $$Astro$4 = createAstro();
 const $$Menu = createComponent(($$result, $$props, $$slots) => {
-  const Astro2 = $$result.createAstro($$Astro$3, $$props, $$slots);
+  const Astro2 = $$result.createAstro($$Astro$4, $$props, $$slots);
   Astro2.self = $$Menu;
   const {
     menu,
@@ -652,26 +652,26 @@ function hexToRgb(hex) {
   return `${parseInt(r, 16)}, ${parseInt(g, 16)}, ${parseInt(b, 16)}`;
 }
 
-const $$Astro$2 = createAstro();
+const $$Astro$3 = createAstro();
 const $$ClientRouter = createComponent(($$result, $$props, $$slots) => {
-  const Astro2 = $$result.createAstro($$Astro$2, $$props, $$slots);
+  const Astro2 = $$result.createAstro($$Astro$3, $$props, $$slots);
   Astro2.self = $$ClientRouter;
   const { fallback = "animate" } = Astro2.props;
   return renderTemplate`<meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback"${addAttribute(fallback, "content")}>${renderScript($$result, "/Users/jcmujica/Code/jc/waitless/waitless-menu/node_modules/.pnpm/astro@5.13.5_@types+node@24.3.0_@vercel+functions@2.2.13_jiti@2.5.1_lightningcss@1.30.1_rollup@4.49.0_typescript@5.9.2/node_modules/astro/components/ClientRouter.astro?astro&type=script&index=0&lang.ts")}`;
 }, "/Users/jcmujica/Code/jc/waitless/waitless-menu/node_modules/.pnpm/astro@5.13.5_@types+node@24.3.0_@vercel+functions@2.2.13_jiti@2.5.1_lightningcss@1.30.1_rollup@4.49.0_typescript@5.9.2/node_modules/astro/components/ClientRouter.astro", void 0);
 
-const $$Astro$1 = createAstro();
+const $$Astro$2 = createAstro();
 const $$LoadingOverlay = createComponent(($$result, $$props, $$slots) => {
-  const Astro2 = $$result.createAstro($$Astro$1, $$props, $$slots);
+  const Astro2 = $$result.createAstro($$Astro$2, $$props, $$slots);
   Astro2.self = $$LoadingOverlay;
   const { accountSettings, theme = "light" } = Astro2.props;
   const logoUrl = accountSettings?.logo_url;
   return renderTemplate`<!-- Loading Overlay - Shows during View Transitions -->${maybeRenderHead()}<div id="loading-overlay" class="loading-overlay"${addAttribute(theme, "data-theme")} aria-hidden="true" role="presentation" data-astro-cid-7p2d43sv> <!-- Animated backdrop --> <div class="loading-backdrop" data-astro-cid-7p2d43sv> <!-- Radial gradient orbs --> <div class="orb orb-1" data-astro-cid-7p2d43sv></div> <div class="orb orb-2" data-astro-cid-7p2d43sv></div> <div class="orb orb-3" data-astro-cid-7p2d43sv></div> </div> <!-- Glass container --> <div class="loading-content" data-astro-cid-7p2d43sv> ${logoUrl ? renderTemplate`<div class="logo-container" data-astro-cid-7p2d43sv> <img${addAttribute(logoUrl, "src")} alt="Loading..." class="loading-logo" data-astro-cid-7p2d43sv> <div class="logo-ring" data-astro-cid-7p2d43sv></div> </div>` : renderTemplate`<div class="loading-spinner" data-astro-cid-7p2d43sv> <div class="spinner-ring" data-astro-cid-7p2d43sv></div> <div class="spinner-ring spinner-ring-2" data-astro-cid-7p2d43sv></div> </div>`} <!-- Loading dots --> <div class="loading-dots" data-astro-cid-7p2d43sv> <span class="dot" data-astro-cid-7p2d43sv></span> <span class="dot" data-astro-cid-7p2d43sv></span> <span class="dot" data-astro-cid-7p2d43sv></span> </div> </div> </div> `;
 }, "/Users/jcmujica/Code/jc/waitless/waitless-menu/src/components/LoadingOverlay.astro", void 0);
 
-const $$Astro = createAstro();
+const $$Astro$1 = createAstro();
 const $$MenuLayout = createComponent(($$result, $$props, $$slots) => {
-  const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
+  const Astro2 = $$result.createAstro($$Astro$1, $$props, $$slots);
   Astro2.self = $$MenuLayout;
   const parseJSON = (obj) => {
     try {
@@ -714,6 +714,51 @@ const $$MenuLayout = createComponent(($$result, $$props, $$slots) => {
     backgroundRepeat: customBgProps.mode === "pattern" ? "repeat" : "no-repeat"
   }, "style")} data-astro-transition-persist="background" data-astro-cid-vrixsjww></div>`}  <div data-astro-transition-persist="loading-overlay" data-astro-cid-vrixsjww> ${renderComponent($$result, "LoadingOverlay", $$LoadingOverlay, { "accountSettings": accountSettings, "theme": theme, "data-astro-cid-vrixsjww": true })} </div> <main${addAttribute(`${theme} min-h-screen w-full relative`, "class")} data-astro-cid-vrixsjww> <div class="relative z-10" data-astro-cid-vrixsjww> ${renderSlot($$result, $$slots["default"])} </div> </main>  </body></html>`;
 }, "/Users/jcmujica/Code/jc/waitless/waitless-menu/src/layouts/MenuLayout.astro", "self");
+
+const $$Astro = createAstro();
+const $$AccountUnavailable = createComponent(($$result, $$props, $$slots) => {
+  const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
+  Astro2.self = $$AccountUnavailable;
+  const {
+    accountSettings,
+    level = "inactive",
+    message = "This menu is currently unavailable"
+  } = Astro2.props;
+  const logoUrl = accountSettings?.logo_url;
+  const accountName = accountSettings?.name;
+  const getDisplayMessage = () => {
+    switch (level) {
+      case "not_found":
+        return {
+          title: "Menu Not Found",
+          subtitle: message || "The menu you're looking for doesn't exist or may have been moved.",
+          icon: "search"
+        };
+      case "suspended":
+        return {
+          title: "Menu Temporarily Unavailable",
+          subtitle: "This menu is temporarily unavailable. Please check back later.",
+          icon: "pause"
+        };
+      case "expired":
+        return {
+          title: "Menu Unavailable",
+          subtitle: "This menu is currently not available. The business may be updating their subscription.",
+          icon: "clock"
+        };
+      case "inactive":
+      default:
+        return {
+          title: "Menu Unavailable",
+          subtitle: message || "This menu is currently not available.",
+          icon: "info"
+        };
+    }
+  };
+  const displayInfo = getDisplayMessage();
+  return renderTemplate`${maybeRenderHead()}<div class="unavailable-container" data-astro-cid-3a36hfiz> <!-- Animated gradient background --> <div class="background-gradient" data-astro-cid-3a36hfiz></div> <!-- Dot pattern overlay --> <div class="background-pattern" data-astro-cid-3a36hfiz></div> <!-- Glow effect --> <div class="glow-effect" data-astro-cid-3a36hfiz></div> <!-- Content --> <div class="content" data-astro-cid-3a36hfiz> <!-- Logo or Icon --> <div class="logo-section" data-astro-cid-3a36hfiz> ${logoUrl ? renderTemplate`<div class="logo-wrapper" data-astro-cid-3a36hfiz> <img${addAttribute(logoUrl, "src")}${addAttribute(accountName || "Restaurant", "alt")} class="logo" data-astro-cid-3a36hfiz> </div>` : renderTemplate`<div class="icon-container" data-astro-cid-3a36hfiz> ${displayInfo.icon === "search" && renderTemplate`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon" data-astro-cid-3a36hfiz> <circle cx="11" cy="11" r="8" data-astro-cid-3a36hfiz></circle> <path d="M21 21l-4.35-4.35" data-astro-cid-3a36hfiz></path> </svg>`} ${displayInfo.icon === "pause" && renderTemplate`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon" data-astro-cid-3a36hfiz> <circle cx="12" cy="12" r="10" data-astro-cid-3a36hfiz></circle> <line x1="10" y1="15" x2="10" y2="9" data-astro-cid-3a36hfiz></line> <line x1="14" y1="15" x2="14" y2="9" data-astro-cid-3a36hfiz></line> </svg>`} ${displayInfo.icon === "clock" && renderTemplate`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon" data-astro-cid-3a36hfiz> <circle cx="12" cy="12" r="10" data-astro-cid-3a36hfiz></circle> <polyline points="12 6 12 12 16 14" data-astro-cid-3a36hfiz></polyline> </svg>`} ${displayInfo.icon === "info" && renderTemplate`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon" data-astro-cid-3a36hfiz> <circle cx="12" cy="12" r="10" data-astro-cid-3a36hfiz></circle> <line x1="12" y1="16" x2="12" y2="12" data-astro-cid-3a36hfiz></line> <line x1="12" y1="8" x2="12.01" y2="8" data-astro-cid-3a36hfiz></line> </svg>`} </div>`} </div> <!-- Restaurant Name (if available) --> ${accountName && renderTemplate`<h2 class="restaurant-name" data-astro-cid-3a36hfiz>${accountName}</h2>`} <!-- Message --> <div class="message-section" data-astro-cid-3a36hfiz> <h1 class="title" data-astro-cid-3a36hfiz>${displayInfo.title}</h1> <p class="subtitle" data-astro-cid-3a36hfiz>${displayInfo.subtitle}</p> </div> <!-- Contact Info (if available) --> ${(accountSettings?.contact_email || accountSettings?.contact_phone) && renderTemplate`<div class="contact-section" data-astro-cid-3a36hfiz> <p class="contact-label" data-astro-cid-3a36hfiz>For inquiries, please contact:</p> ${accountSettings.contact_phone && renderTemplate`<a${addAttribute(`tel:${accountSettings.contact_phone}`, "href")} class="contact-link" data-astro-cid-3a36hfiz> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="contact-icon" data-astro-cid-3a36hfiz> <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" data-astro-cid-3a36hfiz></path> </svg> ${accountSettings.contact_phone} </a>`} ${accountSettings.contact_email && renderTemplate`<a${addAttribute(`mailto:${accountSettings.contact_email}`, "href")} class="contact-link" data-astro-cid-3a36hfiz> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="contact-icon" data-astro-cid-3a36hfiz> <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" data-astro-cid-3a36hfiz></path> <polyline points="22,6 12,13 2,6" data-astro-cid-3a36hfiz></polyline> </svg> ${accountSettings.contact_email} </a>`} </div>`} <!-- Footer --> <div class="footer" data-astro-cid-3a36hfiz> <p class="powered-by" data-astro-cid-3a36hfiz>
+Powered by <a href="https://waitless.tech" target="_blank" rel="noopener noreferrer" data-astro-cid-3a36hfiz>Waitless</a> </p> </div> </div> </div> `;
+}, "/Users/jcmujica/Code/jc/waitless/waitless-menu/src/components/AccountUnavailable.astro", void 0);
 
 let globalQueryClient = null;
 function getQueryClient() {
@@ -778,4 +823,4 @@ function MenuCache(props) {
   return /* @__PURE__ */ jsx(QueryProvider, { children: /* @__PURE__ */ jsx(MenuCacheInner, { ...props }) });
 }
 
-export { $$MenuLayout as $, MenuCache as M, $$Menu as a, fetchRestaurantSettingsByPath as b, fetchRestaurantSettings as f, supabase as s };
+export { $$MenuLayout as $, MenuCache as M, $$AccountUnavailable as a, $$Menu as b, fetchRestaurantSettingsByPath as c, fetchRestaurantSettings as f, supabase as s };

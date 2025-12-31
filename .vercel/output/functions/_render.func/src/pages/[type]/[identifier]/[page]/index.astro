@@ -10,27 +10,54 @@ import { MenuCache } from "@/components/MenuCache";
 
 const { type, identifier, page: pageId } = Astro.params;
 
-// Step 1: Get account ID and check access FIRST (lightweight query)
+// Initialize variables
 let accountId: string | undefined;
 let accountSettings;
 let accountAccess: AccountAccess = { hasAccess: true, level: 'active' };
+let menu: IMenu | undefined;
 
-if (type === "qr") {
+// Step 1: Validate route type
+const isValidRouteType = type === "qr" || type === "v";
+
+if (!isValidRouteType) {
+  // Invalid route type - show not found
+  accountAccess = { 
+    hasAccess: false, 
+    level: 'not_found', 
+    message: 'This page doesn\'t exist. Please check the URL and try again.' 
+  };
+} else if (type === "qr") {
+  // QR route - use identifier as account ID directly
   accountId = identifier as string;
+  
+  // Check if the account exists and has access
+  accountAccess = await checkAccountAccess(accountId);
+  
+  // If account not found, update to show not_found level
+  if (!accountAccess.hasAccess && accountAccess.level === 'inactive' && accountAccess.message === 'Account not found') {
+    accountAccess.level = 'not_found';
+    accountAccess.message = 'This menu doesn\'t exist. Please check the URL and try again.';
+  }
 } else if (type === "v") {
-  // For vanity URLs, resolve path to account ID first
+  // Vanity URL - resolve path to account ID first
   const settingsResponse = await fetchRestaurantSettingsByPath(identifier as string);
   accountSettings = settingsResponse.data;
   accountId = accountSettings?.account_id;
-}
-
-// Check account access before fetching heavy menu data
-if (accountId) {
-  accountAccess = await checkAccountAccess(accountId);
+  
+  if (!accountId) {
+    // Path doesn't exist
+    accountAccess = { 
+      hasAccess: false, 
+      level: 'not_found', 
+      message: 'This menu doesn\'t exist. Please check the URL and try again.' 
+    };
+  } else {
+    // Check account access
+    accountAccess = await checkAccountAccess(accountId);
+  }
 }
 
 // Step 2: Only fetch full menu data if account has access
-let data, error;
 if (accountAccess.hasAccess && accountId) {
   if (type === "qr") {
     // Fetch menu and settings in parallel
@@ -38,29 +65,41 @@ if (accountAccess.hasAccess && accountId) {
       fetchMenu(accountId),
       fetchRestaurantSettings(accountId)
     ]);
-    data = menuResponse.data;
-    error = menuResponse.error;
+    menu = menuResponse.data;
     accountSettings = settingsResponse.data;
+    
+    // If menu doesn't exist for valid account
+    if (!menu && !menuResponse.error) {
+      accountAccess = { 
+        hasAccess: false, 
+        level: 'not_found', 
+        message: 'This restaurant hasn\'t set up their menu yet. Please check back later.' 
+      };
+    }
   } else if (type === "v") {
     // We already have settings, just fetch menu
     const menuResponse = await fetchMenu(accountId);
-    data = menuResponse.data;
-    error = menuResponse.error;
+    menu = menuResponse.data;
+    
+    // If menu doesn't exist for valid account
+    if (!menu && !menuResponse.error) {
+      accountAccess = { 
+        hasAccess: false, 
+        level: 'not_found', 
+        message: 'This restaurant hasn\'t set up their menu yet. Please check back later.' 
+      };
+    }
   }
-} else if (!accountId && type !== "qr" && type !== "v") {
-  error = new Error(`Unknown route type: ${type}`);
 }
-
-const menu = data as IMenu;
 
 // Find the current page
 const currentPage = menu?.pages?.find((page: MenuPage) => page.id === pageId);
 
-// Get theme for unavailable page (default to light if no menu)
+// Get theme for page (default to light if no menu)
 const theme = (menu?.appearance?.theme || "light") as "light" | "dark";
 
 // Cache the response at Vercel's edge for better performance
-if (!error && menu && accountAccess.hasAccess) {
+if (menu && accountAccess.hasAccess) {
   Astro.response.headers.set(
     'Cache-Control',
     'public, s-maxage=60, stale-while-revalidate=300'
@@ -98,7 +137,6 @@ if (!error && menu && accountAccess.hasAccess) {
       accountPath={type === "v" ? identifier : undefined}
       currentPage={currentPage}
       accountSettings={accountSettings}
-      error={error}
     />
   </MenuLayout>
 )}
