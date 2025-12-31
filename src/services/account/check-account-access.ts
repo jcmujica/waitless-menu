@@ -20,24 +20,17 @@ export async function checkAccountAccess(accountId: string): Promise<AccountAcce
   try {
     const supabaseClient = supabase()
 
-    // Fetch account status
+    // Fetch account status - use maybeSingle to avoid errors when account doesn't exist
     const { data: account, error: accountError } = await supabaseClient
       .from('accounts')
       .select('account_status')
       .eq('id', accountId)
-      .single()
+      .maybeSingle()
 
     if (accountError) {
-      // Check if account doesn't exist (PGRST116 = no rows found)
-      if (accountError.code === 'PGRST116' || accountError.message?.includes('0 rows')) {
-        return {
-          hasAccess: false,
-          level: 'inactive',
-          message: 'Account not found'
-        }
-      }
       console.error('Error fetching account:', accountError)
-      // For other errors, allow access - don't block menus due to transient errors
+      // For any query errors, allow access - don't block menus due to transient errors
+      // This prevents RLS or other issues from blocking valid accounts
       return {
         hasAccess: true,
         level: 'active'
@@ -45,7 +38,8 @@ export async function checkAccountAccess(accountId: string): Promise<AccountAcce
     }
 
     if (!account) {
-      // Account doesn't exist
+      // Account doesn't exist - only return error if we're certain
+      // Use maybeSingle so this only happens if truly no rows
       return {
         hasAccess: false,
         level: 'inactive',

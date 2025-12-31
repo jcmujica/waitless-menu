@@ -30,13 +30,30 @@ if (!isValidRouteType) {
   // QR route - use identifier as account ID directly
   accountId = identifier as string;
   
-  // Check if the account exists and has access
-  accountAccess = await checkAccountAccess(accountId);
+  // First verify account exists by fetching settings
+  const settingsResponse = await fetchRestaurantSettings(accountId);
   
-  // If account not found, update to show not_found level
-  if (!accountAccess.hasAccess && accountAccess.level === 'inactive' && accountAccess.message === 'Account not found') {
-    accountAccess.level = 'not_found';
-    accountAccess.message = 'This menu doesn\'t exist. Please check the URL and try again.';
+  if (settingsResponse.error || !settingsResponse.data) {
+    // Account doesn't exist
+    accountAccess = { 
+      hasAccess: false, 
+      level: 'not_found', 
+      message: 'This menu doesn\'t exist. Please check the URL and try again.' 
+    };
+  } else {
+    // Account exists (we have settings) - now check access status
+    accountSettings = settingsResponse.data;
+    accountAccess = await checkAccountAccess(accountId);
+    
+    // If checkAccountAccess says "not found" but we have settings, it's likely an RLS/query issue
+    // In that case, assume account is active and proceed
+    if (!accountAccess.hasAccess && accountAccess.message === 'Account not found') {
+      // Account exists (we have settings), so allow access
+      accountAccess = {
+        hasAccess: true,
+        level: 'active'
+      };
+    }
   }
 } else if (type === "v") {
   // Vanity URL - resolve path to account ID first
@@ -61,8 +78,19 @@ if (!isValidRouteType) {
         message: 'This menu doesn\'t exist. Please check the URL and try again.' 
       };
     } else {
-      // Check account access
+      // If we have account_settings, the account exists - just check status
+      // Only check access status, not existence (we already know it exists)
       accountAccess = await checkAccountAccess(accountId);
+      
+      // If checkAccountAccess says "not found" but we have settings, it's likely an RLS/query issue
+      // In that case, assume account is active and proceed
+      if (!accountAccess.hasAccess && accountAccess.message === 'Account not found') {
+        // Account exists (we have settings), so allow access
+        accountAccess = {
+          hasAccess: true,
+          level: 'active'
+        };
+      }
     }
   }
 }
@@ -70,11 +98,8 @@ if (!isValidRouteType) {
 // Step 2: Only fetch full menu data if account has access
 if (accountAccess.hasAccess && accountId) {
   if (type === "qr") {
-    // Fetch menu and settings in parallel
-    const [menuResponse, settingsResponse] = await Promise.all([
-      fetchMenu(accountId),
-      fetchRestaurantSettings(accountId)
-    ]);
+    // We already have settings from above, just fetch menu
+    const menuResponse = await fetchMenu(accountId);
     
     if (menuResponse.error) {
       // Error fetching menu - show unavailable
@@ -85,7 +110,6 @@ if (accountAccess.hasAccess && accountId) {
       };
     } else {
       menu = menuResponse.data;
-      accountSettings = settingsResponse.data;
       
       // If menu doesn't exist for valid account
       if (!menu) {
