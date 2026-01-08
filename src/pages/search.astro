@@ -1,7 +1,12 @@
 ---
 import { searchMenus, type SearchResult } from "@/services/search/search-menus";
+import { getServerLocale } from "@/utils/server-locale";
+import { getPageTranslation, getPageTranslationWithReplacements } from "@/utils/get-page-translations";
 import "../styles/global.css";
 import "../styles/theme.css";
+
+// Get user's language preference
+const userLanguage = getServerLocale(Astro.cookies, Astro.request.headers);
 
 // Get search query from URL params
 const url = new URL(Astro.request.url);
@@ -24,16 +29,24 @@ if (query.trim().length >= 2) {
 const getMenuUrl = (result: SearchResult) => {
   return result.path ? `/v/${result.path}` : `/qr/${result.accountId}`;
 };
+
+// Get translations
+const t = (key: string, replacements?: Record<string, string | number>) => {
+  if (replacements) {
+    return getPageTranslationWithReplacements(key, userLanguage, replacements);
+  }
+  return getPageTranslation(key, userLanguage);
+};
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang={userLanguage}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
-    <title>Search Menus | Waitless</title>
-    <meta name="description" content="Search for restaurant menus on Waitless" />
+    <title>{t("Search Menus | Waitless")}</title>
+    <meta name="description" content={t("Search for restaurant menus on Waitless")} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
@@ -61,8 +74,8 @@ const getMenuUrl = (result: SearchResult) => {
 
         <!-- Search Section -->
         <div class="search-section">
-          <h1 class="title">Find a Menu</h1>
-          <p class="subtitle">Search restaurants and browse their digital menus</p>
+          <h1 class="title">{t("Find a Menu")}</h1>
+          <p class="subtitle">{t("Search restaurants and browse their digital menus")}</p>
           
           <form action="/search" method="get" class="search-form">
             <div class="search-input-wrapper">
@@ -74,13 +87,13 @@ const getMenuUrl = (result: SearchResult) => {
                 type="text"
                 name="q"
                 value={query}
-                placeholder="Restaurant name or URL..."
+                placeholder={t("Restaurant name or URL...")}
                 class="search-input"
                 autofocus
                 autocomplete="off"
               />
               {query && (
-                <a href="/search" class="clear-button" aria-label="Clear search">
+                <a href="/search" class="clear-button" aria-label={t("Clear search")}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"/>
                     <line x1="6" y1="6" x2="18" y2="18"/>
@@ -89,7 +102,7 @@ const getMenuUrl = (result: SearchResult) => {
               )}
             </div>
             <button type="submit" class="search-button">
-              Search
+              {t("Search")}
             </button>
           </form>
         </div>
@@ -104,7 +117,7 @@ const getMenuUrl = (result: SearchResult) => {
                   <line x1="12" y1="8" x2="12" y2="12"/>
                   <line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
-                <p>Something went wrong. Please try again.</p>
+                <p>{t("Something went wrong. Please try again.")}</p>
               </div>
             ) : results.length === 0 ? (
               <div class="no-results">
@@ -114,14 +127,17 @@ const getMenuUrl = (result: SearchResult) => {
                     <path d="M21 21l-4.35-4.35"/>
                   </svg>
                 </div>
-                <h3>No menus found</h3>
-                <p>We couldn't find any menus matching "<strong>{query}</strong>"</p>
-                <p class="hint">Try a different search term or check the spelling</p>
+                <h3>{t("No menus found")}</h3>
+                <p>{getPageTranslationWithReplacements("We couldn't find any menus matching \"{query}\"", userLanguage, { query })}</p>
+                <p class="hint">{t("Try a different search term or check the spelling")}</p>
               </div>
             ) : (
               <>
                 <p class="results-count">
-                  Found <strong>{results.length}</strong> {results.length === 1 ? 'menu' : 'menus'}
+                  {getPageTranslationWithReplacements("Found {count} {menu}", userLanguage, { 
+                    count: results.length, 
+                    menu: results.length === 1 ? t("menu") : t("menus")
+                  })}
                 </p>
                 <div class="results-grid">
                   {results.map((result, index) => (
@@ -167,7 +183,7 @@ const getMenuUrl = (result: SearchResult) => {
         {!query && (
           <div class="empty-state">
             <div class="suggestions">
-              <p class="suggestions-label">Popular searches</p>
+              <p class="suggestions-label">{t("Popular searches")}</p>
               <div class="suggestion-tags">
                 <a href="/search?q=pizza" class="suggestion-tag">Pizza</a>
                 <a href="/search?q=sushi" class="suggestion-tag">Sushi</a>
@@ -181,7 +197,7 @@ const getMenuUrl = (result: SearchResult) => {
         <!-- Footer -->
         <footer class="footer">
           <p>
-            Powered by <a href="https://waitless.tech" target="_blank" rel="noopener noreferrer">Waitless</a>
+            {t("Powered by")} <a href="https://waitless.tech" target="_blank" rel="noopener noreferrer">Waitless</a>
           </p>
         </footer>
       </div>

@@ -1,5 +1,7 @@
 ---
 import type { AccountSettings, AccountAccessLevel } from "@/types/menu";
+import { getServerLocale } from "@/utils/server-locale";
+import { getPageTranslation } from "@/utils/get-page-translations";
 
 interface Props {
   accountSettings?: AccountSettings;
@@ -11,8 +13,14 @@ interface Props {
 const { 
   accountSettings, 
   level = "inactive",
-  message = "This menu is currently unavailable"
+  message
 } = Astro.props;
+
+// Get user's language preference
+const userLanguage = getServerLocale(Astro.cookies, Astro.request.headers);
+
+// Translation helper
+const t = (key: string) => getPageTranslation(key, userLanguage);
 
 const logoUrl = accountSettings?.logo_url;
 const accountName = accountSettings?.name;
@@ -22,27 +30,27 @@ const getDisplayMessage = () => {
   switch (level) {
     case 'not_found':
       return {
-        title: 'Menu Not Found',
-        subtitle: message || "The menu you're looking for doesn't exist or may have been moved.",
+        title: t('Menu Not Found'),
+        subtitle: message || t("The menu you're looking for doesn't exist or may have been moved."),
         icon: 'search'
       }
     case 'suspended':
       return {
-        title: 'Menu Temporarily Unavailable',
-        subtitle: 'This menu is temporarily unavailable. Please check back later.',
+        title: t('Menu Temporarily Unavailable'),
+        subtitle: t('This menu is temporarily unavailable. Please check back later.'),
         icon: 'pause'
       }
     case 'expired':
       return {
-        title: 'Menu Unavailable',
-        subtitle: 'This menu is currently not available. The business may be updating their subscription.',
+        title: t('Menu Unavailable'),
+        subtitle: t('This menu is currently not available. The business may be updating their subscription.'),
         icon: 'clock'
       }
     case 'inactive':
     default:
       return {
-        title: 'Menu Unavailable',
-        subtitle: message || 'This menu is currently not available.',
+        title: t('Menu Unavailable'),
+        subtitle: message || t('This menu is currently not available.'),
         icon: 'info'
       }
   }
@@ -119,7 +127,7 @@ const displayInfo = getDisplayMessage();
     <!-- Contact Info (if available) -->
     {(accountSettings?.contact_email || accountSettings?.contact_phone) && (
       <div class="contact-section">
-        <p class="contact-label">For inquiries, please contact:</p>
+        <p class="contact-label">{t("For inquiries, please contact:")}</p>
         {accountSettings.contact_phone && (
           <a href={`tel:${accountSettings.contact_phone}`} class="contact-link">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="contact-icon">

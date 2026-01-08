@@ -6,8 +6,13 @@ import Menu from "@/components/Menu.astro";
 import MenuLayout from "@/layouts/MenuLayout.astro";
 import AccountUnavailable from "@/components/AccountUnavailable.astro";
 import { MenuCache } from "@/components/MenuCache";
+import { getServerLocale } from "@/utils/server-locale";
+import { applyMenuTranslations } from "@/utils/apply-menu-translations";
 
 const { menuId } = Astro.params;
+
+// Detect user's language preference
+const userLanguage = getServerLocale(Astro.cookies, Astro.request.headers);
 
 // Initialize variables
 let menu: IMenu | undefined;
@@ -15,7 +20,7 @@ let accountSettings = null;
 let accountAccess: AccountAccess = { hasAccess: true, level: 'active' };
 
 // Fetch menu by ID (for preview - allows inactive menus)
-const response = await fetchMenuById(menuId as string);
+const response = await fetchMenuById(menuId as string, userLanguage);
 menu = response.data;
 const accountId = response.accountId;
 
@@ -30,6 +35,11 @@ if (!menu) {
   // Fetch account settings using the account_id from the menu
   const settingsResponse = await fetchRestaurantSettings(accountId);
   accountSettings = settingsResponse.data;
+  
+  // Apply translations if menu exists and account settings are available
+  if (menu && accountSettings) {
+    menu = applyMenuTranslations(menu, userLanguage, accountSettings);
+  }
 }
 
 // Get theme for page (default to light if no menu)
@@ -45,7 +55,11 @@ Astro.response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate
 ---
 
 {!accountAccess.hasAccess ? (
-  <MenuLayout menu={menu} accountSettings={accountSettings}>
+  <MenuLayout 
+    menu={menu} 
+    accountSettings={accountSettings}
+    currentLanguage={userLanguage}
+  >
     <AccountUnavailable 
       accountSettings={accountSettings ?? undefined}
       theme={theme}
@@ -54,7 +68,11 @@ Astro.response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate
     />
   </MenuLayout>
 ) : (
-  <MenuLayout menu={menu} accountSettings={accountSettings}>
+  <MenuLayout 
+    menu={menu} 
+    accountSettings={accountSettings}
+    currentLanguage={userLanguage}
+  >
     {/* Client-side cache for instant navigation between preview pages */}
     {menu && (
       <MenuCache 

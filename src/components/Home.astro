@@ -12,27 +12,32 @@ const hasLogo = !!accountSettings?.logo_url;
       <div class="flex items-center justify-center">
         {
           hasLogo && (
+            <div class="home-logo-container">
             <img 
               src={accountSettings?.logo_url} 
               alt="Logo" 
-              class="w-48 h-48"
+                class="home-logo w-48 h-48 sm:w-56 sm:h-56"
               transition:name="logo" 
             />
+            </div>
           )
         }
       </div>
       {
         !hasLogo && (
-          <h1 class="text-2xl font-bold text-center" transition:name="menu-title">
+          <h1 class="home-title text-3xl sm:text-4xl font-bold text-center" transition:name="menu-title">
             {menu?.name || "Menu"}
           </h1>
         )
       }
     </header>
-    <nav class="flex flex-col gap-4 mb-4 text-center px-4">
+    <nav class="home-nav flex flex-col gap-3 sm:gap-4 mb-4 text-center px-4 max-w-md mx-auto w-full">
       {
         menu.pages.map((page: MenuPage, index: number) => (
-          <div style={`animation-delay: ${(index + 1) * 50}ms`}>
+          <div 
+            class="home-nav-item"
+            style={`animation-delay: ${(index + 1) * 50}ms`}
+          >
             <Button href={`${baseUrl}/${page.id}`}>{page.name}</Button>
           </div>
         ))
@@ -40,3 +45,130 @@ const hasLogo = !!accountSettings?.logo_url;
     </nav>
   </div>
 </main>
+
+<style>
+  /* Logo container with subtle backdrop */
+  .home-logo-container {
+    position: relative;
+    padding: 1rem;
+    border-radius: 1.5rem;
+  }
+
+  .home-logo {
+    border-radius: 1rem;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    transition: transform 0.3s ease, filter 0.3s ease;
+  }
+
+  .home-logo:hover {
+    transform: scale(1.02);
+  }
+
+  /* Title styling */
+  .home-title {
+    background: linear-gradient(
+      135deg,
+      var(--primary-600) 0%,
+      var(--primary-500) 50%,
+      var(--primary-700) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Navigation container */
+  .home-nav {
+    position: relative;
+  }
+
+  .home-nav-item {
+    opacity: 0;
+    animation: fadeInUp 0.5s ease forwards;
+    transform: translateY(10px);
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Theme-aware styling */
+  :global(.light-mode) {
+    .home-logo-container {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .home-logo {
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+    }
+
+    .home-title {
+      background: linear-gradient(
+        135deg,
+        var(--primary-700) 0%,
+        var(--primary-600) 50%,
+        var(--primary-800) 100%
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  :global(.dark-mode) {
+    .home-logo-container {
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .home-logo {
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+    }
+
+    .home-title {
+      background: linear-gradient(
+        135deg,
+        var(--primary-400) 0%,
+        var(--primary-300) 50%,
+        var(--primary-500) 100%
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .home-logo {
+      transition: none;
+    }
+
+    .home-logo:hover {
+      transform: none;
+    }
+
+    .home-nav-item {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (min-width: 640px) {
+    .home-title {
+      font-size: 2.5rem;
+    }
+  }
+</style>

@@ -1,7 +1,12 @@
 import { supabase } from "../supabase/client"
 import type { IMenu, MenuItem, MenuPage, MenuResponse } from "../../types/menu"
+import type { SupportedLanguage } from "../../utils/server-locale"
+import { applyPageItemTranslations } from "../../utils/translations"
 
-export const fetchMenu = async (account: string): Promise<MenuResponse> => {
+export const fetchMenu = async (
+  account: string,
+  language?: SupportedLanguage
+): Promise<MenuResponse> => {
   try {
     const supabaseClient = supabase()
 
@@ -43,10 +48,10 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
       return { error: menuError || new Error('Menu not found') }
     }
 
-    // 2. Fetch pages for the menu
+    // 2. Fetch pages for the menu (including translations)
     const { data: pagesData, error: pagesError } = await supabaseClient
       .from('menu_pages')
-      .select('id, name, position')
+      .select('id, name, position, translations')
       .eq('menu_id', menuData.id)
       .order('position')
 
@@ -57,7 +62,7 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
 
     const pageIds = pagesData.map(p => p.id)
 
-    // 3. Fetch items with their details in a single query
+    // 3. Fetch items with their details in a single query (including translations)
     const { data: itemsData, error: itemsError } = await supabaseClient
       .from('menu_items')
       .select(`
@@ -72,7 +77,8 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
           description,
           is_available,
           classes,
-          type
+          type,
+          translations
         )
       `)
       .in('page_id', pageIds)
@@ -83,14 +89,14 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
       return { error: itemsError }
     }
 
-    // 4. Group items by page
-    const itemsByPageId = (itemsData || []).reduce<Record<string, MenuItem[]>>((acc, item: any) => {
+    // 4. Group items by page (preserving translations for later application)
+    const itemsByPageId = (itemsData || []).reduce<Record<string, (MenuItem & { translations?: any })[]>>((acc, item: any) => {
       const pageId = item.page_id
       const itemData = item.items
 
       if (!itemData) return acc // Skip if item data is missing
 
-      const menuItem: MenuItem = {
+      const menuItem: MenuItem & { translations?: any } = {
         id: item.id,
         item_id: itemData.id,
         name: itemData.name || '',
@@ -99,7 +105,8 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
         description: itemData.description,
         is_available: itemData.is_available,
         classes: itemData.classes,
-        type: itemData.type || 'item'
+        type: itemData.type || 'item',
+        translations: itemData.translations || null
       }
 
       if (!acc[pageId]) acc[pageId] = []
@@ -107,12 +114,17 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
       return acc
     }, {})
 
-    // 5. Construct pages with their items
-    const pages: MenuPage[] = pagesData.map(page => ({
+    // 5. Construct pages with their items (preserving translations)
+    const pages: (MenuPage & { translations?: any })[] = pagesData.map(page => ({
       id: page.id,
       name: page.name,
-      items: itemsByPageId[page.id] || []
+      items: itemsByPageId[page.id] || [],
+      translations: page.translations || null
     }))
+
+    // 6. Apply translations if language is provided and different from primary
+    // Note: We'll need account settings to know primary_language and enabled_languages
+    // For now, we'll apply translations in the page component where we have access to account settings
 
     // Handle the case where menu_appearances and menu_settings might be arrays or objects
     const appearance = Array.isArray(menuData.menu_appearances)
@@ -132,7 +144,7 @@ export const fetchMenu = async (account: string): Promise<MenuResponse> => {
       }
     }
 
-    // 6. Build the final menu object
+    // 7. Build the final menu object
     const menu: IMenu = {
       id: menuData.id,
       name: menuData.name,

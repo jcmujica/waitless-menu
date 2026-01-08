@@ -7,8 +7,17 @@ import Menu from "@/components/Menu.astro";
 import MenuLayout from "@/layouts/MenuLayout.astro";
 import AccountUnavailable from "@/components/AccountUnavailable.astro";
 import { MenuCache } from "@/components/MenuCache";
+import { getServerLocale } from "@/utils/server-locale";
+import { applyMenuTranslations } from "@/utils/apply-menu-translations";
+import { getPageTranslation } from "@/utils/get-page-translations";
 
 const { type, identifier } = Astro.params;
+
+// Detect user's language preference
+const userLanguage = getServerLocale(Astro.cookies, Astro.request.headers);
+
+// Translation helper
+const t = (key: string) => getPageTranslation(key, userLanguage);
 
 const PATH_TYPES = {
   ACCOUNT_ID: "qr",
@@ -29,7 +38,7 @@ if (!isValidRouteType) {
   accountAccess = { 
     hasAccess: false, 
     level: 'not_found', 
-    message: 'This page doesn\'t exist. Please check the URL and try again.' 
+    message: t("This page doesn't exist. Please check the URL and try again.")
   };
 } else if (type === PATH_TYPES.ACCOUNT_ID) {
   // QR route - use identifier as account ID directly
@@ -43,7 +52,7 @@ if (!isValidRouteType) {
     accountAccess = { 
       hasAccess: false, 
       level: 'not_found', 
-      message: 'This menu doesn\'t exist. Please check the URL and try again.' 
+      message: t("This page doesn't exist. Please check the URL and try again.")
     };
   } else {
     // Account exists (we have settings) - now check access status
@@ -69,7 +78,7 @@ if (!isValidRouteType) {
     accountAccess = { 
       hasAccess: false, 
       level: 'not_found', 
-      message: 'This menu doesn\'t exist. Please check the URL and try again.' 
+      message: t("This page doesn't exist. Please check the URL and try again.")
     };
   } else {
     accountSettings = settingsResponse.data;
@@ -80,7 +89,7 @@ if (!isValidRouteType) {
       accountAccess = { 
         hasAccess: false, 
         level: 'not_found', 
-        message: 'This menu doesn\'t exist. Please check the URL and try again.' 
+        message: t("This page doesn't exist. Please check the URL and try again.")
       };
     } else {
       // If we have account_settings, the account exists - just check status
@@ -104,47 +113,57 @@ if (!isValidRouteType) {
 if (accountAccess.hasAccess && accountId) {
   if (type === PATH_TYPES.ACCOUNT_ID) {
     // We already have settings from above, just fetch menu
-    const menuResponse = await fetchMenu(accountId);
+    const menuResponse = await fetchMenu(accountId, userLanguage);
     
     if (menuResponse.error) {
       // Error fetching menu - show unavailable
       accountAccess = { 
         hasAccess: false, 
         level: 'inactive', 
-        message: 'This menu is currently unavailable.' 
+        message: t('This menu is currently not available.')
       };
     } else {
       menu = menuResponse.data;
+      
+      // Apply translations if menu exists and account settings are available
+      if (menu && accountSettings) {
+        menu = applyMenuTranslations(menu, userLanguage, accountSettings);
+      }
       
       // If menu doesn't exist for valid account
       if (!menu) {
         accountAccess = { 
           hasAccess: false, 
           level: 'not_found', 
-          message: 'This restaurant hasn\'t set up their menu yet. Please check back later.' 
+          message: t('This menu is currently not available.')
         };
       }
     }
   } else if (type === PATH_TYPES.ACCOUNT_PATH) {
     // We already have settings from above, just fetch menu
-    const menuResponse = await fetchMenu(accountId);
+    const menuResponse = await fetchMenu(accountId, userLanguage);
     
     if (menuResponse.error) {
       // Error fetching menu - show unavailable
       accountAccess = { 
         hasAccess: false, 
         level: 'inactive', 
-        message: 'This menu is currently unavailable.' 
+        message: t('This menu is currently not available.')
       };
     } else {
       menu = menuResponse.data;
+      
+      // Apply translations if menu exists and account settings are available
+      if (menu && accountSettings) {
+        menu = applyMenuTranslations(menu, userLanguage, accountSettings);
+      }
       
       // If menu doesn't exist for valid account
       if (!menu) {
         accountAccess = { 
           hasAccess: false, 
           level: 'not_found', 
-          message: 'This restaurant hasn\'t set up their menu yet. Please check back later.' 
+          message: t('This menu is currently not available.')
         };
       }
     }
@@ -177,7 +196,11 @@ if (menu && accountAccess.hasAccess) {
     />
   </MenuLayout>
 ) : (
-  <MenuLayout menu={menu} accountSettings={accountSettings}>
+  <MenuLayout 
+    menu={menu} 
+    accountSettings={accountSettings}
+    currentLanguage={userLanguage}
+  >
     {/* Client-side cache for instant navigation between menu pages */}
     <MenuCache 
       client:load

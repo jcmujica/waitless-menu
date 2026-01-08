@@ -14,18 +14,19 @@ interface Props {
 }
 
 // Base classes shared by all button variants
+// Mobile-first: larger text and touch targets on mobile, compact on desktop
 const baseClasses =
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-9 px-4 py-2 has-[>svg]:px-3";
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-base font-medium sm:text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive h-10 px-6 py-3 sm:h-9 sm:px-4 sm:py-2 has-[>svg]:px-4 has-[>svg]:sm:px-3";
 // Variant-specific classes with auto-contrast text
 const variantClasses = {
   primary:
-    "bg-[var(--primary-500)] text-[var(--primary-500-contrast)] shadow-xs hover:bg-[var(--primary-600)] hover:text-[var(--primary-600-contrast)]",
+    "bg-[var(--primary-500)] text-[var(--primary-500-contrast)] shadow-md hover:bg-[var(--primary-600)] hover:text-[var(--primary-600-contrast)] hover:shadow-lg active:scale-[0.98]",
   secondary:
-    "bg-[var(--primary-100)] text-[var(--primary-100-contrast)] shadow-xs hover:bg-[var(--primary-200)] hover:text-[var(--primary-200-contrast)]",
+    "bg-[var(--primary-100)] text-[var(--primary-100-contrast)] shadow-sm hover:bg-[var(--primary-200)] hover:text-[var(--primary-200-contrast)] hover:shadow-md active:scale-[0.98]",
   outline:
-    "border border-[var(--primary-500)] text-[var(--primary-500)] bg-background shadow-xs hover:bg-[var(--primary-50)] dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+    "border border-[var(--primary-500)] text-[var(--primary-500)] bg-background shadow-sm hover:bg-[var(--primary-50)] hover:shadow-md dark:bg-input/30 dark:border-input dark:hover:bg-input/50 active:scale-[0.98]",
   ghost:
-    "text-[var(--primary-600)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-700)] dark:hover:bg-accent/50",
+    "text-[var(--primary-600)] hover:bg-[var(--primary-50)] hover:text-[var(--primary-700)] dark:hover:bg-accent/50 active:scale-[0.98]",
 };
 
 // Default to 'viewport' - works on both desktop and mobile
@@ -43,3 +44,21 @@ const { href, variant = "primary", prefetch = 'viewport' } = Astro.props;
     <slot />
   </button>
 </a>
+
+<style>
+  /* Smooth transitions for button interactions */
+  button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    button {
+      transition: none;
+    }
+
+    button:active {
+      transform: none !important;
+    }
+  }
+</style>

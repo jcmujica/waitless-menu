@@ -131,6 +131,8 @@ export interface AccountSettings {
   address: string | null
   created_at?: string
   updated_at?: string
+  primary_language?: string
+  enabled_languages?: string[]
 }
 
 /**

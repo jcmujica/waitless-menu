@@ -2,7 +2,9 @@
 import { generateThemeVariables } from "@/utils/themeUtils";
 import { ClientRouter } from "astro:transitions";
 import type { IMenu, AccountSettings } from "@/types/menu";
+import type { SupportedLanguage } from "@/utils/server-locale";
 import LoadingOverlay from "@/components/LoadingOverlay.astro";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 import "../styles/global.css";
 import "../styles/theme.css";
@@ -10,6 +12,7 @@ import "../styles/theme.css";
 interface Props {
   menu?: IMenu;
   accountSettings?: AccountSettings;
+  currentLanguage?: SupportedLanguage;
 }
 
 const parseJSON = (obj: any) => {
@@ -20,7 +23,7 @@ const parseJSON = (obj: any) => {
   }
 };
 
-const { menu, accountSettings } = Astro.props;
+const { menu, accountSettings, currentLanguage = 'en' } = Astro.props;
 
 const theme = (menu?.appearance?.theme || "light") as "light" | "dark";
 const styleData = parseJSON(menu?.appearance?.style);
@@ -49,7 +52,7 @@ const primaryColorStyles = Object.entries(themeVariables)
   .join("\n        ");
 ---
 
-<html lang="es" class={theme === "dark" ? "dark-mode" : "light-mode"}>
+<html lang={currentLanguage} class={theme === "dark" ? "dark-mode" : "light-mode"}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -124,6 +127,24 @@ const primaryColorStyles = Object.entries(themeVariables)
     </div>
 
     <main class={`${theme} min-h-screen w-full relative`}>
+      {/* Language Selector - Fixed position */}
+      {accountSettings && (accountSettings.enabled_languages?.length || 0) > 0 && (
+        <div class="fixed top-4 right-4 z-20">
+          <LanguageSelector
+            client:load
+            currentLanguage={currentLanguage}
+            enabledLanguages={accountSettings.enabled_languages || []}
+            primaryLanguage={accountSettings.primary_language || 'es'}
+            onLanguageChange={(lang) => {
+              // Set cookie and reload page with new language
+              if (typeof document !== 'undefined') {
+                document.cookie = `waitless-language=${lang}; path=/; max-age=${60 * 60 * 24 * 365}`;
+                window.location.reload();
+              }
+            }}
+          />
+        </div>
+      )}
       <div class="relative z-10">
         <slot />
       </div>
